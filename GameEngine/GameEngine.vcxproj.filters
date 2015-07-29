@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{fb299e18-58f1-4378-b3f9-6e848ca709a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{dd08cf86-1b41-43f8-a2e9-0fe018b0df77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Base">
+      <UniqueIdentifier>{6fca13ce-176b-4118-b760-6aa8e2ea461a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\AudioEngine">
+      <UniqueIdentifier>{e7b4c509-d8e5-4b63-960f-5f70d4432bfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Resource">
+      <UniqueIdentifier>{60fad723-f84d-4e66-8424-66cafc3a2a41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI">
+      <UniqueIdentifier>{5cd3334e-b28c-4688-b662-b8563afe1dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Rendering">
+      <UniqueIdentifier>{2d879076-8f1f-45e6-b0b8-2b61f98cbe40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utilities">
+      <UniqueIdentifier>{f80d5f2d-e95f-45f6-a1f2-f3232e1e214a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\FontEngine">
+      <UniqueIdentifier>{4e4adf36-c333-4c2f-adb8-6ae6ea447e78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Physics">
+      <UniqueIdentifier>{fce590b5-7f2b-4ecd-b269-fc9771d8bbcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Input">
+      <UniqueIdentifier>{d3c20f5d-ebc6-49eb-b930-c765cc2e1bae}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Animation.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\enginepch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Scene.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\SkyBox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\GameWindow.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\GraphicDevice.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Texture2D.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Component.cpp">
+      <Filter>Source\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Object.cpp">
+      <Filter>Source\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\GameObject.cpp">
+      <Filter>Source\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Audio.cpp">
+      <Filter>Source\AudioEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\MathLib.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Resource.cpp">
+      <Filter>Source\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\FbxLoader.cpp">
+      <Filter>Source\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Button.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Image.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Text.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\SelectableUI.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\UIBase.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\UISelector.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Light.cpp">
+      <Filter>Source\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Material.cpp">
+      <Filter>Source\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Mesh.cpp">
+      <Filter>Source\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Renderer.cpp">
+      <Filter>Source\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Shader.cpp">
+      <Filter>Source\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Camera.cpp">
+      <Filter>Source\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\GameTime.cpp">
+      <Filter>Source\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Singleton.cpp">
+      <Filter>Source\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\GlobalSetting.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Transform.cpp">
+      <Filter>Source\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\DXUtil.cpp">
+      <Filter>Source\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Font.cpp">
+      <Filter>Source\FontEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\GlyphPool.cpp">
+      <Filter>Source\FontEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\property.cpp">
+      <Filter>Source\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Physics.cpp">
+      <Filter>Source\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\Input.cpp">
+      <Filter>Source\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\RenderTarget.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\Sources\DepthStencil.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\Sources\Animation.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\enginepch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Scene.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\SkyBox.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\EngineDefines.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\GameWindow.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\GraphicDevice.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Component.h">
+      <Filter>Source\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Object.h">
+      <Filter>Source\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\GameObject.h">
+      <Filter>Source\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Audio.h">
+      <Filter>Source\AudioEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\MathLib.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Resource.h">
+      <Filter>Source\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\FbxLoader.h">
+      <Filter>Source\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\UI.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Light.h">
+      <Filter>Source\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Material.h">
+      <Filter>Source\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Mesh.h">
+      <Filter>Source\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Renderer.h">
+      <Filter>Source\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Shader.h">
+      <Filter>Source\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Camera.h">
+      <Filter>Source\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\GameTime.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Singleton.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\GlobalSetting.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Transform.h">
+      <Filter>Source\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\DXUtil.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Font.h">
+      <Filter>Source\FontEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\GlyphPool.h">
+      <Filter>Source\FontEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\property.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Physics.h">
+      <Filter>Source\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Input.h">
+      <Filter>Source\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\Texture2D.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\GameEngine.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
