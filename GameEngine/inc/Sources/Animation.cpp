@@ -23,12 +23,13 @@ namespace GameEngine
 			// has transform curves;
 			if(clip->transformCurves.size() > 0) {
 				//find top object
-				auto go = gameObject;
-				while(go->parent)
-					go = go->parent;
+				auto root = transform();
+				while(root->GetParent())
+					root = root->GetParent();
 				transforms.reserve(clip->transformCurves.size());
 				for(auto& curve : clip->transformCurves) {
-					transforms.push_back(go->FindGameObject(curve->boneName)->transform());
+					auto g = root->gameObject->FindGameObjectInChildren(curve->boneName);
+					transforms.push_back(&g->transform);
 				}
 			}
 			run = true;
@@ -67,7 +68,7 @@ namespace GameEngine
 
 		for(int i = 0; i < nBones; ++i) {
 			auto& transformCurve = clip->transformCurves[i];
-			auto& transform = transforms[i].lock();
+			auto& transform = transforms[i];
 			//translation
 			transform->position = transformCurve->EvaluateT(elaspedTime);
 			//scaling

@@ -38,8 +38,8 @@ namespace GameEngine
 	class GlyphPool : public Singleton<GlyphPool>
 	{
 	private:
-		const int MapWidth = 512;
-		const int MapHeight = 512;
+		const int MapWidth = 128;
+		const int MapHeight = 128;
 		const int tileSize = 4;
 		const int tileWidth = MapWidth / tileSize;
 		const int tileHeight = MapHeight / tileSize;

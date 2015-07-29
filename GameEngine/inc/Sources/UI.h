@@ -20,7 +20,7 @@ namespace GameEngine
 	class UIRenderer;
 
 	// ui object
-	class GAMEENGINE_API UIBase abstract : public Component
+	class GAMEENGINE_API UIBase  : public Component
 	{
 	public:
 		UIRenderMode renderMode = UIRenderMode::eOverlay;

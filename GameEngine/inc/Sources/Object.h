@@ -21,19 +21,69 @@ namespace GameEngine
 			return name.substr(name.find_last_of(':') + 1);
 		}
 
-		virtual std::shared_ptr<Object> Clone()
+		virtual Object* Clone()
 		{
-			return std::make_shared<Object>(*this);
+			return new Object(*this);
 		}
 	};
 
 	template <class Base, class Derived>
-	class ClonableObject abstract : public Base
+	class ClonableObject : public Base
 	{
 	public:
-		virtual std::shared_ptr<Object> Clone()
+		virtual Base* Clone()
 		{
-			return std::make_shared<Derived>((Derived&)*this);
+			return new Derived((Derived)*this);
+		}
+	};
+
+	template <class Content>
+	class GAMEENGINE_API Node 
+	{
+	protected:
+		Content* parent = nullptr;
+		std::vector<Content*> children;
+
+	public:
+		bool RemoveChild(Content* const child)
+		{
+			if(child) {
+				for(int i = 0; i < children.size(); ++i) {
+					auto& c = children[i];
+					if(c == child) {
+						std::move(c, children.back());
+						children.pop_back();
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		bool AddChild(Content* const child)
+		{
+			if(child) {
+				Node* g = (Node*)child;
+				if(g->parent)
+					((Node*)g->parent)->RemoveChild(child);
+				children.push_back(child);
+				return true;
+			}
+			return false;
+		}
+
+		void SetParent(Content* _parent)
+		{
+			if(parent) {
+				Node p = (Node*)parent;
+				p->RemoveChild(this);
+			}
+			parent = _parent;
+			((Node*)parent)->AddChild(this);
+		}
+
+		Content* GetParent()
+		{ 
+			return parent;
 		}
 	};
 }

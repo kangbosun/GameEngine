@@ -18,7 +18,7 @@ namespace GameEngine
 	{
 	private:
 		float elaspedTime = 0;
-		std::vector<std::weak_ptr<Transform>> transforms;
+		std::vector<Transform*> transforms;
 		bool isValid = false;
 
 	public:

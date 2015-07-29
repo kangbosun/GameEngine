@@ -78,7 +78,7 @@ namespace GameEngine
 
 	std::shared_ptr<Light> Light::CreateDirectionalLight()
 	{
-		auto& go = GameObject::Instantiate("DirectionalLight");
+		auto go = GameObject::Instantiate("DirectionalLight");
 		std::shared_ptr<Light> ptr = go->AddComponent<Light>();
 		ptr->type = LightType::eDirectional;
 		allLights.push_back(ptr);
@@ -87,7 +87,7 @@ namespace GameEngine
 
 	std::shared_ptr<Light> Light::CreatePointLight()
 	{
-		auto& go = GameObject::Instantiate("DirectionalLight");
+		auto go = GameObject::Instantiate("DirectionalLight");
 		std::shared_ptr<Light> ptr = go->AddComponent<Light>();
 		ptr->type = LightType::ePoint;
 		return ptr;
@@ -95,7 +95,7 @@ namespace GameEngine
 
 	std::shared_ptr<Light> Light::CreateSpotLight()
 	{
-		auto& go = GameObject::Instantiate("DirectionalLight");
+		auto go = GameObject::Instantiate("DirectionalLight");
 		std::shared_ptr<Light> ptr = go->AddComponent<Light>();
 		ptr->type = LightType::eSpot;
 
@@ -105,7 +105,7 @@ namespace GameEngine
 	LightData& Light::GetLightData()
 	{
 		data.position = transform()->position;
-		data.dir = transform()->forward;
+		data.dir = transform()->forward();
 		data.lightType = type;
 		data.color = lightColor;
 		return data;
@@ -122,7 +122,7 @@ namespace GameEngine
 	void Light::BuildShadowTransform()
 	{
 		cameraData.position = transform()->position;
-		Matrix::LookAtLH(transform()->position, Vector3::Zero, transform()->up, cameraData.viewMatrix);
+		Matrix::LookAtLH(transform()->position, Vector3::Zero, transform()->up(), cameraData.viewMatrix);
 		Matrix::OrthographicOffCenterLH(-2, 2, -2, 2, nearplane, farplane, cameraData.projMatrix);
 		//Matrix::PerspectiveFovLH(MathUtil::ToRadians(45), 1, nearplane, farplane, cameraData.projMatrix);
 

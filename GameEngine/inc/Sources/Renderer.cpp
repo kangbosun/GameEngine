@@ -28,10 +28,10 @@ namespace GameEngine
 	void MeshRenderer::Start()
 	{
 		if(rootBoneName != "") {
-			auto node = gameObject;
-			while(node->parent)
-				node = node->parent;
-			auto& rootBone = node->FindGameObject(rootBoneName);
+			auto node = transform();
+			while(node->GetParent())
+				node = node->GetParent();
+			auto rootBone = node->gameObject->FindGameObjectInChildren(rootBoneName);
 			SetBone(rootBone);
 		}
 		allMeshRenderers.push_back(gameObject->GetComponent<MeshRenderer>());
@@ -148,7 +148,7 @@ namespace GameEngine
 
 	UIRenderer::UIRenderer()
 	{
-		material.shader = Resource::GetShader(L"Standard");
+		material.shader = Resource::GetShader(L"Tex");
 		material.data.color = Color::White;
 		type = RendererType::eUI;
 	}
@@ -181,12 +181,6 @@ namespace GameEngine
 		t.x *= sx; t.y *= sy;
 		s.x *= sx; s.y *= sy;
 		Matrix::CreateTransform(world, t, q, s);
-
-		uishader->SetBoneMatrices(0, 0);
-		uishader->SetNormalMap(0);
-		uishader->SetLight(0);
-		uishader->SetShadowMap(0, 0);
-		uishader->SetGlobalSetting(0);
 	
 		uishader->SetWorldMatrix(&world);
 		uishader->SetMaterial(&material.data);

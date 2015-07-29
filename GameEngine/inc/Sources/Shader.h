@@ -26,7 +26,7 @@ namespace GameEngine
 	struct CameraData;
 	struct GraphicSetting;
 
-	class GAMEENGINE_API IShader abstract : public Object
+	class GAMEENGINE_API IShader  : public Object
 	{
 	public:
 		virtual void Render(const CComPtr<ID3D11DeviceContext>& context, int n, int offset = 0) = 0;

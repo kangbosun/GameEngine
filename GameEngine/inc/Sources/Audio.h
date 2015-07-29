@@ -43,7 +43,7 @@ namespace GameEngine
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//base type
-	class GAMEENGINE_API AudioClip abstract
+	class GAMEENGINE_API AudioClip 
 	{
 	public:
 		enum AudioClipState

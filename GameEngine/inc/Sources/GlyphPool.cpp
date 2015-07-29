@@ -99,8 +99,8 @@ namespace GameEngine
 		data.bmW = _face->glyph->bitmap.width;
 		data.bmH = _face->glyph->bitmap.rows;
 
-		int tileRectWidth = ((data.bmW + tileSize - 1) / tileSize) + 1;
-		int tileRectHeight = ((data.bmH + tileSize - 1) / tileSize) + 1;
+		int tileRectWidth = ((data.bmW + tileSize - 1) / tileSize);
+		int tileRectHeight = ((data.bmH + tileSize - 1) / tileSize);
 
 		auto& p = FindSpace(tileRectWidth, tileRectHeight);
 

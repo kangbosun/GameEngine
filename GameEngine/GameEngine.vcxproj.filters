@@ -255,8 +255,6 @@
     <ClInclude Include="inc\Sources\Texture2D.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
-    <ClInclude Include="inc\GameEngine.h">
-      <Filter>Source</Filter>
-    </ClInclude>
+    <ClInclude Include="inc\GameEngine.h" />
   </ItemGroup>
 </Project>

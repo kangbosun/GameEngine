@@ -199,7 +199,9 @@
     <ClCompile Include="inc\Sources\UISelector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inc\GameEngine.h" />
+    <ClInclude Include="inc\GameEngine.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="inc\Sources\Animation.h" />
     <ClInclude Include="inc\Sources\Audio.h" />
     <ClInclude Include="inc\Sources\Camera.h" />

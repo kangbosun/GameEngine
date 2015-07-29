@@ -52,7 +52,7 @@ namespace GameEngine
 		else
 			i->SetTexture(Resource::GetTexture2D(L"white"));
 		i->SetSize((int)size.x, (int)size.y);
-		g->transform()->position = pos;
+		g->transform.position = pos;
 
 		return i;
 	}

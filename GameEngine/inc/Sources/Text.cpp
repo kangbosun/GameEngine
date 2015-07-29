@@ -146,7 +146,7 @@ namespace GameEngine
 
 				xoffset += data.advX;
 			}
-			yoffset -= heightPerLine;
+			yoffset -= heightPerLine + 1;
 		}
 		auto mesh = make_shared<Mesh>();
 		mesh->Initialize(&vertices[0], &indices[0], totalChars * 4, totalChars * 6, 0, 0, device);

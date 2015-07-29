@@ -23,7 +23,7 @@ namespace GameEngine
 		int useSkinning = false;
 	};
 
-	class GAMEENGINE_API Renderer abstract : public Component
+	class GAMEENGINE_API Renderer  : public Component
 	{
 	public:
 		enum RendererType

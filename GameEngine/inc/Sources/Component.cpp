@@ -9,46 +9,46 @@ namespace GameEngine
 {
 	using namespace std;
 
-	unordered_map<string, list<weak_ptr<Component>>> Component::allComponents;
-
-	Component::Component()
+	Component::Component() 
 	{
 	}
 
 	Component::~Component()
 	{
 		OnDestroy();
-		/*if(gameObject)
-			std::cout << gameObject->name << " - " << ToString() << " destroyed(Component)" << std::endl;*/
 	}
 
 	void Component::Register(const shared_ptr<Component>& com)
 	{
 		if(!com->registered && com->gameObject) {
-			allComponents[com->ToString()].push_back(com);
-			com->_registered = true;
+			allComponents.push_back(com);
+			com->registered = true;
 			com->Start();
 		}
 	}
 
-	void Component::UnRegister(const shared_ptr<Component>& com)
+	void Component::UpdateAll()
 	{
-		//if(com->isRegistered) {
-		//	auto& list = allComponents[com->ToString()];
-		//	list.remove(com);
-		//	if(list.size() == 0)
-		//		allComponents.erase(com->ToString());
-
-		//	com->isRegistered = false;
-		//}
+		vector<std::weak_ptr<Component>> forSwap;
+		forSwap.reserve(allComponents.size());
+		for(int i = 0; i < allComponents.size(); ++i) {
+			auto& weak = allComponents[i];
+			if(!weak.expired()) {
+				auto& strong = weak.lock();
+				if(strong->enabled)
+					strong->Update();
+				forSwap.emplace_back(move(weak));
+			}
+		}
+		allComponents.swap(forSwap);
 	}
 
-	const std::shared_ptr<Transform> Component::transform()
+	Transform* const Component::transform()
 	{
 		if(gameObject)
-			return gameObject->transform();
+			return &gameObject->transform;
 		else
-			return std::shared_ptr<GameEngine::Transform>();
+			return nullptr;
 	}
 
 	const std::shared_ptr<Renderer> Component::renderer()

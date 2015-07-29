@@ -19,7 +19,6 @@ namespace GameEngine
 		texture2D->GetDesc(&texDesc);
 		width = texDesc.Width;
 		height = texDesc.Height;
-
 		hr = hr = device->CreateShaderResourceView(texture2D, 0, &srv.p);
 		if(SUCCEEDED(hr))
 			isValid = true;

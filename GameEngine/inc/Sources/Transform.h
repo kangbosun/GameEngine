@@ -13,9 +13,11 @@ namespace GameEngine
 
 	typedef Align Pivot;
 
-	class GAMEENGINE_API Transform : public ClonableObject<Component, Transform>
+	class GAMEENGINE_API Transform : public Node<Transform>
 	{
+		friend class GameObject;
 	public:
+		GameObject* gameObject;
 		//local
 		Math::Vector3 position = { 0, 0, 0 };
 		//local
@@ -29,22 +31,22 @@ namespace GameEngine
 	private:
 		Math::Matrix worldMatrix;
 		Math::Matrix localMatrix;
-		bool changed = true;
+		bool changed = false;
 		Pivot pivotFlags = Pivot(eCenter | eCenter);
 
 	public:
-		readonly<Math::Vector3> up = { prop_get{ return worldMatrix.Up(); } };
-		readonly<Math::Vector3> forward = { prop_get{ return worldMatrix.Forward(); } };
-		readonly<Math::Vector3> right = { prop_get{ return worldMatrix.Right(); } };
+		Math::Vector3 up() { return worldMatrix.Up();  };
+		Math::Vector3 forward() {  return worldMatrix.Forward();  };
+		Math::Vector3 right() { return worldMatrix.Right();  };
 		Math::Vector3 worldPosition() { return worldMatrix.GetT(); }
-	private:
+	public:
 		void BuildLocalMatrix();
-		void BuildWorldMatrix();
 
 	public:
+		Transform() = default;
+		Transform(const Transform& rhs);
 		void SetPivot(Align _pivot);
 
-		virtual void Update();
 		void Rotate(const Math::Vector3& axis, float angle);
 		void Rotate(const Math::Quaternion& quaternion);
 		void SetRotation(Math::Vector3& euler);

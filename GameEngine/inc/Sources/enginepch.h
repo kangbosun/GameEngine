@@ -61,3 +61,4 @@
 #include "property.h"
 #include "Object.h"
 #include "Component.h"
+#include "Transform.h"

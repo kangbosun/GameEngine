@@ -93,29 +93,21 @@ namespace GameEngine
 		changed = true;
 	}
 
-	void Transform::Update()
-	{
-		BuildLocalMatrix();
-		changed = false;
-
-		BuildWorldMatrix();
-	}
-
 	void Transform::BuildLocalMatrix()
 	{
 		Matrix::CreateTransform(localMatrix, position - pivot, rotation, scale, pivot);
 	}
 
-	void Transform::BuildWorldMatrix()
+	Transform::Transform(const Transform & rhs)
 	{
-		Matrix parent;
-		if(gameObject && gameObject->parent) {
-			parent = gameObject->parent->transform()->worldMatrix;
-			Matrix::Multiply(localMatrix, parent, worldMatrix);
-		}
-		else {
-			worldMatrix = localMatrix;
-		}
+		position = rhs.position;
+		rotation = rhs.rotation;
+		scale = rhs.scale;
+		width = rhs.width;
+		height = rhs.height;
+		pivot = rhs.pivot;
+		pivotFlags = rhs.pivotFlags;
+		localMatrix = rhs.localMatrix;
 	}
 
 	void Transform::SetPivot(Align pivot)
@@ -150,22 +142,22 @@ namespace GameEngine
 	{
 		if(p == position)
 			return;
-		Matrix m, parent, inv;
+		Matrix m, parentMatrix, inv;
 
 		BuildLocalMatrix();
 
-		if(gameObject && gameObject->parent)
-			parent = gameObject->parent->transform()->worldMatrix;
+		if(parent)
+			parentMatrix = parent->worldMatrix;
 		else
-			parent.SetIdentity();
+			parentMatrix.SetIdentity();
 
-		Matrix::Multiply(localMatrix, parent, worldMatrix);
+		Matrix::Multiply(localMatrix, parentMatrix, worldMatrix);
 		auto _up = worldMatrix.Up();
 
 		Matrix::LookAtLH(position, p, _up, m);
 		m.Inverse(inv);
 		Matrix::Multiply(inv, worldMatrix, worldMatrix);
-		parent.Inverse(inv);
+		parentMatrix.Inverse(inv);
 		Matrix::Multiply(inv, worldMatrix, localMatrix);
 		SetLocalTransform(localMatrix);
 	}
@@ -175,3 +167,5 @@ namespace GameEngine
 		LookAt(t->position);
 	}
 }
+
+

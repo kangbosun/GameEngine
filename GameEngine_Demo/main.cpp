@@ -96,7 +96,7 @@ public:
 		talia = Resource::GetModel(L"Talia");
 		//GameObject::Register(talia);
 
-		auto text2 = Text::CreateText(Vector3(960, 540, 2), Vector2(100, 100), L"°¡³ª´Ù", L"NanumGothic");
+		auto text2 = Text::CreateText(Vector3(960, 540, 2), Vector2(100, 100), L"a", L"NanumGothic");
 		text2->transform()->SetPivot(Align(eRight | eTop));
 		text2->SetFontSize(32);
 		text2->SetAlign(Align(eRight | eTop));
@@ -118,8 +118,8 @@ public:
 		auto button2 = dynamic_pointer_cast<GameObject>(button->gameObject->Clone());
 		GameObject::Register(button2);
 		button2->transform()->Translate(0, 70, 1);
-		button2->GetComponent<Button>()->SetText(L"Shadowy On/Off");
-		button2->GetComponentInChildren<Text>()->SetFontSize(25);
+		button2->GetComponent<Button>()->SetText(L"Shadow On/Off");
+		button2->GetComponentInChildren<Text>()->SetFontSize(24);
 		button2->GetComponent<Button>()->onClick = bind([&]() { light1->renderShadow = !light1->renderShadow; });
 
 		//GraphicDevice::Instance()->vSync = false;

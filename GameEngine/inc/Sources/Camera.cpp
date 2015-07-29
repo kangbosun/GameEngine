@@ -24,14 +24,14 @@ namespace GameEngine
 		cameraData.position = transform()->position;
 		float aspect = GlobalSetting::aspectRatio;
 		// view matrix
-		auto& forward = transform()->forward;
+		auto& forward = transform()->forward();
 		Vector3 look;
 		if(lockTarget)
 			look = target;
 		else
 			look = transform()->position + forward;
 
-		Matrix::LookAtLH(transform()->position, look, transform()->up, cameraData.viewMatrix);
+		Matrix::LookAtLH(transform()->position, look, transform()->up(), cameraData.viewMatrix);
 
 		float f = MathUtil::ToRadians(fov);
 
@@ -48,7 +48,7 @@ namespace GameEngine
 
 	std::shared_ptr<Camera> Camera::CreateCamera(ProjMode mode)
 	{
-		auto& go = GameEngine::GameObject::Instantiate("Camera");
+		auto go = GameObject::Instantiate("Camera");
 		auto& com = go->AddComponent<Camera>();
 		allCameras.push_back(com);
 		com->mode = mode;

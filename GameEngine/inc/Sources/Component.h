@@ -9,44 +9,40 @@ namespace GameEngine
 	class Renderer;
 	class Transform;
 
-	class GAMEENGINE_API Component abstract : public Object, public std::enable_shared_from_this<Component>
+	class GAMEENGINE_API Component  : public Object
 	{
-	public:
-		enum EventType
-		{
-			eOnCollisionEnter, eOnCollisionExit
-		};
-		friend GameObject;
-	public:
-		static std::unordered_map<std::string, std::list<std::weak_ptr<Component>>> allComponents;
+		friend class Scene;
+		friend class GameObject;
 
-	protected:
-		typedef std::unordered_map<EventType, std::function<void()>> EventReceiverMap;
-		bool _registered = false;
-
-	public:
-		std::shared_ptr<GameObject> gameObject;
-		const std::shared_ptr<Transform> transform();
-		const std::shared_ptr<Renderer> renderer();
-		readonly<bool> registered = { _registered };
-		bool enabled = true;
+	protected :
+		bool registered = false;
 		bool destroy = false;
+		GameObject* gameObject;
 
+	public:
+		
+		Transform* const transform();
+		const std::shared_ptr<Renderer> renderer();
+		bool enabled = true;
+		
 	protected:
 		virtual void OnDestroy() {}
 		virtual void Start() {}
-	public:
-		Component();
-		virtual ~Component();
+	public:	
 		virtual void Update() {}
 		virtual void OnCollisionEnter() {}
 		virtual void OnCollisionExit() {}
 
-		Component(const Component& c) { enabled = c.enabled; _registered = false; }
+		Component();
+		virtual ~Component();
+		Component(const Component& c) { enabled = c.enabled; }
 
-	public:
+
+	private :
+		static std::vector<std::weak_ptr<Component>> allComponents;
 		static void Register(const std::shared_ptr<Component>& com);
-		static void UnRegister(const std::shared_ptr<Component>& com);
+		static void UpdateAll();
+		static void Clear() { allComponents.clear(); }
 	};
 }
 

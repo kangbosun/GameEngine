@@ -315,7 +315,7 @@ namespace GameEngine
 			Vector3 Evaluate(float time, bool degree);
 		};
 
-		struct GAMEENGINE_API AnimCurveContainer abstract
+		struct GAMEENGINE_API AnimCurveContainer 
 		{
 		};
 

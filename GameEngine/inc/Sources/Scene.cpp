@@ -9,30 +9,15 @@
 
 namespace GameEngine
 {
+	void Scene::Register(GameObject * go)
+	{
+		if(go) {
+			rootTransform.AddChild(&go->transform);
+		}
+	}
 	void Scene::Update()
 	{
-		auto& componentsMap = Component::allComponents;
-
-		auto& mapIter = componentsMap.begin();
-		while(mapIter != componentsMap.cend()) {
-			auto& comList = mapIter->second;
-			auto& comIter = comList.begin();
-			while(comIter != comList.cend()) {
-				auto& com = comIter->lock();
-				if(!com)
-					comList.erase(comIter++);
-				else {
-					if(com->enabled) {
-						com->Update();
-						++comIter;
-					}
-				}
-			}
-			if(comList.size() == 0)
-				componentsMap.erase(mapIter++);
-			else
-				++mapIter;
-		}
+		Component::UpdateAll();
 	}
 
 	void Scene::Render()
@@ -43,7 +28,6 @@ namespace GameEngine
 
 		//ui Renderer
 		GraphicDevice::Instance()->SetDepthEnable(false);
-		GraphicDevice::Instance()->ClearDepthStencil();
 		UIRenderer::RenderAll(Camera::ui->GetCameraData());
 		GraphicDevice::Instance()->SetDepthEnable(true);
 	}
