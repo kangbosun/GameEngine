@@ -1,6 +1,6 @@
 
-#ifndef _CAMERA_H_
-#define _CAMERA_H_
+#ifndef _CAMERA_FXH_
+#define _CAMERA_FXH_
 
 struct Camera
 {

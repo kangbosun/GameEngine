@@ -11,7 +11,7 @@ namespace GameEngine
 
 	class GAMEENGINE_API Component abstract : public Object, public std::enable_shared_from_this<Component>
 	{
-	public :
+	public:
 		enum EventType
 		{
 			eOnCollisionEnter, eOnCollisionExit
@@ -32,8 +32,7 @@ namespace GameEngine
 		bool enabled = true;
 		bool destroy = false;
 
-	
-	protected :
+	protected:
 		virtual void OnDestroy() {}
 		virtual void Start() {}
 	public:
@@ -42,7 +41,7 @@ namespace GameEngine
 		virtual void Update() {}
 		virtual void OnCollisionEnter() {}
 		virtual void OnCollisionExit() {}
-		
+
 		Component(const Component& c) { enabled = c.enabled; _registered = false; }
 
 	public:

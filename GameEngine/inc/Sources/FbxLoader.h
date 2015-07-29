@@ -1,7 +1,4 @@
-
-
 #pragma once
-
 
 #pragma warning(push)
 #pragma warning(disable:4251)
@@ -31,7 +28,6 @@ namespace GameEngine
 			Vector3 position;
 			std::vector<BlendWeightPair> blendWeigths;
 		};
-
 
 		struct FMaterial
 		{
@@ -91,7 +87,6 @@ namespace GameEngine
 			~Node() { Release(); }
 			void Release()
 			{
-
 			}
 		};
 
@@ -112,7 +107,6 @@ namespace GameEngine
 			unordered_map<std::string, std::shared_ptr<AnimClip>> animationClips;
 			bool useNormalMap = false;
 			AxisMode axismode = FbxLoader::eOpenGL;
-
 
 		public:
 			~FbxLoader();

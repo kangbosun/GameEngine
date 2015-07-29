@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Transform.h"
 #include "UI.h"
@@ -27,7 +26,7 @@ namespace GameEngine
 		auto img = g->AddComponent<Image>();
 		img->SetSize((int)size.x, (int)size.y);
 		img->SetTexture(Resource::GetTexture2D(L"white"));
-		
+
 		g->AddChild(text->gameObject);
 		auto& button = g->AddComponent<Button>();
 		button->SetSize(size.x, size.y);

@@ -6,7 +6,7 @@
 namespace GameEngine
 {
 	template <typename T>
-	 inline void Debug(T s, bool endline = true)
+	inline void Debug(T s, bool endline = true)
 	{
 #ifdef _DEBUG
 		if(endline)
@@ -16,9 +16,8 @@ namespace GameEngine
 #endif
 	}
 
-
 	template <>
-	 inline void Debug(std::string s, bool endline)
+	inline void Debug(std::string s, bool endline)
 	{
 #ifdef _DEBUG
 		if(endline)
@@ -29,7 +28,7 @@ namespace GameEngine
 	}
 
 	template <>
-	 inline void Debug(std::wstring s, bool endline)
+	inline void Debug(std::wstring s, bool endline)
 	{
 #ifdef _DEBUG
 		if(endline)
@@ -39,7 +38,7 @@ namespace GameEngine
 #endif
 	}
 
-	 void Tokenize(std::vector<std::string>& tokens, std::string& line, std::string delimeter);
+	void Tokenize(std::vector<std::string>& tokens, std::string& line, std::string delimeter);
 
 	template <typename T>
 	struct  ArrayDeleter
@@ -52,7 +51,7 @@ namespace GameEngine
 	};
 
 	template <typename T>
-	 inline float clamp(T value, T min, T max)
+	inline float clamp(T value, T min, T max)
 	{
 		if(value > max)
 			value = max;

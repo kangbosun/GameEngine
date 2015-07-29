@@ -5,8 +5,8 @@
 
 #include "Material.h"
 
-namespace GameEngine 
-{	
+namespace GameEngine
+{
 	class Mesh;
 	class Texture2D;
 	class Shader;
@@ -23,10 +23,9 @@ namespace GameEngine
 		int useSkinning = false;
 	};
 
-
 	class GAMEENGINE_API Renderer abstract : public Component
 	{
-	public :
+	public:
 		enum RendererType
 		{
 			eMesh = 0,
@@ -41,32 +40,31 @@ namespace GameEngine
 
 	///////////////////////
 	class GAMEENGINE_API MeshRenderer : public ClonableObject<Renderer, MeshRenderer>
-	{		
-	protected :
+	{
+	protected:
 		static std::list<std::weak_ptr<MeshRenderer>> allMeshRenderers;
-	public :
+	public:
 		std::shared_ptr<Mesh> mesh;
 		bool castShadow = true;
 		bool receiveShadow = true;
 
-	public :
+	public:
 		//for skinning
 		std::string rootBoneName = "";
 		std::vector<std::shared_ptr<Transform>> bones;
-	
+
 		std::vector<Math::Matrix> matrices;
 
-	protected :
+	protected:
 		void SetBone(const std::shared_ptr<GameObject>& rootBone);
 		virtual void Render(const CameraData& cam, const std::shared_ptr<Shader>& shader);
-	public :
+	public:
 		virtual void Start();
 		virtual void Update();
 		MeshRenderer();
 		static void RenderAll(const CameraData& cam);
 		static void RenderAllToShadowMap(const CameraData& cam, const std::shared_ptr<Shader>& shadowShader);
 	};
-
 
 	///////////////////////////
 
@@ -76,11 +74,11 @@ namespace GameEngine
 
 	class GAMEENGINE_API UIRenderer : public ClonableObject<Renderer, UIRenderer>
 	{
-	protected :
+	protected:
 		static std::list<std::weak_ptr<UIRenderer>> allUIRenderers;
 		virtual void Render(const CameraData& cam, const std::shared_ptr<Shader>& forcedShader);
 
-	public :
+	public:
 		Material material;
 		std::shared_ptr<Mesh> mesh;
 
@@ -88,7 +86,7 @@ namespace GameEngine
 
 		virtual void Start();
 		static void RenderAll(const CameraData& cam, const std::shared_ptr<Shader>& forcedShader = nullptr);
-	};	
+	};
 }
 
 #pragma warning(pop)

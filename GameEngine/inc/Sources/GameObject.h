@@ -1,4 +1,3 @@
-
 #pragma once
 #ifndef _GAMEOBJECT_H_
 #define _GAMEOBJECT_H_
@@ -13,31 +12,31 @@ namespace GameEngine
 	class Renderer;
 
 	class GAMEENGINE_API GameObject final : public Object, public std::enable_shared_from_this<GameObject>
-	{	
-	private :
+	{
+	private:
 		std::unordered_map<std::string, std::shared_ptr<Component>> components;
 		void UpdateComponents();
 		std::weak_ptr<Transform> _transform;
 		std::weak_ptr<Renderer> _renderer;
 		bool isRegistered = false;
-	public:	
+	public:
 		std::string name;
 		std::list<std::shared_ptr<GameObject>> children;
-		
+
 		std::shared_ptr<GameObject> parent;
-		
+
 		bool active = true;
 		bool destroy = false;
 		bool enableCollisionTest = false;
 
 		static std::list<std::shared_ptr<GameObject>> allGameObjects;
 
-	private :
+	private:
 		std::shared_ptr<GameObject> CopyEmpty();
 		void CopyComponents(std::shared_ptr<GameObject>& src, std::shared_ptr<GameObject>& dst);
 		GameObject() = default;
 
-	public :
+	public:
 		GameObject(const GameObject& gameObject);
 		std::shared_ptr<Transform> transform();
 		std::shared_ptr<Renderer> renderer();
@@ -48,12 +47,12 @@ namespace GameEngine
 	public:
 		~GameObject() { std::cout << name << " destroyed(GameObject)" << std::endl; }
 		virtual const std::string ToString() const { return name; }
-		
-		void Update();	
+
+		void Update();
 		void Render();
-			
+
 		virtual std::shared_ptr<Object> Clone();
-		
+
 		void AddChild(const std::shared_ptr<GameObject>& child);
 		void RemoveChild(const std::shared_ptr<GameObject>& child) { children.remove(child); }
 
@@ -79,7 +78,7 @@ namespace GameEngine
 		template <typename T>
 		void RemoveComponent();
 
-		void RemoveComponent(const std::string& name) {	components.erase(name);	}	
+		void RemoveComponent(const std::string& name) { components.erase(name); }
 #pragma endregion
 	};
 
@@ -116,10 +115,10 @@ namespace GameEngine
 
 	template <typename T>
 	std::shared_ptr<T> GameObject::GetComponentInChildren()
-	{	
+	{
 		for(auto& iter : components) {
 			auto& target = std::dynamic_pointer_cast<T>(iter.second);
-			if(target) 
+			if(target)
 				return target;
 		}
 

@@ -1,11 +1,11 @@
  
-#ifndef _DIFFUSEMAPPING_H_
-#define _DIFFUSEMAPPING_H_
+#ifndef _DIFFUSEMAPPING_FXH_
+#define _DIFFUSEMAPPING_FXH_
  
 Texture2D diffuseMap;
 SamplerState diffuseMapSamplerState
 {
-	Filter = MIN_MAG_MIP_LINEAR;
+	Filter = MIN_MAG_MIP_POINT;
 	AddressU = Clamp;
 	AddressV = Clamp;
 };

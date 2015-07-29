@@ -3,7 +3,7 @@
 #pragma warning(push)
 #pragma warning(disable:4251)
 
-namespace GameEngine 
+namespace GameEngine
 {
 	struct Viewport
 		: public D3D11_VIEWPORT
@@ -27,13 +27,13 @@ namespace GameEngine
 
 	class GAMEENGINE_API GraphicDevice : public std::enable_shared_from_this<GraphicDevice>
 	{
-	private :
+	private:
 		static std::shared_ptr<GraphicDevice> instance;
 		DXGI_SAMPLE_DESC sampleDesc;
 		D3D11_FILL_MODE fillMode;
 
 		D3D11_RASTERIZER_DESC rasterizerDesc;
-		
+
 		std::shared_ptr<RenderTarget> renderTarget;
 		std::shared_ptr<DepthStencil> depthStencil;
 		std::shared_ptr<RenderTarget> currRenderTarget;
@@ -54,13 +54,13 @@ namespace GameEngine
 
 		D3D11_VIEWPORT viewPort;
 
-	public :
+	public:
 		UINT vSync;
 		CComPtr<ID3D11Device> device;
 		CComPtr<ID3D11DeviceContext> context;
 		CComPtr<IDXGISwapChain> swapChain;
-		
-	public:		
+
+	public:
 		static std::shared_ptr<GraphicDevice>& Instance() { return instance; }
 		void Initialize(int width, int height, HWND hWnd);
 		//void Release();

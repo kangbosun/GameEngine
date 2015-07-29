@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Light.h"
 #include "Transform.h"
@@ -51,12 +50,12 @@ namespace GameEngine
 
 	const CComPtr<ID3D11ShaderResourceView>& ShadowMap::GetSRV() const
 	{
-		return renderTarget->srv; 
+		return renderTarget->srv;
 	}
 
-	const std::shared_ptr<Texture2D> ShadowMap::GetTexture() 
-	{ 
-		return std::static_pointer_cast<Texture2D>(renderTarget); 
+	const std::shared_ptr<Texture2D> ShadowMap::GetTexture()
+	{
+		return std::static_pointer_cast<Texture2D>(renderTarget);
 	}
 
 	///////////////////////////////////////////////////////////
@@ -64,17 +63,17 @@ namespace GameEngine
 	list<weak_ptr<Light>> Light::allLights;
 
 	Light::Light()
-	{		
+	{
 		shadowMapSize = GlobalSetting::graphicSetting.shadowMapSize;
 		shadowShader = Resource::GetShader(L"Standard");
 		shadowTransform = Matrix::Identity;
 	}
 
 	void Light::Start()
-	{		
+	{
 		auto dx = GraphicDevice::Instance();
 		shadowMap = make_shared<ShadowMap>();
-		shadowMap->Initialize(shadowMapSize);	
+		shadowMap->Initialize(shadowMapSize);
 	}
 
 	std::shared_ptr<Light> Light::CreateDirectionalLight()
@@ -114,12 +113,11 @@ namespace GameEngine
 
 	void Light::BuildShadowMap()
 	{
-		auto graphicDevice = GraphicDevice::Instance();	
+		auto graphicDevice = GraphicDevice::Instance();
 		shadowMap->Bind(graphicDevice);
-		MeshRenderer::RenderAllToShadowMap(cameraData, shadowShader);	
+		MeshRenderer::RenderAllToShadowMap(cameraData, shadowShader);
 		graphicDevice->SetBackBufferRenderTarget();
 	}
-
 
 	void Light::BuildShadowTransform()
 	{
@@ -144,7 +142,7 @@ namespace GameEngine
 				allLights.erase(i);
 			else if(i->lock()->renderShadow) {
 				i->lock()->BuildShadowTransform();
-				i->lock()->BuildShadowMap();		
+				i->lock()->BuildShadowMap();
 			}
 		}
 	}

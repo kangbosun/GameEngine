@@ -1,8 +1,8 @@
 
-#ifndef _LIGHTING_H_
-#define _LIGHTING_H_
+#ifndef _LIGHTING_FXH_
+#define _LIGHTING_FXH_
 
-#include "Material.h"
+#include "Material.fxh"
 
 struct Light
 {

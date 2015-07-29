@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "MathLib.h"
 
@@ -133,7 +132,6 @@ namespace GameEngine
 		const Vector3 Vector3::X = { 1, 0, 0 };
 		const Vector3 Vector3::Y = { 0, 1, 0 };
 		const Vector3 Vector3::Z = { 0, 0, 1 };
-
 
 		// Vector4
 		Vector4 Vector4::operator+(const Vector4& rhs)
@@ -292,7 +290,6 @@ namespace GameEngine
 			DirectX::XMStoreFloat4x4(&out, _m1 * _m2);
 		}
 
-
 		void Matrix::CreateTransform(Matrix& out, const Vector3& T, const Quaternion& Q, const Vector3& S, const Vector3& Pivot)
 		{
 			DirectX::XMVECTOR _T = DirectX::XMLoadFloat3(&T);
@@ -438,11 +435,11 @@ namespace GameEngine
 			DirectX::XMStoreFloat4x4(&out, DirectX::XMMatrixOrthographicOffCenterRH(viewLeft, viewRight, viewBottom, viewTop, nearZ, farZ));
 		}
 
-		const Matrix Matrix::Identity = { 
+		const Matrix Matrix::Identity = {
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
-			0, 0, 0, 1};
+			0, 0, 0, 1 };
 
 #else
 
@@ -513,12 +510,11 @@ namespace GameEngine
 
 		AnimCurve::~AnimCurve()
 		{
-
 			for(auto key : keyframes)
 				delete key;
 		}
 
-		// 
+		//
 		AnimCurve3::AnimCurve3()
 		{
 			for(auto& curve : curves)

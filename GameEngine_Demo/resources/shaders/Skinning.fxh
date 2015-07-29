@@ -1,6 +1,6 @@
 
-#ifndef _SKINNING_H_
-#define _SKINNING_H_
+#ifndef _SKINNING_FXH_
+#define _SKINNING_FXH_
 
 #define MAX_BONE 100
 

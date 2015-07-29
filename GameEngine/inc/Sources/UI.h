@@ -1,4 +1,3 @@
-
 #pragma once
 
 #pragma warning(push)
@@ -8,7 +7,7 @@
 #include "Transform.h"
 #include "Singleton.h"
 
-namespace GameEngine 
+namespace GameEngine
 {
 	enum UIRenderMode
 	{
@@ -20,27 +19,26 @@ namespace GameEngine
 	};
 	class UIRenderer;
 
-	
 	// ui object
 	class GAMEENGINE_API UIBase abstract : public Component
 	{
-	public :
+	public:
 		UIRenderMode renderMode = UIRenderMode::eOverlay;
 		Math::Color color = Math::Color::White;
 		bool isBillboard = true;
 
 		std::shared_ptr<Camera> renderCamera = Camera::ui;
-	protected: 
+	protected:
 		std::weak_ptr<UIRenderer> _renderer;
-	public: 
+	public:
 		const std::shared_ptr<UIRenderer> renderer();
 
-	public :
+	public:
 		UIBase() = default;
 		UIBase(const UIBase& ui) { color = ui.color; isBillboard = ui.isBillboard; renderCamera = ui.renderCamera; }
 		void SetColor(const Math::Color& color);
 	};
-	//---------------------------------------------------------------------	
+	//---------------------------------------------------------------------
 
 	class Font;
 
@@ -54,7 +52,7 @@ namespace GameEngine
 			int width;
 		};
 	public:
-		
+
 	private:
 		std::shared_ptr<Font> font;
 		std::wstring text = L"";
@@ -71,7 +69,7 @@ namespace GameEngine
 		void SetFont(const std::shared_ptr<Font>& Font);
 		void Update();
 		static std::shared_ptr<Text> CreateText(const Math::Vector3& pos, const Math::Vector2& size, std::wstring str, const std::wstring& fontName);
-		
+
 		std::wstring& GetText() { return text; }
 	};
 
@@ -90,36 +88,35 @@ namespace GameEngine
 		bool lbuttonDown;
 	};
 
-
 	class GAMEENGINE_API SelectableUI : public ClonableObject<UIBase, SelectableUI>
 	{
-	public :
+	public:
 		typedef std::function<void()> callback;
-	private :
+	private:
 		typedef std::function<void(const UIStateParam&)> UIStateMachine;
 		UIState prevState = UIState::eUp;
 		UIState state = UIState::eUp;
 
 		UIStateMachine stateMachine;
 
-	public :
+	public:
 		callback onClick;
 		callback onDown;
 		callback onUp;
 		callback onHoverEnter;
 		callback onHoverExit;
 
-	public :
+	public:
 		Math::Color colorUp = Math::Color(0.8f, 0.8f, 0.8f, 1);
 		Math::Color colorDown = Math::Color(0.5f, 0.5f, 0.5f, 1);
 		Math::Color colorHover = Math::Color(0.7f, 0.7f, 0.7f, 1);
-				
+
 		SelectableUI();
 		SelectableUI(const SelectableUI& o);
 
 		void SetState(const UIStateParam& param);
 
-	private :
+	private:
 		//for finite state machine
 		void state_Up(const UIStateParam& param);
 		void state_Down(const UIStateParam& param);
@@ -131,8 +128,8 @@ namespace GameEngine
 	private:
 		std::shared_ptr<Image> _image;
 		std::shared_ptr<Text> _text;
-		
-	public :
+
+	public:
 		void Start();
 		void SetText(const std::wstring& str);
 		const std::shared_ptr<Text>& GetText() { return _text; }
@@ -144,14 +141,14 @@ namespace GameEngine
 
 	class GAMEENGINE_API UIInputManager : public ClonableObject<Component, UIInputManager>
 	{
-	public :
+	public:
 		static std::shared_ptr<UIInputManager> GetInstance();
 	private:
 		static std::shared_ptr<UIInputManager> instance;
 		static std::weak_ptr<SelectableUI> selectedUI;
 		static std::list<std::weak_ptr<SelectableUI>> registedUI;
 
-	public :
+	public:
 		static Math::Vector2 ConvertMousePos(const Math::Vector2& pos);
 		void Update();
 		void Register(const std::shared_ptr<SelectableUI>& ui);
@@ -159,11 +156,9 @@ namespace GameEngine
 
 	class GAMEENGINE_API UISelector : public ClonableObject < Component, UISelector >
 	{
-	public :
+	public:
 		void Start();
 	};
 }
-
-
 
 #pragma warning(pop)

@@ -11,7 +11,6 @@ namespace GameEngine
 	{
 		class FbxLoader;
 		struct Node;
-
 	};
 	class Shader;
 	class Texture2D;

@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "UI.h"
 
@@ -59,7 +58,7 @@ namespace GameEngine
 	{
 		prevState = state;
 		SetColor(colorHover);
-		if(param.instersects) { 
+		if(param.instersects) {
 			if(param.lbuttonDown) {
 				state = UIState::eDown;
 				if(onDown) onDown();

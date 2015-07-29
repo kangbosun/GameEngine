@@ -1,6 +1,4 @@
-
 #pragma once
-
 
 #pragma warning(push)
 #pragma warning(disable:4251)
@@ -33,7 +31,7 @@ namespace GameEngine
 
 	class GAMEENGINE_API Material final
 	{
-	public:		
+	public:
 		std::string name;
 		MaterialData data;
 
@@ -43,7 +41,7 @@ namespace GameEngine
 
 		std::shared_ptr<Shader> shader;
 
-	public :
+	public:
 		std::shared_ptr<Material> Clone();
 	};
 }

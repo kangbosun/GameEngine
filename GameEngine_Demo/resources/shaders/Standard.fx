@@ -1,21 +1,13 @@
 
-#include "Lighting.h"
-#include "DiffuseMapping.h"
-#include "NormalMapping.h"
-#include "ShadowMapping.h"
-#include "Skinning.h"
-#include "Camera.h"
+#include "VertexInput.fxh"
+#include "Lighting.fxh"
+#include "DiffuseMapping.fxh"
+#include "NormalMapping.fxh"
+#include "ShadowMapping.fxh"
+#include "Skinning.fxh"
+#include "Camera.fxh"
 
 // structs
-struct VertexInput
-{
-	float3 position : POSITION;
-	float2 texcoord : TEXCOORD0;
-	float3 normal : NORMAL;
-	float3 tangent : TANGENT;
-	uint4   boneIndices : BLENDINDICES;
-	float4 weights : BLENDWEIGHTS;
-};
 
 struct PixelInput
 {
@@ -45,8 +37,8 @@ PixelInput VS(VertexInput input)
 	PixelInput output;
 	float4x4 skinnedMatrix = skinning.GetMatrix(input.boneIndices, input.weights);
 	float4 pos = mul(float4(input.position,1), skinnedMatrix);
-	float3 normal = mul(float4(input.normal,1), skinnedMatrix).xyz;
-	float3 tangent = mul(float4(input.tangent,1), skinnedMatrix).xyz;
+	float3 normal = mul(input.normal, (float3x3)skinnedMatrix);
+	float3 tangent = mul(input.tangent, (float3x3)skinnedMatrix);
 	
 	float4 worldPos = mul(pos, worldMatrix);
 	float4 worldViewPos = mul(worldPos, transpose(camera.viewMatrix));
@@ -73,7 +65,7 @@ GlobalSetting globalSetting;
 
 float4 PS(PixelInput input) : SV_TARGET
 {
-	float4 colorFinal = float4(0, 0, 0, 1);
+	float4 colorFinal = float4(0, 0, 0, 0);
 
 	float4 diffuseColor = diffuseMapping.GetDiffuseColor(input.texcoord);
 

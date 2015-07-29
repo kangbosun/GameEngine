@@ -2,9 +2,7 @@
 #pragma warning(push)
 #pragma warning(disable:4251)
 
-
-
-namespace GameEngine 
+namespace GameEngine
 {
 	class GameTime;
 	class GraphicDevice;
@@ -12,13 +10,13 @@ namespace GameEngine
 
 	class GAMEENGINE_API GameWindow
 	{
-	private:		
+	private:
 		float elaspedTime = 0;
 		float updateTime = 0;
 		int updatePerSecond = 0;
 		std::shared_ptr<Scene> currScene;
 
-	protected :
+	protected:
 		HWND hWnd = 0;
 		std::shared_ptr<GraphicDevice> graphicDevice;
 		int width = 0;
@@ -26,10 +24,10 @@ namespace GameEngine
 		int positionX = 0;
 		int positionY = 0;
 		static GameWindow* ptr;
-	private :
+	private:
 		void Update();
 		void Render();
-		
+
 	public:
 		bool run;
 		static GameWindow* const  GetCurrentWindow() { return ptr; }
@@ -40,6 +38,5 @@ namespace GameEngine
 		void UnloadScene();
 		Rect GetRect() { return{ width, height, positionX, positionY }; }
 	};
-
 }
 #pragma warning(pop)

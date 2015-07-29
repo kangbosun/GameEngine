@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <memory>
@@ -13,7 +12,7 @@ namespace GameEngine
 
 	class GAMEENGINE_API Object
 	{
-	public :
+	public:
 
 		const std::string ToString() const
 		{

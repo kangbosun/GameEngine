@@ -2,7 +2,6 @@
 #include "UI.h"
 #include "Renderer.h"
 
-
 namespace GameEngine
 {
 	bool operator <(const std::weak_ptr<UIBase>& lhs, const std::weak_ptr<UIBase>& rhs)
@@ -10,7 +9,7 @@ namespace GameEngine
 		return (lhs.lock()->transform()->worldPosition().z < rhs.lock()->transform()->worldPosition().z);
 	}
 
-	const std::shared_ptr<UIRenderer> UIBase::renderer() 
+	const std::shared_ptr<UIRenderer> UIBase::renderer()
 	{
 		using namespace std;
 
@@ -29,5 +28,4 @@ namespace GameEngine
 		color = _color;
 		renderer()->material.data.color = color;
 	}
-
 }

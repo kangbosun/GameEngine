@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Scene.h"
 #include "GameTime.h"
@@ -20,7 +19,7 @@ namespace GameEngine
 			auto& comIter = comList.begin();
 			while(comIter != comList.cend()) {
 				auto& com = comIter->lock();
-				if(!com) 
+				if(!com)
 					comList.erase(comIter++);
 				else {
 					if(com->enabled) {
@@ -29,7 +28,7 @@ namespace GameEngine
 					}
 				}
 			}
-			if(comList.size() == 0) 
+			if(comList.size() == 0)
 				componentsMap.erase(mapIter++);
 			else
 				++mapIter;

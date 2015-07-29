@@ -1,4 +1,3 @@
-
 #pragma once
 #include "Singleton.h"
 
@@ -38,9 +37,9 @@ namespace GameEngine
 
 	class GlyphPool : public Singleton<GlyphPool>
 	{
-	private :
-		const int MapWidth = 1024;
-		const int MapHeight = 1024;
+	private:
+		const int MapWidth = 512;
+		const int MapHeight = 512;
 		const int tileSize = 4;
 		const int tileWidth = MapWidth / tileSize;
 		const int tileHeight = MapHeight / tileSize;
@@ -50,8 +49,7 @@ namespace GameEngine
 		std::vector<wchar_t> tiles;
 		std::map<Glyph, GlyphData> glyphs;
 
-
-	private :
+	private:
 		wchar_t& MapAt(int x, int y) { return tiles[x + (y * tileWidth)]; }
 		bool TestSpace(int x, int y, int w, int h);
 		void FillSpace(int x, int y, int w, int h, wchar_t c);
@@ -67,5 +65,4 @@ namespace GameEngine
 		GlyphPool();
 		~GlyphPool();
 	};
-
 }

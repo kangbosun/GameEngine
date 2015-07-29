@@ -4,7 +4,7 @@
 namespace GameEngine
 {
 	float GlobalSetting::aspectRatio = 16.0f / 9.0f;
-	GraphicSetting GlobalSetting::graphicSetting;	
+	GraphicSetting GlobalSetting::graphicSetting;
 
 	int GlobalSetting::resolutionX = 0;
 	int GlobalSetting::resolutionY = 0;

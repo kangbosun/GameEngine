@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Audio.h"
 #include "DXUtil.h"
@@ -43,7 +42,6 @@ namespace GameEngine
 		return mXAudio2;
 	}
 
-
 	// MediaStreamer
 
 	MediaStreamer::MediaStreamer()
@@ -80,7 +78,7 @@ namespace GameEngine
 		mediaType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
 
 		mediaType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, UINT32(false));
-				
+
 		mReader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, mediaType.p);
 
 		hr = mReader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, &outMediaType.p);
@@ -108,7 +106,7 @@ namespace GameEngine
 		double durationInSeconds = (duration / (double)(10000000));
 		mLengthInSeconds = (float)durationInSeconds;
 		unsigned int bytes = (unsigned int)(durationInSeconds * mWaveFormat->nAvgBytesPerSec);
-		mLengthInBytes = ((bytes + 3) >>2) <<2;
+		mLengthInBytes = ((bytes + 3) >> 2) << 2;
 		return true;
 	}
 
@@ -120,14 +118,14 @@ namespace GameEngine
 		CComPtr<IMFSample> sample;
 		CComPtr<IMFMediaBuffer> mediaBuffer;
 		DWORD dwFlags = 0;
-		
+
 		HRESULT hr = mReader->ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, 0, &dwFlags, NULL, &sample.p);
 		if(FAILED(hr)) {
 			Debug("ReadSample failed");
 			return false;
 		}
 
-		if(dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {		
+		if(dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
 			*outEndofstream = true;
 			return true;
 		}
@@ -141,7 +139,7 @@ namespace GameEngine
 			return true;
 		}
 		else
-			return false;		
+			return false;
 	}
 
 	void MediaStreamer::ResetBuffer()
@@ -184,15 +182,13 @@ namespace GameEngine
 				size = maxBufferSize - cbBuffer;
 			memcpy(&buffer[cbBuffer], bytes, size);
 			mediaBuffer->Unlock();
-			cbBuffer += size;	
+			cbBuffer += size;
 			sample.Release();
 			mediaBuffer.Release();
 		}
 	}
 
 	// AudioClip
-
-
 
 	AudioClip::AudioClip()
 	{
@@ -250,10 +246,7 @@ namespace GameEngine
 		}
 	}
 
-
-
 	///////////////////////////////////////////////////////////////////////
-
 
 	void AudioMusic::Stream()
 	{
@@ -322,7 +315,6 @@ namespace GameEngine
 	}
 	/////////////////////////////////////////////////////////////////////////////
 
-
 	std::shared_ptr<AudioSFX> AudioSFX::CreateAudioClipFromFile(const std::wstring& filename)
 	{
 		std::shared_ptr<AudioSFX> clip = std::make_shared<AudioSFX>();
@@ -341,7 +333,7 @@ namespace GameEngine
 		engine->CreateSourceVoice(&mSourceVoice, mStreamer.mWaveFormat);
 
 		int len = (int)mStreamer.mLengthInBytes;
-		
+
 		mBuffer.reset(new BYTE[len], ArrayDeleter<BYTE>());
 		size_t n = mStreamer.GetEntireBuffer(mBuffer.get(), len);
 		mStreamer.mReader.Release();
@@ -351,7 +343,7 @@ namespace GameEngine
 	{
 		if(mSourceVoice) {
 			Stop();
-			mSourceVoice->SetVolume(mVolume);			
+			mSourceVoice->SetVolume(mVolume);
 			XAUDIO2_BUFFER buffer = { 0 };
 			buffer.AudioBytes = mStreamer.mLengthInBytes;
 			buffer.pAudioData = mBuffer.get();
@@ -373,13 +365,11 @@ namespace GameEngine
 		return sfx;
 	}
 
-
 	AudioSFX::~AudioSFX()
 	{
 	}
 
 	AudioSFX::AudioSFX()
 	{
-
 	}
 }

@@ -1,6 +1,6 @@
 
-#ifndef _NORMALMAPPING_H_
-#define _NORMALMAPPING_H_
+#ifndef _NORMALMAPPING_FXH_
+#define _NORMALMAPPING_FXH_
 
 Texture2D normalMap;
 SamplerState normalMapSamplerState

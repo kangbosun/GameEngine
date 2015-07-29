@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <unordered_map>
@@ -18,7 +17,6 @@
 #include <sstream>
 #include <tchar.h>
 #include <set>
-
 
 #ifdef _WIN64
 #include <Windows.h>
@@ -63,5 +61,3 @@
 #include "property.h"
 #include "Object.h"
 #include "Component.h"
-
-

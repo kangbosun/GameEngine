@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Renderer.h"
 #include "Resource.h"
@@ -21,7 +20,6 @@ namespace GameEngine
 
 	list<weak_ptr<MeshRenderer>> MeshRenderer::allMeshRenderers;
 
-
 	MeshRenderer::MeshRenderer()
 	{
 		type = Renderer::eMesh;
@@ -38,8 +36,6 @@ namespace GameEngine
 		}
 		allMeshRenderers.push_back(gameObject->GetComponent<MeshRenderer>());
 	}
-
-	
 
 	void MeshRenderer::SetBone(const std::shared_ptr<GameObject>& rootBone)
 	{
@@ -72,7 +68,6 @@ namespace GameEngine
 		}
 	}
 
-
 	void MeshRenderer::Render(const CameraData& cam, const shared_ptr<Shader>& forcedShader)
 	{
 		auto dx = GraphicDevice::Instance();
@@ -91,14 +86,14 @@ namespace GameEngine
 		for(int i = 0; i < materials.size(); ++i) {
 			auto& material = materials[i];
 			if(!material) continue;
-			
+
 			auto& shader = forcedShader ? forcedShader : material->shader;
 			if(!shader) continue;
-	
+
 			shader->SetGlobalSetting(&GlobalSetting::graphicSetting);
 			shader->SetCamera(&cam);
 			shader->SetWorldMatrix(&transform()->WorldMatrix());
-			
+
 			if(matrices.size() > 0)
 				shader->SetBoneMatrices(&(*matrices.begin()), matrices.size());
 			else
@@ -114,12 +109,11 @@ namespace GameEngine
 				shader->SetShadowMap(light->GetShadowMap()->GetTexture().get(), &light->GetShadowTransform());
 			else
 				shader->SetShadowMap(0, 0);
-		
+
 			shader->Render(dx->context, mesh->vertCountOfSubMesh[i], offset);
 			offset += mesh->vertCountOfSubMesh[i];
 		}
 	}
-
 
 	void MeshRenderer::RenderAll(const CameraData& cam)
 	{
@@ -148,10 +142,7 @@ namespace GameEngine
 		}
 	}
 
-
 	//////////////////////////////////////////////////////////
-
-
 
 	std::list<std::weak_ptr<UIRenderer>> UIRenderer::allUIRenderers;
 
@@ -196,7 +187,7 @@ namespace GameEngine
 		uishader->SetLight(0);
 		uishader->SetShadowMap(0, 0);
 		uishader->SetGlobalSetting(0);
-
+	
 		uishader->SetWorldMatrix(&world);
 		uishader->SetMaterial(&material.data);
 		uishader->SetCamera(&cam);
@@ -232,5 +223,4 @@ namespace GameEngine
 	}
 
 	///////////////////////////////////////
-
 }

@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "UI.h"
 #include "Input.h"
@@ -41,12 +40,12 @@ namespace GameEngine
 		auto screenRect = GameWindow::GetCurrentWindow()->GetRect();
 
 		float xratio = w / screenRect.width;
-		float yratio =  h / screenRect.height;
+		float yratio = h / screenRect.height;
 
 		float x = pos.x * xratio;
 		float y = h - (pos.y * yratio);
 
-		return{ x - (w / 2), y - (h / 2)};
+		return{ x - (w / 2), y - (h / 2) };
 	}
 
 	void UIInputManager::Update()
@@ -64,9 +63,9 @@ namespace GameEngine
 		registedUI.sort();
 
 		for(auto iter = registedUI.begin(); iter != registedUI.end();) {
-			if(iter->expired()) 
+			if(iter->expired())
 				iter = registedUI.erase(iter);
-			
+
 			else {
 				auto ui = iter->lock();
 				if(skip) {
@@ -96,10 +95,9 @@ namespace GameEngine
 						skip = true;
 				}
 				++iter;
-			}		
+			}
 		}
 	}
-	
 
 	void UISelector::Start()
 	{

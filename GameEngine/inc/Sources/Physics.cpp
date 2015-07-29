@@ -1,10 +1,8 @@
-
 #include "enginepch.h"
 #include "Physics.h"
 #include "GameObject.h"
 #include "DXUtil.h"
 #include "Transform.h"
-
 
 namespace GameEngine
 {
@@ -45,7 +43,7 @@ namespace GameEngine
 				if(o2->type != Object::eGameObject)
 					continue;
 				auto go2 = ((GameObject*)o2.get());
-				
+
 				ProcessCollisionRecursive(go1, go2);
 				iter--;
 			}

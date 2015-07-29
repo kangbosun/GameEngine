@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #pragma warning(push)
@@ -43,14 +41,14 @@ namespace GameEngine
 
 	class GAMEENGINE_API Texture2D : public Object
 	{
-	protected :
+	protected:
 		bool isValid = false;
 	public:
 		std::string name;
 		int width = 0;
 		int height = 0;
 		TextureFormat format;
-		
+
 		int msaa = 1;
 		CComPtr<ID3D11Texture2D> texture2D;
 		CComPtr<ID3D11ShaderResourceView> srv;

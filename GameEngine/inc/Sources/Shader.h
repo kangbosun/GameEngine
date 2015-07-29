@@ -40,7 +40,10 @@ namespace GameEngine
 	class GAMEENGINE_API Shader : public IShader
 	{
 	protected:
-		struct 
+		CComPtr<ID3DX11Effect> effect;
+		CComPtr<ID3DX11EffectTechnique> tech;
+
+		struct
 		{
 			CComPtr<ID3DX11EffectShaderResourceVariable> diffuseMap;
 			CComPtr<ID3DX11EffectShaderResourceVariable> normalMap;
@@ -80,10 +83,8 @@ namespace GameEngine
 			CComPtr<ID3DX11EffectClassInstanceVariable> specularMapEnable;
 			CComPtr<ID3DX11EffectClassInstanceVariable> specularMapDisable;
 		} classInstances;
-
-		CComPtr<ID3DX11EffectTechnique> tech;
-		CComPtr<ID3D11InputLayout> layout;
-		CComPtr<ID3DX11Effect> effect;
+		
+		CComPtr<ID3D11InputLayout> layout;		
 		std::unordered_map<std::string, CComPtr<ID3DX11EffectVariable>> variables;
 	protected:
 		ID3DX11EffectVariable* const GetVariable(std::string name) const;
@@ -91,6 +92,7 @@ namespace GameEngine
 	public:
 		std::string name;
 		Shader();
+		~Shader();
 		virtual bool InitShader(const std::wstring& filename);
 
 		virtual void Render(const CComPtr<ID3D11DeviceContext>& context, int n, int offset = 0) override;

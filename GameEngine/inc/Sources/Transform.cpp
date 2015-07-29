@@ -59,7 +59,6 @@ namespace GameEngine
 		changed = true;
 	}
 
-
 	void Transform::Translate(Vector3& v)
 	{
 		position += v;
@@ -94,12 +93,11 @@ namespace GameEngine
 		changed = true;
 	}
 
-
 	void Transform::Update()
 	{
 		BuildLocalMatrix();
 		changed = false;
-		
+
 		BuildWorldMatrix();
 	}
 
@@ -118,7 +116,6 @@ namespace GameEngine
 		else {
 			worldMatrix = localMatrix;
 		}
-		
 	}
 
 	void Transform::SetPivot(Align pivot)
@@ -150,16 +147,16 @@ namespace GameEngine
 	}
 
 	void Transform::LookAt(const Math::Vector3& p)
-	{		
+	{
 		if(p == position)
 			return;
 		Matrix m, parent, inv;
-		
+
 		BuildLocalMatrix();
 
-		if(gameObject && gameObject->parent) 
+		if(gameObject && gameObject->parent)
 			parent = gameObject->parent->transform()->worldMatrix;
-		else 
+		else
 			parent.SetIdentity();
 
 		Matrix::Multiply(localMatrix, parent, worldMatrix);

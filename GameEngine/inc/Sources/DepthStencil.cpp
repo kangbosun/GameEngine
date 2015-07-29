@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Texture2D.h"
 #include "GraphicDevice.h"
@@ -11,7 +10,7 @@ namespace GameEngine
 		this->width = width;
 		this->height = height;
 		isValid = false;
-		
+
 		depthStencilView.Release();
 		srv.Release();
 
@@ -26,5 +25,4 @@ namespace GameEngine
 		}
 		isValid = true;
 	}
-
 }

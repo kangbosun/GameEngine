@@ -1,6 +1,4 @@
-
 #pragma once
-
 
 #include "Singleton.h"
 #include "Camera.h"
@@ -9,7 +7,7 @@
 #pragma warning(disable:4251)
 
 namespace GameEngine
-{	
+{
 	class RenderTarget;
 	class DepthStencil;
 	class GraphicDevice;
@@ -34,14 +32,13 @@ namespace GameEngine
 	class Shader;
 
 	struct GAMEENGINE_API LightData
-	{	
+	{
 		Math::Color color;
 		Math::Vector3 dir;
 		int lightType;
 		Math::Vector3 position;
-		
 	};
-	
+
 	class GAMEENGINE_API Light final : public ClonableObject<Component, Light>
 	{
 		enum LightType
@@ -50,10 +47,10 @@ namespace GameEngine
 			ePoint,
 			eSpot,
 		};
-	private :
+	private:
 		LightType type;
 		LightData data;
-		
+
 		// for shadow map
 		float fov = 60.0f;
 		float nearplane = 0.1f;
@@ -67,12 +64,12 @@ namespace GameEngine
 		void BuildShadowTransform();
 		void BuildShadowMap();
 
-	public :
+	public:
 		CameraData cameraData;
 		Math::Color lightColor = Math::Color::White;
-		
+
 		bool renderShadow = true;
-	
+
 		Light();
 		void Start();
 		LightType GetType() { return type; }
@@ -80,7 +77,7 @@ namespace GameEngine
 
 		std::shared_ptr<ShadowMap>& GetShadowMap() { return shadowMap; }
 		const Math::Matrix& GetShadowTransform() { return shadowTransform; }
-		
+
 		static std::shared_ptr<Light> CreateDirectionalLight();
 		static std::shared_ptr<Light> CreatePointLight();
 		static std::shared_ptr<Light> CreateSpotLight();

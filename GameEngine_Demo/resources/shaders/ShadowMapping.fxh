@@ -1,6 +1,6 @@
 
-#ifndef _SHADOWMAPPING_H_
-#define _SHADOWMAPPING_H_
+#ifndef _SHADOWMAPPING_FXH_
+#define _SHADOWMAPPING_FXH_
 
 
 Texture2D shadowMap;

@@ -15,7 +15,7 @@ namespace GameEngine
 	float GameTime::_unscaledDeltaTime = 0;
 	float GameTime::_timeScale = 1.0f;
 	double GameTime::_totalTime = 0.0f;
-	
+
 	readonly<float> GameTime::deltaTime = { GameTime::_deltaTime };
 	readonly<float> GameTime::unscaledDeltaTime = { GameTime::_unscaledDeltaTime };
 	property<float> GameTime::timeScale = { GameTime::_timeScale };
@@ -30,7 +30,7 @@ namespace GameEngine
 		_unscaledDeltaTime = duration.count();
 
 		_deltaTime = _unscaledDeltaTime * _timeScale;
-		_totalTime =  _totalTime + _unscaledDeltaTime;
+		_totalTime = _totalTime + _unscaledDeltaTime;
 	}
 
 	void GameTime::StopwatchStart(int num)

@@ -1,6 +1,4 @@
-
 #include "enginepch.h"
-
 
 #include "FbxLoader.h"
 
@@ -20,12 +18,10 @@ namespace GameEngine
 			materials.clear();
 		}
 
-
 		FbxLoader::FbxLoader(FbxLoader::AxisMode mode)
 		{
 			axismode = mode;
 		}
-
 
 		void FbxLoader::LoadFromFile(const std::string& folder, const std::string& name)
 		{
@@ -38,7 +34,6 @@ namespace GameEngine
 			FbxImporter* importer = (FbxImporter::Create(fbxManager, ""));
 			bool b = importer->Initialize(path.c_str(), -1, fbxManager->GetIOSettings());
 			if(!b) {
-
 			}
 			scene = FbxScene::Create(fbxManager, path.c_str());
 			importer->Import(scene);
@@ -48,7 +43,6 @@ namespace GameEngine
 			importer->GetFileVersion(fileMajor, fileMinor, fileRevision);
 
 			FbxNode* root = scene->GetRootNode();
-
 
 			FbxAxisSystem axisSystem = scene->GetGlobalSettings().GetAxisSystem();
 			if(axisSystem != FbxAxisSystem::OpenGL)
@@ -67,7 +61,6 @@ namespace GameEngine
 
 			ProcessMeshNode(root, rootNode);
 		}
-
 
 		void FbxLoader::ProcessMeshNode(FbxNode* node, const std::shared_ptr<Node>& mnode)
 		{
@@ -88,7 +81,6 @@ namespace GameEngine
 				else if(type == FbxNodeAttribute::eSkeleton) {
 					mnode->type = Node::eBone;
 				}
-
 			}
 
 			ComputeNodeMatrix(node, *mnode.get(), true);
@@ -188,7 +180,7 @@ namespace GameEngine
 						normal.x *= -1;
 						//binormal.x *= -1;
 						tangent.x *= -1;
-						uv.y = 1- uv.y;
+						uv.y = 1 - uv.y;
 						uv.x = uv.x;
 					}
 					meshNode.useSkinnedMesh = true;
@@ -460,7 +452,7 @@ namespace GameEngine
 			//		bone->name = name;
 			//		//bone->index = this->boneCounter++;
 
-			//		
+			//
 			//		if(parent) {
 			//			//bone->parentName = parent->name;
 			//			parent->children.push_back(bone);
@@ -673,7 +665,7 @@ namespace GameEngine
 					xvalue *= factor; yvalue *= factor; zvalue *= factor;
 				}
 				if(type == AnimCurve::eRotation) {
-					FbxAMatrix temp; 
+					FbxAMatrix temp;
 					temp.SetR(FbxVector4(xvalue, yvalue, zvalue));
 					auto R = (preRotation* temp).GetR();
 					xvalue = (float)R[0]; yvalue = (float)R[1]; zvalue = (float)R[2];
@@ -694,7 +686,6 @@ namespace GameEngine
 				curve3->curves[2]->keyframes[ki] = (zkey);
 			}
 		}
-
 
 		void FbxLoader::ComputeNodeMatrix(FbxNode* node, Node& meshNode, bool local)
 		{
@@ -749,7 +740,7 @@ namespace GameEngine
 		{
 			// load animation data
 			const int animCount = scene->GetSrcObjectCount<FbxAnimStack>();
-			
+
 			for(int ac = 0; ac < animCount; ++ac) {
 				FbxAnimStack* currAnimStack = scene->GetSrcObject<FbxAnimStack>(ac);
 				if(!currAnimStack) return;
@@ -768,7 +759,6 @@ namespace GameEngine
 				std::shared_ptr<AnimClip> clip = make_shared<AnimClip>();
 				clip->name = animStackName;
 				animationClips[clip->name] = clip;
-
 			}
 		}
 		void FbxLoader::ConvertMatrix(Matrix& dest, FbxAMatrix& src)

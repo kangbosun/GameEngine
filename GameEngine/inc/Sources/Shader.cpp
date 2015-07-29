@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Shader.h"
 #include "GraphicDevice.h"
@@ -31,6 +30,10 @@ namespace GameEngine
 
 	Shader::Shader()
 	{
+	}
+
+	inline Shader::~Shader() 
+	{ 
 
 	}
 
@@ -55,8 +58,6 @@ namespace GameEngine
 #endif
 
 		CComPtr<ID3DBlob> compileShader, compilationMsgs;
-
-
 
 		HRESULT result = D3DX11CompileFromFile(filename.c_str(), 0, 0, 0, "fx_5_0", shaderFlags, 0, 0, &compileShader.p, &compilationMsgs.p, 0);
 		if(compilationMsgs.p) {
@@ -129,13 +130,12 @@ namespace GameEngine
 			D3DX11_EFFECT_VARIABLE_DESC varDesc;
 			auto var = effect->GetVariableByIndex(i);
 			var->GetDesc(&varDesc);
-			variables[varDesc.Name] = var;
+			//variables[varDesc.Name] = var;
 		}
 
 		for(int i = 0; i < nInterface; ++i) {
 			D3DX11_EFFECT_VARIABLE_DESC varDesc;
 		}
-
 
 		auto pass = tech->GetPassByIndex(0);
 
@@ -239,7 +239,7 @@ namespace GameEngine
 	}
 
 	void Shader::SetDiffuseMap(const Texture2D * const diffuseMap)
-	{	
+	{
 		if(shaderVariables.diffuseMap && shaderVariables.diffuseMap->IsValid()) {
 			if(diffuseMap && diffuseMap->IsValid()) {
 				shaderVariables.diffuseMap->SetResource(diffuseMap->srv.p);

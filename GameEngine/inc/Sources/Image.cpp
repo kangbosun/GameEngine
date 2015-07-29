@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Transform.h"
 #include "Renderer.h"
@@ -7,7 +6,6 @@
 #include "Resource.h"
 #include "UI.h"
 
-
 namespace GameEngine
 {
 	void Image::SetSize(int _width, int _height)
@@ -15,7 +13,7 @@ namespace GameEngine
 		transform()->SetSize(_width, _height);
 		std::vector<Math::Vertex> vertices(4);
 		std::vector<unsigned long> indices = { 0, 1, 3, 1, 2, 3 };
-		
+
 		float left = -_width * 0.5f;
 		float right = -left;
 		float top = _height * 0.5f;
@@ -55,7 +53,7 @@ namespace GameEngine
 			i->SetTexture(Resource::GetTexture2D(L"white"));
 		i->SetSize((int)size.x, (int)size.y);
 		g->transform()->position = pos;
-		
+
 		return i;
 	}
 }

@@ -1,4 +1,3 @@
-
 #pragma once
 
 #pragma warning(push)
@@ -14,15 +13,15 @@ namespace GameEngine
 
 	class SkinnedMeshRenderer;
 	class Transform;
-	
+
 	class GAMEENGINE_API Animation : public ClonableObject<Component, Animation>
 	{
-	private :
+	private:
 		float elaspedTime = 0;
 		std::vector<std::weak_ptr<Transform>> transforms;
 		bool isValid = false;
 
-	public :
+	public:
 		std::unordered_map<std::string, std::shared_ptr<Math::AnimClip>> clips;
 		std::shared_ptr<Math::AnimClip> clip = nullptr;
 

@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Animation.h"
 #include "GameObject.h"
@@ -56,14 +55,14 @@ namespace GameEngine
 
 		if(elaspedTime < startTime)
 			return;
-				
+
 		const size_t nBones = transforms.size();
 		const size_t nClusters = clip->transformCurves.size();
 		if(nBones != nClusters) {
 			run = false;
 			return;
 		}
-			
+
 		//elaspedTime = 0.0f;
 
 		for(int i = 0; i < nBones; ++i) {

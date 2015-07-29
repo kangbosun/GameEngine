@@ -14,7 +14,7 @@ namespace GameEngine
 	void Input::UpdateKeyboard()
 	{
 		memcpy_s(prevKeyboardState, 256, keyboardState, 256);
-		GetKeyboardState(keyboardState);	
+		GetKeyboardState(keyboardState);
 	}
 
 	void Input::UpdateMouse(HWND hWnd)
@@ -36,15 +36,15 @@ namespace GameEngine
 	}
 
 	Input::Input()
-	{		
+	{
 	}
 
 	Input::~Input()
 	{
 	}
-	
+
 	void Input::Update(int width, int height, HWND hWnd)
-	{		
+	{
 		screenSize = { (float)width, (float)height };
 		UpdateKeyboard();
 		UpdateMouse(hWnd);
@@ -52,7 +52,7 @@ namespace GameEngine
 	}
 
 	Vector2 Input::GetMousePos()
-	{	
+	{
 		return{ (float)mousePos.x, (float)mousePos.y };
 	}
 

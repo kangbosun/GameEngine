@@ -1,4 +1,3 @@
-
 #pragma once
 
 #ifdef _WIN64
@@ -43,8 +42,6 @@ namespace GameEngine
 		struct Quaternion;
 		struct Matrix;
 
-		
-
 		typedef unsigned char Byte;
 		struct GAMEENGINE_API Byte4
 		{
@@ -76,7 +73,7 @@ namespace GameEngine
 			Vector3() {}
 			Vector3(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
 			Vector3(const float* pArray) : XMFLOAT3(pArray) {}
-			
+
 			Vector3 operator+(const Vector3& rhs);
 			Vector3 operator-(const Vector3& rhs);
 			Vector3 operator*(const Vector3& rhs);
@@ -84,7 +81,7 @@ namespace GameEngine
 
 			friend Vector3 operator*(float scalar, const Vector3& v1);
 			friend Vector3 operator*(const Vector3& v1, float scalar);
-			
+
 			Vector3& operator+=(const Vector3& rhs);
 			Vector3& operator-=(const Vector3& rhs);
 			Vector3& operator*=(float scalar);
@@ -163,8 +160,7 @@ namespace GameEngine
 			friend Color operator*(const Color& v1, float scalar) { return{ v1.x * scalar, v1.y * scalar, v1.z * scalar, v1.w * scalar }; }
 		};
 
-
-		// 4x4 Matrix 
+		// 4x4 Matrix
 		struct GAMEENGINE_API Matrix : public DirectX::XMFLOAT4X4
 		{
 			Matrix() : XMFLOAT4X4() {}
@@ -173,20 +169,20 @@ namespace GameEngine
 				   float m10, float m11, float m12, float m13,
 				   float m20, float m21, float m22, float m23,
 				   float m30, float m31, float m32, float m33) :
-				   XMFLOAT4X4(
-				   m00, m01, m02, m03,
-				   m10, m11, m12, m13,
-				   m20, m21, m22, m23,
-				   m30, m31, m32, m33
-				   )
+				XMFLOAT4X4(
+					m00, m01, m02, m03,
+					m10, m11, m12, m13,
+					m20, m21, m22, m23,
+					m30, m31, m32, m33
+					)
 			{
 			}
 			Matrix(const Vector3& row1, const Vector3& row2, const Vector3& row3) :
 				Matrix(
-				row1.x, row1.y, row1.z, 0,
-				row2.x, row2.y, row2.z, 0,
-				row3.x, row3.y, row3.z, 0,
-				0, 0, 0, 1)
+					row1.x, row1.y, row1.z, 0,
+					row2.x, row2.y, row2.z, 0,
+					row3.x, row3.y, row3.z, 0,
+					0, 0, 0, 1)
 			{
 			}
 
@@ -250,17 +246,16 @@ namespace GameEngine
 #ifdef GAMEMATH_DEFINED
 		struct GAMEENGINE_API MathUtil
 		{
-		public :
+		public:
 			static const float PI;
 			static const float PIOVER180;
 			static const float PIUNDER180;
 
-		public :
+		public:
 			static float ToRadians(float degrees);
 			static float ToDegrees(float radians);
 			static int ToPiexels(int pt, int dpi) { return (int)(pt * dpi / 72); }
 		};
-
 
 		struct GAMEENGINE_API Vertex
 		{
@@ -281,7 +276,6 @@ namespace GameEngine
 			std::vector<Bone*> children;
 			~Bone();
 		};
-
 
 		struct GAMEENGINE_API Keyframe
 		{
@@ -325,7 +319,6 @@ namespace GameEngine
 		{
 		};
 
-
 		struct GAMEENGINE_API AnimTransformCurve : public AnimCurveContainer
 		{
 			std::string boneName;
@@ -339,7 +332,6 @@ namespace GameEngine
 			~AnimTransformCurve();
 		};
 
-
 		struct GAMEENGINE_API AnimClip
 		{
 			std::string name;
@@ -352,6 +344,5 @@ namespace GameEngine
 #endif
 	}
 }
-
 
 #pragma warning(pop)

@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 
 #include "Mesh.h"
@@ -9,13 +8,13 @@ namespace GameEngine
 	using namespace Math;
 
 	bool Mesh::Initialize(Vertex vertices[], unsigned long indices[], int nVertices, int nIndices, int vertsOfSub[],
-					int subMeshCount, ID3D11Device* device, D3D11_PRIMITIVE_TOPOLOGY primitive)
+						  int subMeshCount, ID3D11Device* device, D3D11_PRIMITIVE_TOPOLOGY primitive)
 	{
 		primitiveType = primitive;
 		vertCountOfSubMesh.assign(subMeshCount, 0);
-		for(int i = 0; i < subMeshCount; ++i) 
+		for(int i = 0; i < subMeshCount; ++i)
 			vertCountOfSubMesh[i] = vertsOfSub[i];
-		
+
 		D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 		D3D11_SUBRESOURCE_DATA vertexData, indexData;
 		HRESULT result;

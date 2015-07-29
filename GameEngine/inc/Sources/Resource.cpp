@@ -14,7 +14,6 @@
 #include "DXUtil.h"
 #include "Texture2D.h"
 
-
 namespace GameEngine
 {
 	using namespace Math;
@@ -28,6 +27,10 @@ namespace GameEngine
 
 	void Resource::LoadDefaultResource()
 	{
+		auto s = make_shared<Shader>();
+		s->InitShader(L"resources\\shaders\\Tex.fx");
+		Resource::AddShader(L"Tex", s);
+
 		auto s2 = make_shared<Shader>();
 		s2->InitShader(L"resources\\shaders\\Standard.fx");
 		Resource::AddShader(L"Standard", s2);
@@ -67,7 +70,7 @@ namespace GameEngine
 		auto dx = GraphicDevice::Instance();
 		string _path = string(path.begin(), path.end());
 		auto& font = Font::LoadFont(string(name.begin(), name.end()), _path);
-		
+
 		fonts[name] = font;
 	}
 
@@ -79,9 +82,9 @@ namespace GameEngine
 		Debug(L"#AddTexture2D(" + path + L")", false);
 		auto temp = make_shared<Texture2D>();
 		temp->LoadFromFile(path);
-		if(!temp->IsValid()) 
+		if(!temp->IsValid())
 			Debug("	-Failed");
-		
+
 		else {
 			Debug("	-Success");
 			temp->name = string(name.begin(), name.end());
@@ -133,7 +136,6 @@ namespace GameEngine
 		Debug(" -Success");
 	}
 
-
 	void Resource::FbxToObject(const wstring& modelName, const std::shared_ptr<GameObject>& object, const std::shared_ptr<FbxLoader::Node>& meshNode, FbxLoader::FbxLoader& loader)
 	{
 		auto device = GraphicDevice::Instance()->device;
@@ -167,7 +169,6 @@ namespace GameEngine
 				aniCom->clips = loader.animationClips;
 			}
 		}
-
 
 		// materials
 		if(materialCount > 0) {
@@ -250,7 +251,6 @@ namespace GameEngine
 		}
 	}
 
-
 	std::shared_ptr<GameObject> Resource::GetModel(const wstring& modelName)
 	{
 		//Debug(L"#GetModel(" + modelName + L")", false);
@@ -330,7 +330,6 @@ namespace GameEngine
 		//Debug("	-Failed");
 		return ret->Clone();
 	}
-
 
 	bool Resource::RemoveShader(const wstring& name)
 	{

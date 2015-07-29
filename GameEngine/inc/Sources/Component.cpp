@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 
 #include "Component.h"
@@ -14,7 +13,6 @@ namespace GameEngine
 
 	Component::Component()
 	{
-
 	}
 
 	Component::~Component()
@@ -44,7 +42,6 @@ namespace GameEngine
 		//	com->isRegistered = false;
 		//}
 	}
-
 
 	const std::shared_ptr<Transform> Component::transform()
 	{

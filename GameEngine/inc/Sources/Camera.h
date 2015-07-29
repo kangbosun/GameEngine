@@ -17,22 +17,22 @@ namespace GameEngine
 
 	class GAMEENGINE_API Camera final : public ClonableObject<Component, Camera>
 	{
-	private :
+	private:
 		static std::list<std::weak_ptr<Camera>> allCameras;
 		CameraData cameraData;
-	public  :		
+	public:
 		enum ProjMode
 		{
 			eOrtho,
 			ePerspective,
 		};
-		
+
 		static std::shared_ptr<Camera> main;
 		static std::shared_ptr<Camera> ui;
-				
+
 		Math::Vector3 target = Math::Vector3::Zero;
 		bool lockTarget = false;
-		
+
 		float fov = 60.0f;
 		float nearplane = 0.1f;
 		float farplane = 1000.0f;
@@ -42,7 +42,7 @@ namespace GameEngine
 		int width = 1;
 		int height = 1;
 		float size = 1;
-	
+
 		Viewport viewport;
 	public:
 		void BuildViewProjMatrix();
@@ -51,11 +51,11 @@ namespace GameEngine
 		const CameraData& GetCameraData() const { return cameraData; }
 		virtual void Update();
 
-	public :
+	public:
 		static std::shared_ptr<Camera> CreateCamera(ProjMode mode);
 
-	private :
-	};	
+	private:
+	};
 }
 
 #pragma warning(pop)

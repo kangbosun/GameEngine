@@ -1,7 +1,7 @@
 #pragma once
 
-namespace GameEngine 
-{	
+namespace GameEngine
+{
 	enum Align
 	{
 		eCenter = 0,
@@ -13,10 +13,9 @@ namespace GameEngine
 
 	typedef Align Pivot;
 
-
 	class GAMEENGINE_API Transform : public ClonableObject<Component, Transform>
 	{
-	public :
+	public:
 		//local
 		Math::Vector3 position = { 0, 0, 0 };
 		//local
@@ -38,7 +37,7 @@ namespace GameEngine
 		readonly<Math::Vector3> forward = { prop_get{ return worldMatrix.Forward(); } };
 		readonly<Math::Vector3> right = { prop_get{ return worldMatrix.Right(); } };
 		Math::Vector3 worldPosition() { return worldMatrix.GetT(); }
-	private :
+	private:
 		void BuildLocalMatrix();
 		void BuildWorldMatrix();
 

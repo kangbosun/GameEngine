@@ -103,11 +103,11 @@ public:
 		text2->gameObject->AddComponent<MousePos>();
 		text2->SetColor(Color::White);
 		GameObject::Register(text2->gameObject);
-
-		//auto img = Image::CreateImage(Vector3(-960, 540, 1), Vector2(400, 400), light1->GetShadowMap()->GetTexture());
-		//string name = img->ToString();
-		//img->transform()->SetPivot(Pivot(eLeft | eTop));
-		//GameObject::Register(img->gameObject);
+		text2->SetMesh();
+		auto img = Image::CreateImage(Vector3(-960, 540, 1), Vector2(400, 400), text2->renderer()->material.diffuseMap);
+		string name = img->ToString();
+		img->transform()->SetPivot(Pivot(eLeft | eTop));
+		GameObject::Register(img->gameObject);
 
 		auto button = Button::CreateButton(Vector3(960, -540, 1), Vector2(200, 60), L"Button");
 		button->transform()->SetPivot(Pivot(eRight | eBottom));
@@ -118,7 +118,7 @@ public:
 		auto button2 = dynamic_pointer_cast<GameObject>(button->gameObject->Clone());
 		GameObject::Register(button2);
 		button2->transform()->Translate(0, 70, 1);
-		button2->GetComponent<Button>()->SetText(L"Shadow On/Off");
+		button2->GetComponent<Button>()->SetText(L"Shadowy On/Off");
 		button2->GetComponentInChildren<Text>()->SetFontSize(25);
 		button2->GetComponent<Button>()->onClick = bind([&]() { light1->renderShadow = !light1->renderShadow; });
 

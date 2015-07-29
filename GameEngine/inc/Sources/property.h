@@ -1,4 +1,3 @@
-
 #pragma once
 #include <functional>
 
@@ -40,9 +39,7 @@ namespace GameEngine
 		{
 			return getter();
 		}
-
 	};
-
 
 	template <class T>
 	class GAMEENGINE_API property : public readonly < T >
@@ -69,4 +66,3 @@ namespace GameEngine
 }
 
 #pragma warning(pop)
-

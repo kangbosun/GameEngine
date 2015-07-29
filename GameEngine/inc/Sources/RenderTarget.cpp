@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Texture2D.h"
 #include "GraphicDevice.h"
@@ -31,7 +30,7 @@ namespace GameEngine
 
 	void RenderTarget::Initialize(int width, int height, TextureFormat format, const CComPtr<ID3D11Texture2D>& buffer)
 	{
-		this->format = format;		
+		this->format = format;
 		this->width = width;
 		this->height = height;
 		isValid = false;

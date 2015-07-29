@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "GameObject.h"
 #include "Renderer.h"
@@ -7,7 +6,6 @@
 #include "Transform.h"
 #include "Shader.h"
 #include "GraphicDevice.h"
-
 
 namespace GameEngine
 {
@@ -20,7 +18,6 @@ namespace GameEngine
 		active = gameObject.active;
 		enableCollisionTest = gameObject.enableCollisionTest;
 	}
-
 
 	shared_ptr<Transform> GameObject::transform()
 	{
@@ -44,7 +41,7 @@ namespace GameEngine
 			Component::Register(com.second);
 		}
 		for(auto& child : gameObject->children)
-			Register(child);		
+			Register(child);
 	}
 
 	void GameObject::Destroy(std::shared_ptr<GameObject>& object)
@@ -77,7 +74,7 @@ namespace GameEngine
 		for(auto& child : children) {
 			if(child->name == name)
 				target = child;
-			else 
+			else
 				target = child->FindGameObject(name);
 			if(target)
 				return target;
@@ -96,7 +93,7 @@ namespace GameEngine
 	}
 
 	void GameObject::CopyComponents(shared_ptr<GameObject>& src, shared_ptr<GameObject>& dst)
-	{			
+	{
 		dst->components.clear();
 
 		for(auto& com : this->components) {
@@ -147,13 +144,12 @@ namespace GameEngine
 		if(child) {
 			if(child->parent)
 				child->parent->RemoveChild(child);
-			children.push_back(child);	
+			children.push_back(child);
 			child->parent = shared_from_this();
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////
-
 
 	//DXSprite2D::DXSprite2D(const string& name) : GameObject(name)
 	//{

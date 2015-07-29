@@ -25,7 +25,6 @@ namespace GameEngine
 		return 0;
 	}
 
-
 	GameWindow* GameWindow::ptr = nullptr;
 
 	LRESULT GameWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -56,8 +55,6 @@ namespace GameEngine
 		}
 	}
 
-
-
 	void GameWindow::Initialize(LPCWSTR title, int width, int height, int updatePerSecond)
 	{
 		ptr = this;
@@ -80,7 +77,6 @@ namespace GameEngine
 							 WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 							 CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top,
 							 nullptr, nullptr, nullptr, nullptr);
-
 
 		graphicDevice = make_shared<GraphicDevice>();
 		graphicDevice->Initialize(width, height, hWnd);
@@ -132,7 +128,7 @@ namespace GameEngine
 		if(elaspedTime >= updateTime) {
 			Input::Update(width, height, hWnd);
 			if(currScene)
-				currScene->Update();		
+				currScene->Update();
 			elaspedTime -= GameTime::unscaledDeltaTime;
 		}
 	}

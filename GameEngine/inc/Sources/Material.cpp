@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Material.h"
 #include "Resource.h"

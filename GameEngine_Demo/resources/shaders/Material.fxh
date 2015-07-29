@@ -1,6 +1,6 @@
 
-#ifndef _MATERIAL_H_
-#define _MATERIAL_H_
+#ifndef _MATERIAL_FXH_
+#define _MATERIAL_FXH_
 
 struct Material
 {

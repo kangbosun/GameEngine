@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Singleton.h"
@@ -8,7 +7,6 @@
 
 namespace GameEngine
 {
-
 	//for FreeType Library (Glyph)
 #ifndef FT_FREETYPE_H
 	struct FT_LibraryRec_;
@@ -48,7 +46,7 @@ namespace GameEngine
 	//		std::string fontname;
 	//		std::vector<std::string> pages;
 	//		std::unordered_map<int, CharInfo> chars;
-	//		
+	//
 	//		int offset;
 	//
 	//		int nChars;

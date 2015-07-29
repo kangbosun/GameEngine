@@ -1,17 +1,14 @@
-
 #include "enginepch.h"
 #include "GraphicDevice.h"
 #include "DXUtil.h"
 #include "GlobalSetting.h"
 #include "Texture2D.h"
 
-
-namespace GameEngine 
+namespace GameEngine
 {
 	using namespace std;
 
 	std::shared_ptr<GraphicDevice> GraphicDevice::instance(nullptr);
-
 
 	void GraphicDevice::Initialize(int width, int height, HWND hWnd)
 	{
@@ -51,7 +48,7 @@ namespace GameEngine
 
 		int maxWidth = displayModeList[numModes - 1].Width;
 		int maxHeight = displayModeList[numModes - 1].Height;
-		
+
 		width = maxWidth;
 		height = maxHeight;
 
@@ -86,12 +83,11 @@ namespace GameEngine
 		scd.BufferDesc.Scaling = DXGI_MODE_SCALING::DXGI_MODE_SCALING_UNSPECIFIED;
 		scd.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_DISCARD;
 
-
 		D3D_FEATURE_LEVEL featureLevels[] = {
 			D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0
 		};
 		result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE, 0, 0, featureLevels,
-			ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &scd, &swapChain, &device, NULL, &context);
+											   ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &scd, &swapChain, &device, NULL, &context);
 		if(FAILED(result))
 			Debug("failed to create Device and Swapchain");
 
@@ -138,7 +134,7 @@ namespace GameEngine
 
 		result = device->CreateRasterizerState(&rasterizerDesc, &rasterizeState.p);
 		if(FAILED(result)) Debug("failed to create RasterizerState");
-		
+
 		context->RSSetState(rasterizeState);
 
 		D3D11_BLEND_DESC bdesc = { 0 };
@@ -195,7 +191,7 @@ namespace GameEngine
 		swapChain->ResizeBuffers(1, width, height, (DXGI_FORMAT)format, 0);
 		CComPtr<ID3D11Texture2D> backBufferPtr;
 		swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr.p);
-		
+
 		renderTarget->msaa = sampleDesc.Count;
 		renderTarget->Initialize(width, height, format, backBufferPtr);
 		depthStencil->msaa = sampleDesc.Count;
@@ -223,7 +219,7 @@ namespace GameEngine
 
 	void GraphicDevice::SwapBuffers()
 	{
-			swapChain->Present(vSync, 0);
+		swapChain->Present(vSync, 0);
 	}
 
 	void GraphicDevice::ClearRenderTarget(const Math::Color& color)
@@ -234,7 +230,6 @@ namespace GameEngine
 	void GraphicDevice::ClearDepthStencil()
 	{
 		context->ClearDepthStencilView(currDepthStencil->depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 	}
 
 	void GraphicDevice::SetViewport(const Viewport& viewport)
@@ -281,5 +276,4 @@ namespace GameEngine
 		currDepthStencil = _depthStencil;
 		context->OMSetRenderTargets(1, &_renderTarget->renderTargetView.p, _depthStencil->depthStencilView);
 	}
-
 }

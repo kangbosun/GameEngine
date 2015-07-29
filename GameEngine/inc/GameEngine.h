@@ -1,4 +1,3 @@
-
 #pragma once
 #if !defined(_GAMEENGINE_H_) && defined(_WIN64)
 #define _GAMEENGINE_H_

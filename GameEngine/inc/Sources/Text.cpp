@@ -16,7 +16,6 @@ namespace GameEngine
 	using namespace std;
 	using namespace Math;
 
-
 	void Text::Update()
 	{
 		SetMesh();
@@ -62,17 +61,17 @@ namespace GameEngine
 		map<wchar_t, GlyphData> datas;
 		wstring str = text;
 		unsigned long long pos = 0;
-		while(pos != str.npos) {		
+		while(pos != str.npos) {
 			pos = str.find('\n');
 			wstring token = str.substr(0, pos);
 			str = str.substr(pos + 1);
 			TextLine line = { token, (int)token.size() };
 			lines.emplace_back(std::move(line));
 		}
-		
+
 		int width = (int)transform()->width;
 		int height = (int)transform()->height;
-		
+
 		int heightPerLine = fontsize;
 		int maxWidth = width;
 		int maxHeight = heightPerLine * (int)lines.size();
@@ -94,12 +93,12 @@ namespace GameEngine
 			lines[n].width = tempWidth;
 		}
 
-		vector<Vertex> vertices(totalChars*4);
-		vector<unsigned long> indices(totalChars*6);
+		vector<Vertex> vertices(totalChars * 4);
+		vector<unsigned long> indices(totalChars * 6);
 
 		int index = 0;
 		int index2 = 0;
-		
+
 		float yoffset = 0;
 		if(align & eBottom)
 			yoffset = (-height * 0.5f) + maxHeight;
@@ -108,7 +107,7 @@ namespace GameEngine
 		else
 			yoffset = maxHeight * 0.5f;
 
-		for(int n = 0; n < lines.size(); ++n) {	
+		for(int n = 0; n < lines.size(); ++n) {
 			wstring line = lines[n].str;
 			float xoffset = 0;
 			if(align & eLeft)
@@ -164,7 +163,7 @@ namespace GameEngine
 		com->transform()->SetSize((int)size.x, (int)size.y);
 		com->SetText(str);
 		com->SetFont(Resource::GetFont(fontName));
-		
+
 		return com;
 	}
 }

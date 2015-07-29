@@ -1,4 +1,3 @@
-
 #include "enginepch.h"
 #include "Camera.h"
 #include "Transform.h"
@@ -12,7 +11,7 @@ namespace GameEngine
 	using namespace Math;
 
 	list<weak_ptr<Camera>> Camera::allCameras;
-	
+
 	void Camera::Update()
 	{
 		width = GlobalSetting::resolutionX;
@@ -56,6 +55,6 @@ namespace GameEngine
 		return com;
 	}
 
-	std::shared_ptr<Camera> Camera::main ;
-	std::shared_ptr<Camera> Camera::ui ;
+	std::shared_ptr<Camera> Camera::main;
+	std::shared_ptr<Camera> Camera::ui;
 }
