@@ -28,22 +28,22 @@ namespace GameEngine
 	void MeshRenderer::Start()
 	{
 		if(rootBoneName != "") {
-			auto node = transform();
-			while(node->GetParent())
-				node = node->GetParent();
-			auto rootBone = node->gameObject->FindGameObjectInChildren(rootBoneName);
-			SetBone(rootBone);
+			auto root = transform();
+			while(root->node.GetParent())
+				root = root->node.GetParent();
+			auto rootBone = root->gameObject->FindGameObjectInChildren(rootBoneName);
+			SetBone(&rootBone->transform);
 		}
 		allMeshRenderers.push_back(gameObject->GetComponent<MeshRenderer>());
 	}
 
-	void MeshRenderer::SetBone(const std::shared_ptr<GameObject>& rootBone)
+	void MeshRenderer::SetBone(Transform* bone)
 	{
-		if(rootBone) {
-			bones.push_back(rootBone->transform());
-			auto& children = rootBone->children;
-			for(auto& child : children)
-				SetBone(child);
+		if(bone) {
+			bones.push_back(bone);
+			auto size = bone->node.GetChildCount();
+			for(int i = 0; i < size; ++i)
+				SetBone(bone->node.GetChild(i));
 		}
 	}
 
@@ -55,8 +55,8 @@ namespace GameEngine
 			matrices.clear();
 			matrices.reserve(bones.size());
 			Matrix offsetInv;
-			if(bones[0]->gameObject->parent)
-				bones[0]->gameObject->parent->transform()->WorldMatrix().Inverse(offsetInv);
+			if(bones[0]->node.GetParent())
+				bones[0]->node.GetParent()->WorldMatrix().Inverse(offsetInv);
 			else offsetInv = Matrix::Identity;
 
 			for(int bi = 0; bi < boneSize; ++bi) {
@@ -70,18 +70,19 @@ namespace GameEngine
 
 	void MeshRenderer::Render(const CameraData& cam, const shared_ptr<Shader>& forcedShader)
 	{
-		auto dx = GraphicDevice::Instance();
-		auto& lights = Light::allLights;
-		string name = gameObject->name;
-		if(!dx)
-			return;
+		auto graphicDevice = GraphicDevice::Instance();
+		if(!graphicDevice)
+			return;	
 		if(!mesh || !mesh->IsValid()) return;
 
 		bool renderShadow = false;
 		bool useSkinning = false;
 
+		auto& lights = Light::allLights;
+		string name = gameObject->name;
+
 		int offset = 0;
-		mesh->Bind(dx->context);
+		graphicDevice->SetMeshBuffer(mesh);
 
 		for(int i = 0; i < materials.size(); ++i) {
 			auto& material = materials[i];
@@ -110,7 +111,7 @@ namespace GameEngine
 			else
 				shader->SetShadowMap(0, 0);
 
-			shader->Render(dx->context, mesh->vertCountOfSubMesh[i], offset);
+			shader->Render(graphicDevice->context, mesh->vertCountOfSubMesh[i], offset);
 			offset += mesh->vertCountOfSubMesh[i];
 		}
 	}
@@ -161,14 +162,15 @@ namespace GameEngine
 	void UIRenderer::Render(const CameraData& cam, const std::shared_ptr<Shader>& _shader)
 	{
 		string name = gameObject->name;
-		auto dx = GraphicDevice::Instance();
-		if(!dx)
-			return;
+		auto graphicDevice = GraphicDevice::Instance();
+		
+		if(!graphicDevice)	return;
+		
 		if(!mesh.get() || mesh->IsValid() == false)
 			return;
 		auto& uishader = _shader ? _shader : material.shader;
-		if(!uishader)
-			return;
+		
+		if(!uishader) return;
 
 		Vector3 s, t;
 		Quaternion q;
@@ -188,8 +190,8 @@ namespace GameEngine
 		uishader->SetDiffuseMap(material.diffuseMap.get());
 
 		//GraphicDevice::Instance()->SetAlphaBlend(useAlphaBlending);
-		mesh->Bind(dx->context);
-		uishader->Render(dx->context, mesh->nIndices());
+		graphicDevice->SetMeshBuffer(mesh);
+		uishader->Render(graphicDevice->context, mesh->nIndices());
 	}
 
 	void UIRenderer::RenderAll(const CameraData& cam, const std::shared_ptr<Shader>& shader)

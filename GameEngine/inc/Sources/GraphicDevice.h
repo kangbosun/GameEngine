@@ -22,6 +22,7 @@ namespace GameEngine
 
 	class RenderTarget;
 	class DepthStencil;
+	class Mesh;
 
 	////////////////////////////////////////////////////
 
@@ -89,6 +90,9 @@ namespace GameEngine
 		Math::Vector2 GetViewportSize() { return Math::Vector2(viewPort.Width, viewPort.Height); }
 
 		int MSAA() { return sampleDesc.Count; }
+
+	public :
+		void SetMeshBuffer(const std::shared_ptr<Mesh>& mesh);
 	};
 }
 #pragma warning(pop)

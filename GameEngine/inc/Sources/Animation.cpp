@@ -24,8 +24,10 @@ namespace GameEngine
 			if(clip->transformCurves.size() > 0) {
 				//find top object
 				auto root = transform();
-				while(root->GetParent())
-					root = root->GetParent();
+				while(root->node.GetParent())
+					root = root->node.GetParent();
+				//done
+
 				transforms.reserve(clip->transformCurves.size());
 				for(auto& curve : clip->transformCurves) {
 					auto g = root->gameObject->FindGameObjectInChildren(curve->boneName);

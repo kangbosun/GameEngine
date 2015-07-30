@@ -273,7 +273,6 @@ namespace GameEngine
 			int index = 0;
 			Matrix bindPose;
 			Matrix bindPoseInverse;
-			std::vector<Bone*> children;
 			~Bone();
 		};
 

@@ -22,7 +22,7 @@ namespace GameEngine
 	unordered_map<wstring, std::shared_ptr<Shader>> Resource::shaders;
 	unordered_map<wstring, std::shared_ptr<Texture2D>> Resource::Texture2Ds;
 	unordered_map<wstring, std::shared_ptr<Font>> Resource::fonts;
-	unordered_map<wstring, std::shared_ptr<GameObject>> Resource::models;
+	unordered_map<wstring, GameObject*> Resource::models;
 	unordered_map<string, std::shared_ptr<Material>> Resource::materials;
 
 	void Resource::LoadDefaultResource()
@@ -113,55 +113,49 @@ namespace GameEngine
 	void Resource::AddModel(const wstring& name, const string& folder, const string& filename)
 	{
 		Debug("#AddModel(" + filename + ")", false);
-		std::shared_ptr<GameObject> obj = GameObject::Instantiate(string(name.begin(), name.end()));
+		auto obj = GameObject::Instantiate(string(name.begin(), name.end()));
 		FbxLoader::FbxLoader loader(FbxLoader::FbxLoader::eDirectX);
 
 		loader.LoadFromFile(folder, filename);
 
-		auto root = loader.rootNode;
-		if(root->vertIndices.size() == 0 && root->mChildNodes.size() == 0) {
-			Debug("	-Failed");
+		auto* pRoot = &loader.rootNode;
+		//check meshdata 
+		if(pRoot->vertIndices.size() == 0 && pRoot->childNodes.size() == 0) {
+			Debug("	-No Mesh Datas");
 		}
-		if(root->vertIndices.size() == 0 && root->mChildNodes.size() == 1)
-			root = root->mChildNodes[0];
+		//check meaningless root node
+		if(pRoot->vertIndices.size() == 0 && pRoot->childNodes.size() == 1)
+			pRoot = &pRoot->childNodes[0];
 
 		ProcessMaterial(loader, name);
 
-		std::shared_ptr<GameObject> empty;
-
-		FbxToObject(name, obj, root, loader);
+		FbxToObject(name, obj, *pRoot, loader);
 
 		obj->name = string(name.begin(), name.end());
 		models[name] = obj;
 		Debug(" -Success");
 	}
 
-	void Resource::FbxToObject(const wstring& modelName, const std::shared_ptr<GameObject>& object, const std::shared_ptr<FbxLoader::Node>& meshNode, FbxLoader::FbxLoader& loader)
+	void Resource::FbxToObject(const wstring& modelName, GameObject* object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader)
 	{
 		auto device = GraphicDevice::Instance()->device;
 
-		const size_t materialCount = meshNode->mMaterialNames.size();
+		const size_t materialCount = meshNode.materialNames.size();
 
-		//skinned mesh
-		const size_t vertCount = meshNode->meshes.size();
+		const size_t vertCount = meshNode.meshes.size();
 		if(vertCount > 0) {
 			auto& renderer = object->AddComponent<MeshRenderer>();
-			Vertex* verts = &meshNode->meshes[0];
-			unsigned long* indices = &meshNode->vertIndices[0];
-			int nIndex = (int)meshNode->vertIndices.size();
-			int nSub = (int)meshNode->vertexCountOfSubMesh.size();
-			int* vertOfSub = &meshNode->vertexCountOfSubMesh[0];
 			auto mesh = make_shared<Mesh>();
-			mesh->Initialize(verts, indices, (int)vertCount, nIndex, vertOfSub, nSub, device);
+			mesh->Initialize(meshNode.meshes, meshNode.vertIndices, meshNode.vertexCountOfSubMesh);
 			renderer->mesh = mesh;
 
 			// bones
-			const int nBones = (int)meshNode->bones.size();
-			if(meshNode->useSkinnedMesh && nBones > 0) {
-				renderer->rootBoneName = meshNode->bones[0]->name;
+			const int nBones = (int)meshNode.bones.size();
+			if(meshNode.useSkinnedMesh && nBones > 0) {
+				renderer->rootBoneName = meshNode.bones[0].name;
 				mesh->bindPoseInv.reserve(nBones);
 				for(int i = 0; i < nBones; ++i)
-					mesh->bindPoseInv.push_back(meshNode->bones[i]->bindPoseInverse);
+					mesh->bindPoseInv.push_back(meshNode.bones[i].bindPoseInverse);
 			}
 			// animations
 			if(loader.animationClips.size() > 0) {
@@ -184,7 +178,7 @@ namespace GameEngine
 		}
 
 		// initial transform
-		object->transform()->SetLocalTransform(meshNode->mMatrix.m[0]);
+		object->transform.SetLocalTransform(meshNode->mMatrix.m[0]);
 
 		// children
 		for(auto& childNode : meshNode->mChildNodes) {

@@ -16,25 +16,21 @@ namespace GameEngine
 	{
 	private :
 		static std::unordered_multimap<std::string, GameObject*> allGameObjects;
-		static void Register(GameObject* go);
+		bool isRegistered = false;
 	public :
+		static void Register(GameObject* go);
 		static GameObject* FindGameObject(const std::string& name);
 		static void FindGameObjects(const std::string& name, std::vector<GameObject*>& result);
 
 		GameObject* FindGameObjectInChildren(const std::string& name);
 		void FindGameObjectsInChildren(const std::string& name, std::vector<GameObject*>& result);
-
-		bool isRegistered = false;
+		
 	public:
 		std::string name;
 		Transform transform;
 
 		bool active = true;
 		bool destroy = false;
-
-	private:
-		GameObject* CopyRecursive(Transform* parent);
-		GameObject();
 
 	public:
 		GameObject(const GameObject& gameObject);
@@ -46,11 +42,13 @@ namespace GameEngine
 	public :
 		std::shared_ptr<Renderer> renderer();
 
-	public:
-		~GameObject() { }
 	private :
+		GameObject* CopyRecursive(Transform* parent);
+		GameObject();
 		/* don't try implicit copy */
 		GameObject& operator=(const GameObject& rhs);
+		~GameObject() {}
+	public :
 		GameObject* Clone();
 
 	public :
@@ -73,7 +71,7 @@ namespace GameEngine
 		std::shared_ptr<Component> GetComponent(const std::string& name);
 
 		template <typename T>
-		std::shared_ptr<Component> GetComponentInChildren();
+		std::shared_ptr<T> GetComponentInChildren();
 
 		template <typename T>
 		void RemoveComponent();
@@ -87,36 +85,41 @@ namespace GameEngine
 	template <typename T>
 	std::shared_ptr<T> GameObject::AddComponent()
 	{
-		auto temp = make_shared<T>();
-		return AddComponent<T>(temp);
+		auto temp = std::make_shared<T>();
+		AddComponent(std::static_pointer_cast<Component>(temp));
+		return temp;
 	}
 
 	template <typename T>
 	std::shared_ptr<T> GameObject::GetComponent()
 	{
-		for(auto com : components) {
-			auto target = std::dynamic_pointer_cast<T>(com);
+		T* target = nullptr;
+		for(auto& com : components) {
+			target = dynamic_cast<T*>(com.get());
 			if(target)
-				return target;
+				break;
 		}
-		return std::shared_ptr<T>();
+		return std::shared_ptr<T>(target);
 	}
 	
 	template <typename T>
 	std::shared_ptr<T> GameObject::GetComponentInChildren()
 	{
+		T* target = nullptr;
 		for(auto com : components) {
-			auto target = std::dynamic_pointer_cast<T>(com);
+			auto target = dynamic_cast<T*>(com.get());
 			if(target)
-				return target;
+				break;
 		}
 
-		std::shared_ptr<T> com;
-		for(auto& child : children) {
-			com = child->GetComponentInChildren<T>();
-			if(com) break;
+		if(!target) {
+			for(int i = 0; i < transform.node.GetChildCount(); ++i) {
+				auto child = transform.node.GetChild(i);
+				target = child->gameObject->GetComponentInChildren<T>().get();
+				if(target) break;
+			}
 		}
-		return com;
+		return std::shared_ptr<T>(target);
 	}
 
 	template <typename T>

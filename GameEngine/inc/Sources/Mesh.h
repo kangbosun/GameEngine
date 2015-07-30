@@ -10,8 +10,9 @@ namespace GameEngine
 		struct Vertex;
 	};
 
-	class GAMEENGINE_API Mesh
+	class GAMEENGINE_API Mesh final
 	{
+		friend class GraphicDevice;
 		enum MeshType
 		{
 			eMesh, eSkinnedMesh
@@ -34,11 +35,9 @@ namespace GameEngine
 	public:
 		Mesh() {}
 
-		virtual bool Initialize(Math::Vertex vertices[], unsigned long indices[], int nVertices, int nIndices, int vertsOfSub[],
-								int subMeshCount, ID3D11Device* device,
+		virtual bool Initialize(std::vector<Math::Vertex>& vertices, std::vector<unsigned long>& indices, std::vector<int>& vertsOfSub,
 								D3D11_PRIMITIVE_TOPOLOGY primitive = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		void Bind(const CComPtr<ID3D11DeviceContext>& context);
 		UINT nIndices() { return nIndex; }
 		bool IsValid() { return valid; }
 	};

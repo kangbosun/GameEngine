@@ -39,20 +39,20 @@ namespace GameEngine
 			};
 
 			MaterialType type;
-			std::string mName;
-			Color mAmbient;
-			Color mDiffuse;
-			Color mEmissive;
-			Color mSpecular;
-			Color mReflection;
-			float mSpecularPower;
-			float mShininess;
-			float mReflectionFactor;
-			float mTransperencyFactor;
-			std::string mDiffuseMapName;
-			std::string mEmissiveMapName;
-			std::string mNormalMapName;
-			std::string mSpecularMapName;
+			std::string name;
+			Color ambient;
+			Color diffuse;
+			Color emissive;
+			Color specular;
+			Color reflection;
+			float specularPower;
+			float shininess;
+			float reflectionFactor;
+			float transperencyFactor;
+			std::string diffuseMapName;
+			std::string emissiveMapName;
+			std::string normalMapName;
+			std::string specularMapName;
 		};
 
 		struct Node
@@ -64,30 +64,23 @@ namespace GameEngine
 			std::string parentName;
 
 			NodeType type;
-			std::vector<CtrlPoint> mControlPoints;
-			std::vector<std::string> mMaterialNames;
+			std::vector<CtrlPoint> controlPoints;
+			std::vector<std::string> materialNames;
 			std::vector<unsigned long> vertIndices;
 			std::vector<int> vertexCountOfSubMesh;
 			std::vector<Vertex> meshes;
-			std::vector<std::shared_ptr<Node>> mChildNodes;
-			std::vector<Bone*> bones;
-			Matrix mMatrix;
+			std::vector<Node> childNodes;
+			std::vector<Bone> bones;
+			Matrix matrix;
 
-			bool useNormalMap;
-			bool useSkinnedMesh;
+			bool useNormalMap = false;
+			bool useSkinnedMesh = false;
 
-			Node(const std::string& name, const std::string& parent)
-			{
-				this->name = name;
-				parentName = parent;
-				useNormalMap = false;
-				useSkinnedMesh = false;
-			}
+			Node() = default;
+			Node(const std::string& name, const std::string& parent);
+			Node(Node&& node);
 
-			~Node() { Release(); }
-			void Release()
-			{
-			}
+			~Node() { }
 		};
 
 		class FbxLoader
@@ -101,10 +94,10 @@ namespace GameEngine
 		public:
 			float factor = 1;
 			FbxScene* scene = nullptr;
-			std::shared_ptr<Node> rootNode;
+			Node rootNode = { "root", "" };
 			std::string relativeFolder;
-			unordered_map<std::string, std::shared_ptr<FMaterial>> materials;
-			unordered_map<std::string, std::shared_ptr<AnimClip>> animationClips;
+			unordered_map<std::string, FMaterial> materials;
+			unordered_map<std::string, AnimClip*> animationClips;
 			bool useNormalMap = false;
 			AxisMode axismode = FbxLoader::eOpenGL;
 
@@ -117,9 +110,9 @@ namespace GameEngine
 			void LoadFromFile(const std::string& folder, const std::string& filename);
 
 			void Release();
-			int GetBoneIndexByName(const std::string& name);
+
 		private:
-			void ProcessMeshNode(FbxNode* node, const std::shared_ptr<Node>& parent);
+			void ProcessMeshNode(FbxNode* node, Node& parent);
 
 			void ProcessControlPoints(FbxNode* node, Node& meshNode);
 
@@ -129,19 +122,20 @@ namespace GameEngine
 			void BindMaterial(FbxNode* node, Node& meshNode);
 
 			void ReadTangent(FbxGeometryElementTangent* tangents, int ctrlIndex, int vertexCount, FbxVector4& vector);
-			void ReadBinormal(FbxGeometryElementBinormal* binormals, int ctrlIndex, int vertexCount, FbxVector4& vector);
+			
+			void ProcessMaterialAttribute(FbxSurfaceMaterial* mat, FMaterial& out);
 
-			void ProcessMaterialAttribute(FbxSurfaceMaterial* mat, std::shared_ptr<FMaterial>& out);
-
-			void ProcessMaterialTexture2D(FbxSurfaceMaterial* mat, const std::shared_ptr<FMaterial>& material);
-
-			void ProcessSkeletonHierarchy(FbxNode* node, Bone* parent);
+			void ProcessMaterialTexture2D(FbxSurfaceMaterial* mat, FMaterial& material);
 
 			void ComputeNodeMatrix(FbxNode* node, Node& meshNode, bool local = true);
 
 			void ProcessBoneAndAnimation(FbxNode* node, Node& meshNode);
+		
+			void ProcessAnimCurve(FbxAnimCurve* curve, AnimCurve* animCurve);
 
-			void ProcessAnimCurve(FbxAnimCurve* curve[], AnimTransformCurve* animCurve, AnimCurve::AnimCurveType type, FbxAMatrix& preRotation);
+			void ProcessAnimCurveS(FbxAnimCurve* curve[], AnimTransformCurve* animCurve);
+			void ProcessAnimCurveT(FbxAnimCurve* curve[], AnimTransformCurve* animCurve);
+			void ProcessAnimCurveR(FbxAnimCurve* curve[], AnimTransformCurve* animCurve, FbxAMatrix& preRotation);
 
 			void LoadAnimationClipData();
 		};

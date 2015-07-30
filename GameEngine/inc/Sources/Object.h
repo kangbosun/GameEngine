@@ -33,7 +33,7 @@ namespace GameEngine
 	public:
 		virtual Base* Clone()
 		{
-			return new Derived((Derived)*this);
+			return new Derived((*(Derived*)this));
 		}
 	};
 
@@ -51,7 +51,7 @@ namespace GameEngine
 				for(int i = 0; i < children.size(); ++i) {
 					auto& c = children[i];
 					if(c == child) {
-						std::move(c, children.back());
+						std::swap(c, children.back());
 						children.pop_back();
 						return true;
 					}
@@ -85,6 +85,9 @@ namespace GameEngine
 		{ 
 			return parent;
 		}
+
+		int GetChildCount() { return children.size(); }
+		Content* GetChild(int n) { if(n < children.size()) return children[n]; else return nullptr; }
 	};
 }
 

@@ -50,11 +50,11 @@ public:
 	shared_ptr<GameObject> talia;
 	shared_ptr<Light> light1;
 	void OnLoad()
-	{
+	{		
 		GameObject::Register(Camera::main->gameObject);
 		GameObject::Register(Camera::ui->gameObject);
 
-		auto& g = GameObject::Instantiate("Grid");
+		auto g = GameObject::Instantiate("Grid");
 		g->AddComponent<Grid>();
 		GameObject::Register(g);
 
@@ -69,8 +69,8 @@ public:
 		//sphere->transform()->Translate(1, 0.5f, 0);
 
 		auto& plane = Resource::GetModel(L"plane");
-		plane->transform()->scale = Vector3(200, 1, 200);
-		plane->transform()->Translate(0.0f, -0.01f, 0.0f);
+		plane->transform.scale = Vector3(200, 1, 200);
+		plane->transform.Translate(0.0f, -0.01f, 0.0f);
 		GameObject::Register(plane);
 
 

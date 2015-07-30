@@ -25,9 +25,9 @@ namespace GameEngine
 			return getter();
 		}
 
-		T* operator->()
+		T operator->()
 		{
-			return &getter();
+			return getter();
 		}
 
 		readonly(std::function<T()> _getter)

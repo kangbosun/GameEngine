@@ -459,14 +459,7 @@ namespace GameEngine
 			return radians * PIUNDER180;
 		}
 
-		//
-		Bone::~Bone()
-		{
-			for(auto& bone : children)
-				delete bone;
-		}
 
-		//
 		Keyframe* AnimCurve::operator[](int n)
 		{
 			return keyframes[min(length, n)];

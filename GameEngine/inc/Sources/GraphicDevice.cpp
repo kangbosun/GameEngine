@@ -3,6 +3,7 @@
 #include "DXUtil.h"
 #include "GlobalSetting.h"
 #include "Texture2D.h"
+#include "Mesh.h"
 
 namespace GameEngine
 {
@@ -254,6 +255,17 @@ namespace GameEngine
 			context->OMSetBlendState(blendState.p, blendFactor, 0xffffffff);
 		else
 			context->OMSetBlendState(disableBlendState.p, blendFactor, 0xffffffff);
+	}
+
+	void GraphicDevice::SetMeshBuffer(const std::shared_ptr<Mesh>& mesh)
+	{
+		if(context && mesh && mesh->IsValid()) {
+			auto& vertexBuffer = mesh->vertexBuffer;
+			auto& indexBuffer = mesh->indexBuffer;
+			context->IASetVertexBuffers(0, 1, (&vertexBuffer.p), &mesh->stride, &mesh->offset);
+			context->IASetIndexBuffer(indexBuffer.p, DXGI_FORMAT_R32_UINT, 0);
+			context->IASetPrimitiveTopology(mesh->primitiveType);
+		}
 	}
 
 	void GraphicDevice::SetBackBufferRenderTarget()

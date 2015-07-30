@@ -29,7 +29,7 @@ namespace GameEngine
 		static std::unordered_map<std::wstring, std::shared_ptr<Shader>> shaders;
 		static std::unordered_map<std::wstring, std::shared_ptr<Texture2D>> Texture2Ds;
 		static std::unordered_map<std::wstring, std::shared_ptr<Font>> fonts;
-		static std::unordered_map<std::wstring, std::shared_ptr<GameObject>> models;
+		static std::unordered_map<std::wstring, GameObject*> models;
 		static std::unordered_map<std::wstring, std::shared_ptr<AudioMusic>> musics;
 		static std::unordered_map<std::wstring, std::shared_ptr<AudioSFX>> soundEffects;
 		static std::unordered_map<std::string, std::shared_ptr<Material>> materials;
@@ -49,7 +49,7 @@ namespace GameEngine
 		static std::shared_ptr<Font> GetFont(const std::wstring& fontname);
 		static std::shared_ptr<Shader> GetShader(const std::wstring& shaderName);
 		static std::shared_ptr<Texture2D> GetTexture2D(const std::wstring& Texture2DName);
-		static std::shared_ptr<GameObject> GetModel(const std::wstring& modelName);
+		static GameObject* GetModel(const std::wstring& modelName);
 		static std::shared_ptr<AudioMusic> GetMusic(const std::wstring& musicName);
 		static std::shared_ptr<AudioSFX> GetSFX(const std::wstring& sfxName);
 		static std::shared_ptr<Material> GetMaterial(const std::string& materialName);
@@ -64,7 +64,7 @@ namespace GameEngine
 		static void RemoveAll();
 
 	private:
-		static void FbxToObject(const std::wstring& modelName, const std::shared_ptr<GameObject>& object, const std::shared_ptr<FbxLoader::Node>& meshNode, FbxLoader::FbxLoader& loader);
+		static void FbxToObject(const std::wstring& modelName, GameObject* object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader);
 	};
 }
 

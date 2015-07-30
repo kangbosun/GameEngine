@@ -6,16 +6,39 @@ namespace GameEngine
 {
 	namespace FbxLoader
 	{
-		using std::make_shared;
+		using namespace std;
+
+		Node::Node(const std::string& name, const std::string& parent)
+		{
+			this->name = name;
+			parentName = parent;
+		}
+
+		Node::Node(Node&& node)
+		{
+			name = node.name;
+			parentName = node.parentName;
+			type = node.type;
+			controlPoints.swap(node.controlPoints);
+			materialNames.swap(node.materialNames);
+			vertIndices.swap(node.vertIndices);
+			vertexCountOfSubMesh.swap(node.vertexCountOfSubMesh);
+			meshes.swap(node.meshes);
+			childNodes.swap(node.childNodes);
+			bones.swap(node.bones);
+			matrix = node.matrix;
+			useNormalMap = node.useNormalMap;
+			useSkinnedMesh = node.useSkinnedMesh;
+		}
 
 		FbxLoader::~FbxLoader()
 		{
-			scene->Clear();
+			Release();
 		}
 
 		void FbxLoader::Release()
 		{
-			materials.clear();
+			scene->Clear();
 		}
 
 		FbxLoader::FbxLoader(FbxLoader::AxisMode mode)
@@ -51,7 +74,6 @@ namespace GameEngine
 			FbxGeometryConverter geometryConverter(fbxManager);
 
 			geometryConverter.Triangulate(scene, false);
-			rootNode = make_shared<Node>(root->GetName(), "null");
 
 			factor = (float)scene->GetGlobalSettings().GetSystemUnit().GetConversionFactorTo(FbxSystemUnit::m);
 
@@ -62,7 +84,7 @@ namespace GameEngine
 			ProcessMeshNode(root, rootNode);
 		}
 
-		void FbxLoader::ProcessMeshNode(FbxNode* node, const std::shared_ptr<Node>& mnode)
+		void FbxLoader::ProcessMeshNode(FbxNode* node, Node& mnode)
 		{
 			if(!node)
 				return;
@@ -70,28 +92,29 @@ namespace GameEngine
 			if(node->GetNodeAttribute()) {
 				auto type = node->GetNodeAttribute()->GetAttributeType();
 				if(type == FbxNodeAttribute::eMesh) {
-					mnode->type = Node::eMesh;
-					ProcessControlPoints(node, *mnode.get());
+					mnode.type = Node::eMesh;
+					ProcessControlPoints(node, mnode);
 
-					ProcessBoneAndAnimation(node, *mnode);
+					ProcessBoneAndAnimation(node, mnode);
 
-					ProcessMesh(node, *mnode.get());
-					BindMaterial(node, *mnode.get());
+					ProcessMesh(node, mnode);
+					BindMaterial(node, mnode);
 				}
 				else if(type == FbxNodeAttribute::eSkeleton) {
-					mnode->type = Node::eBone;
+					mnode.type = Node::eBone;
 				}
 			}
 
-			ComputeNodeMatrix(node, *mnode.get(), true);
+			ComputeNodeMatrix(node, mnode, true);
 			const int count = node->GetChildCount();
-			mnode->mChildNodes.reserve(count);
+			mnode.childNodes.resize(count);
 
 			for(int i = 0; i < count; i++) {
 				auto child = node->GetChild(i);
-				auto childNode = make_shared<Node>(child->GetName(), mnode->name);
+				auto& childNode = mnode.childNodes[i];
+				childNode.name = child->GetName();
+				childNode.parentName = mnode.name;
 				ProcessMeshNode(node->GetChild(i), childNode);
-				mnode->mChildNodes.push_back(childNode);
 			}
 		}
 
@@ -102,11 +125,11 @@ namespace GameEngine
 				return;
 
 			const int ctrlPointCount = currMesh->GetControlPointsCount();
-			meshNode.mControlPoints.assign(ctrlPointCount, CtrlPoint());
+			meshNode.controlPoints.resize(ctrlPointCount);
 
 			for(int i = 0; i < ctrlPointCount; i++) {
 				FbxVector4 p = currMesh->GetControlPointAt(i) * factor;
-				auto& cp = meshNode.mControlPoints[i];
+				auto& cp = meshNode.controlPoints[i];
 				cp.position = { (float)p[0], (float)p[1], (float)p[2] };
 				if(axismode = AxisMode::eDirectX)
 					cp.position.x *= -1;
@@ -121,14 +144,11 @@ namespace GameEngine
 				return;
 
 			FbxLayerElementTangent* tangents = nullptr;
-			FbxLayerElementBinormal* binormals = nullptr;
 
 			if(useNormalMap) {
-				if(currMesh->GetElementTangentCount() < 1 ||
-				   currMesh->GetElementBinormalCount() < 1) {
-					currMesh->GenerateTangentsDataForAllUVSets(true);
+				if(currMesh->GetElementTangentCount() < 1) {
+					currMesh->GenerateTangentsDataForAllUVSets();
 					tangents = currMesh->GetElementTangent();
-					binormals = currMesh->GetElementBinormal();
 				}
 			}
 
@@ -139,30 +159,25 @@ namespace GameEngine
 
 			for(int i = 0; i < polygonCount; i++) {
 				const int polySize = currMesh->GetPolygonSize(i);
-
 				int nMaterials = node->GetMaterialCount();
 				auto elementMaterial = currMesh->GetElementMaterial();
 				int mi = 0;
 				if(elementMaterial)
 					mi = currMesh->GetElementMaterial()->GetIndexArray()[i];
 
-				for(int j = polySize - 1; j >= 0; j--) {
+				for(int j = polySize - 1; j >= 0; --j) {
 					int ctrlIndex = currMesh->GetPolygonVertex(i, j);
 
-					auto& currCtrlPoint = meshNode.mControlPoints[ctrlIndex];
+					auto& currCtrlPoint = meshNode.controlPoints[ctrlIndex];
 					FbxVector4 v4;
 
 					auto& pos = currCtrlPoint.position;
 					currMesh->GetPolygonVertexNormal(i, j, v4);
 					Vector3 normal = { (float)v4[0], (float)v4[1], (float)v4[2] };
 					Vector3 tangent = { 0, 0, 0 };
-					//Vector3 binormal = { 0, 0, 0 };
 					if(useNormalMap) {
 						ReadTangent(tangents, ctrlIndex, vertCounter, v4);
 						tangent = { (float)v4[0], (float)v4[1], (float)v4[2] };
-
-						//ReadBinormal(binormals, ctrlIndex, vertCounter, v4);
-						//binormal = { (float)v4[0], (float)v4[1], (float)v4[2] };
 					}
 
 					Vector2 uv;
@@ -178,23 +193,26 @@ namespace GameEngine
 
 					if(axismode == AxisMode::eDirectX) {
 						normal.x *= -1;
-						//binormal.x *= -1;
 						tangent.x *= -1;
 						uv.y = 1 - uv.y;
 						uv.x = uv.x;
 					}
-					meshNode.useSkinnedMesh = true;
-					int blendCount = (int)min(currCtrlPoint.blendWeigths.size(), 4);
-					if(currCtrlPoint.blendWeigths.size() > 4)
-						sort(currCtrlPoint.blendWeigths.begin(), currCtrlPoint.blendWeigths.end());
 
 					Vector4 weights = { 0, 0, 0, 0 };
 					Byte4 indices = { 0, 0, 0, 0 };
-					for(int i = 0; i < blendCount; i++) {
-						weights[i] = currCtrlPoint.blendWeigths[i].weight;
-						int index = currCtrlPoint.blendWeigths[i].boneIndex;
-						if(index == -1) index = 0;
-						indices.m[i] = index;
+
+					if(meshNode.bones.size() > 0) {
+						meshNode.useSkinnedMesh = true;
+						int blendCount = (int)min(currCtrlPoint.blendWeigths.size(), 4);
+						if(currCtrlPoint.blendWeigths.size() > 4)
+							sort(currCtrlPoint.blendWeigths.begin(), currCtrlPoint.blendWeigths.end());
+
+						for(int i = 0; i < blendCount; i++) {
+							weights[i] = currCtrlPoint.blendWeigths[i].weight;
+							int index = currCtrlPoint.blendWeigths[i].boneIndex;
+							if(index == -1) index = 0;
+							indices.m[i] = index;
+						}
 					}
 					Vertex temp = { pos, uv, normal, tangent, indices, weights };
 					subMeshes[mi].push_back(temp);
@@ -221,17 +239,18 @@ namespace GameEngine
 		void FbxLoader::BindMaterial(FbxNode* node, Node& meshNode)
 		{
 			const int materialCount = node->GetMaterialCount();
+			meshNode.materialNames.resize(materialCount);
 
 			for(int i = 0; i < materialCount; i++) {
 				FbxSurfaceMaterial* surfaceMaterial = node->GetMaterial(i);
 				auto name = surfaceMaterial->GetName();
-				meshNode.mMaterialNames.push_back(name);
-				if(materials[name]->mNormalMapName != "")
+				meshNode.materialNames[i] = name;
+				if(materials[name].normalMapName != "")
 					meshNode.useNormalMap = true;
 			}
 		}
 
-		void FbxLoader::ReadTangent(FbxLayerElementTangent* tangents, int ctrlIndex, int vertexCount, __out FbxVector4& vector)
+		void FbxLoader::ReadTangent(FbxLayerElementTangent* tangents, int ctrlIndex, int vertexCount, FbxVector4& vector)
 		{
 			auto mappingMode = tangents->GetMappingMode();
 			auto refMode = tangents->GetReferenceMode();
@@ -272,119 +291,76 @@ namespace GameEngine
 			}
 		}
 
-		void FbxLoader::ReadBinormal(FbxLayerElementBinormal* binormals, int ctrlIndex, int vertexCount, __out FbxVector4& vector)
-		{
-			auto mappingMode = binormals->GetMappingMode();
-			auto refMode = binormals->GetReferenceMode();
-
-			switch(mappingMode) {
-				case FbxGeometryElement::eByControlPoint:
-					switch(refMode) {
-						case FbxGeometryElement::eDirect:
-						{
-							vector = binormals->GetDirectArray().GetAt(ctrlIndex);
-							break;
-						}
-						case FbxGeometryElement::eIndexToDirect:
-						{
-							int index = binormals->GetIndexArray().GetAt(ctrlIndex);
-							vector = binormals->GetDirectArray().GetAt(index);
-							break;
-						}
-						default:
-							break;
-					}
-				case FbxGeometryElement::eByPolygonVertex:
-					switch(refMode) {
-						case FbxGeometryElement::eDirect:
-						{
-							vector = binormals->GetDirectArray().GetAt(vertexCount);
-							break;
-						}
-						case FbxGeometryElement::eIndexToDirect:
-						{
-							int index = binormals->GetIndexArray().GetAt(vertexCount);
-							vector = binormals->GetDirectArray().GetAt(index);
-							break;
-						}
-						default:
-							break;
-					}
-			}
-		}
-
 		void FbxLoader::ProcessMaterial(FbxScene* scene)
 		{
 			const int materialCount = scene->GetMaterialCount();
 			for(int i = 0; i < materialCount; i++) {
 				FbxSurfaceMaterial* surfaceMaterial = scene->GetMaterial(i);
-				auto material = make_shared<FMaterial>();
+				string name = surfaceMaterial->GetName();
+				auto& material = materials.insert({ name, FMaterial() }).first->second;
 				ProcessMaterialAttribute(surfaceMaterial, material);
 				ProcessMaterialTexture2D(surfaceMaterial, material);
-				material->mName = surfaceMaterial->GetName();
-				materials[material->mName] = material;
 			}
 		}
 
-		void FbxLoader::ProcessMaterialAttribute(FbxSurfaceMaterial* mat, __out std::shared_ptr<FMaterial>& material)
+		void FbxLoader::ProcessMaterialAttribute(FbxSurfaceMaterial* mat, FMaterial& material)
 		{
 			FbxDouble3 d3;
 			FbxDouble d1;
 
-			std::string name = mat->GetName();
-			material->type = FMaterial::MT_INVALID;
+			material.type = FMaterial::MT_INVALID;
 			//material->mName = mat->GetName();
 
-			std::string className = mat->GetClassId().GetName();
+			//legacy material type
+			//std::string className = mat->GetClassId().GetName();
+			//if(className == "FbxSurfaceLambert") {
+			//	material->type = FMaterial::MT_LAMBERT;
 
-			if(className == "FbxSurfaceLambert") {
-				material->type = FMaterial::MT_LAMBERT;
+			//	d3 = reinterpret_cast<FbxSurfaceLambert*>(mat)->Ambient;
+			//	material->mAmbient = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d3 = reinterpret_cast<FbxSurfaceLambert*>(mat)->Ambient;
-				material->mAmbient = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d3 = reinterpret_cast<FbxSurfaceLambert*>(mat)->Diffuse;
+			//	material->mDiffuse = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d3 = reinterpret_cast<FbxSurfaceLambert*>(mat)->Diffuse;
-				material->mDiffuse = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d3 = reinterpret_cast<FbxSurfaceLambert*>(mat)->Emissive;
+			//	material->mEmissive = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d3 = reinterpret_cast<FbxSurfaceLambert*>(mat)->Emissive;
-				material->mEmissive = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d1 = reinterpret_cast<FbxSurfaceLambert*>(mat)->TransparencyFactor;
+			//	material->mTransperencyFactor = (float)d1;
+			//}
+			//// phong model
+			//else if(className == "FbxSurfacePhong") {
+			//	material->type = FMaterial::MT_PHONG;
+			//	d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Ambient;
+			//	material->mAmbient = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d1 = reinterpret_cast<FbxSurfaceLambert*>(mat)->TransparencyFactor;
-				material->mTransperencyFactor = (float)d1;
-			}
-			// phong model
-			else if(className == "FbxSurfacePhong") {
-				material->type = FMaterial::MT_PHONG;
-				d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Ambient;
-				material->mAmbient = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Diffuse;
+			//	material->mDiffuse = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Diffuse;
-				material->mDiffuse = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Emissive;
+			//	material->mEmissive = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Emissive;
-				material->mEmissive = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->TransparencyFactor;
+			//	material->mTransperencyFactor = (float)d1;
 
-				d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->TransparencyFactor;
-				material->mTransperencyFactor = (float)d1;
+			//	d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Specular;
+			//	material->mSpecular = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Specular;
-				material->mSpecular = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Reflection;
+			//	material->mReflection = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
 
-				d3 = reinterpret_cast<FbxSurfacePhong*>(mat)->Reflection;
-				material->mReflection = Color((float)d3[0], (float)d3[1], (float)d3[2], 1);
+			//	d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->Shininess;
+			//	material->mShininess = (float)d1;
 
-				d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->Shininess;
-				material->mShininess = (float)d1;
+			//	d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->ReflectionFactor;
+			//	material->mReflectionFactor = (float)d1;
 
-				d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->ReflectionFactor;
-				material->mReflectionFactor = (float)d1;
-
-				d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->SpecularFactor;
-				material->mSpecularPower = (float)d1;
-			}
+			//	d1 = reinterpret_cast<FbxSurfacePhong*>(mat)->SpecularFactor;
+			//	material->mSpecularPower = (float)d1;
+			//}
 		}
 
-		void FbxLoader::ProcessMaterialTexture2D(FbxSurfaceMaterial* mat, const std::shared_ptr<FMaterial>& material)
+		void FbxLoader::FbxLoader::ProcessMaterialTexture2D(FbxSurfaceMaterial* mat, FMaterial& material)
 		{
 			int Texture2DIndex = 0;
 			FbxProperty prop;
@@ -401,11 +377,11 @@ namespace GameEngine
 							FbxFileTexture* fileTexture = FbxCast<FbxFileTexture>(texture);
 							if(fileTexture) {
 								if(textureType == "DiffuseColor")
-									material->mDiffuseMapName = fileTexture->GetRelativeFileName();
+									material.diffuseMapName = fileTexture->GetRelativeFileName();
 								else if(textureType == "SpecularColor")
-									material->mSpecularMapName = fileTexture->GetRelativeFileName();
+									material.specularMapName = fileTexture->GetRelativeFileName();
 								else if(textureType == "NormalMap") {
-									material->mNormalMapName = fileTexture->GetRelativeFileName();
+									material.normalMapName = fileTexture->GetRelativeFileName();
 									useNormalMap = true;
 								}
 							}
@@ -421,11 +397,11 @@ namespace GameEngine
 							std::string Texture2DType = prop.GetNameAsCStr();
 							if(fileTexture) {
 								if(Texture2DType == "DiffuseColor")
-									material->mDiffuseMapName = fileTexture->GetRelativeFileName();
+									material.diffuseMapName = fileTexture->GetRelativeFileName();
 								else if(Texture2DType == "SpecularColor")
-									material->mSpecularMapName = fileTexture->GetRelativeFileName();
+									material.specularMapName = fileTexture->GetRelativeFileName();
 								else if(Texture2DType == "NormalMap") {
-									material->mNormalMapName = fileTexture->GetRelativeFileName();
+									material.normalMapName = fileTexture->GetRelativeFileName();
 									useNormalMap = true;
 								}
 							}
@@ -434,44 +410,10 @@ namespace GameEngine
 				}
 			}
 
-			if(material->mDiffuseMapName != "") {
-				std::string n = FbxPathUtils::GetFileName(material->mDiffuseMapName.c_str(), false).Buffer();
+			if(material.diffuseMapName != "") {
+				std::string n = FbxPathUtils::GetFileName(material.diffuseMapName.c_str(), false).Buffer();
 				mat->SetName(n.c_str());
 			}
-		}
-
-		void FbxLoader::ProcessSkeletonHierarchy(FbxNode* node, Bone* parent)
-		{
-			//if(node == nullptr) return;
-			//auto attrib = node->GetNodeAttribute();
-			//if(attrib) {
-			//	auto type = attrib->GetAttributeType();
-			//	std::string name = node->GetName();
-			//	if(type == FbxNodeAttribute::eSkeleton) {
-			//		Bone* bone = new Bone();
-			//		bone->name = name;
-			//		//bone->index = this->boneCounter++;
-
-			//
-			//		if(parent) {
-			//			//bone->parentName = parent->name;
-			//			parent->children.push_back(bone);
-			//		}
-			//		else {
-			//			rootBones[name] = bone;
-			//		}
-
-			//		const size_t childCount = node->GetChildCount();
-			//		for(size_t i = 0; i < childCount; i++) {
-			//			ProcessSkeletonHierarchy(node->GetChild((int)i), bone);
-			//		}
-			//		return;
-			//	}
-			//}
-			//const size_t childCount = node->GetChildCount();
-			//for(size_t i = 0; i < childCount; i++) {
-			//	ProcessSkeletonHierarchy(node->GetChild((int)i), parent);
-			//}
 		}
 
 		void FbxLoader::ProcessBoneAndAnimation(FbxNode* node, Node& meshNode)
@@ -500,7 +442,7 @@ namespace GameEngine
 			for(auto& clip : animationClips)
 				clip.second->transformCurves.assign(nClusters, nullptr);
 
-			meshNode.bones.assign(nClusters, nullptr);
+			meshNode.bones.resize(nClusters);
 			const int animCount = scene->GetSrcObjectCount<FbxAnimStack>();
 
 			float time = 0;
@@ -516,9 +458,9 @@ namespace GameEngine
 				globalBindposeInverse.SetT(globalBindposeInverse.GetT() * factor);
 
 				FbxNode* boneNode = cluster->GetLink();
-				Bone* bone = new Bone();
-				bone->name = boneName;
-				bone->index = ci;
+				Bone& bone = meshNode.bones[ci];
+				bone.name = boneName;
+				bone.index = ci;
 
 				if(axismode == AxisMode::eDirectX) {
 					auto& bT = globalBindposeInverse.GetT();
@@ -528,8 +470,7 @@ namespace GameEngine
 					globalBindposeInverse.SetT(bT);
 					globalBindposeInverse.SetR(bR);
 				}
-				ConvertMatrix(bone->bindPoseInverse, globalBindposeInverse);
-				meshNode.bones[ci] = bone;
+				ConvertMatrix(bone.bindPoseInverse, globalBindposeInverse);
 
 				const int nCtrl = cluster->GetControlPointIndicesCount();
 
@@ -537,7 +478,7 @@ namespace GameEngine
 					BlendWeightPair pair;
 					pair.boneIndex = ci;
 					pair.weight = (float)cluster->GetControlPointWeights()[ctrlIndex];
-					meshNode.mControlPoints[cluster->GetControlPointIndices()[ctrlIndex]].blendWeigths.push_back(pair);
+					meshNode.controlPoints[cluster->GetControlPointIndices()[ctrlIndex]].blendWeigths.push_back(pair);
 				}
 
 				FbxAMatrix preRot;
@@ -575,11 +516,13 @@ namespace GameEngine
 
 					transformCurve->boneName = boneName;
 
+					// set & apply filter
 					FbxAnimCurveFilterKeyReducer keyReducer;
-					keyReducer.SetKeySync(true);
+					keyReducer.SetKeySync(false);
 					keyReducer.Apply(fbxTCurves, 3);
-					keyReducer.Apply(fbxRCurves, 3);
 					keyReducer.Apply(fbxSCurves, 3);
+					keyReducer.SetKeySync(true);
+					keyReducer.Apply(fbxRCurves, 3);
 
 					FbxAnimCurveFilterUnroll unroll;
 					unroll.SetForceAutoTangents(true);
@@ -593,10 +536,11 @@ namespace GameEngine
 					tss.Apply(fbxRCurves, 3);
 					tss.Apply(fbxSCurves, 3);
 
+					// process curves
 					if(fbxTCurves[0]->KeyGetCount() > 0) {
-						ProcessAnimCurve(fbxTCurves, transformCurve, AnimCurve::eTranslation, preRot);
-						ProcessAnimCurve(fbxRCurves, transformCurve, AnimCurve::eRotation, preRot);
-						ProcessAnimCurve(fbxSCurves, transformCurve, AnimCurve::eScaling, preRot);
+						ProcessAnimCurveT(fbxTCurves, transformCurve);
+						ProcessAnimCurveS(fbxSCurves, transformCurve);
+						ProcessAnimCurveR(fbxRCurves, transformCurve, preRot);
 					}
 					clip->transformCurves[ci] = transformCurve;
 				} // animations loop
@@ -618,25 +562,73 @@ namespace GameEngine
 			}
 		}
 
-		void FbxLoader::ProcessAnimCurve(FbxAnimCurve* curve[], AnimTransformCurve* transformCurve, AnimCurve::AnimCurveType type, FbxAMatrix& preRotation)
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurve(FbxAnimCurve * curve, AnimCurve * animCurve)
 		{
-			if(!curve) return;
+			if(!curve || !animCurve) return;
 
-			const int nKeys = curve[0]->KeyGetCount();
-			AnimCurve3* curve3;
+			int nkeys = curve->KeyGetCount();
+			animCurve->keyframes.resize(nkeys);
 
-			if(type == AnimCurve::eTranslation)
-				curve3 = transformCurve->translation;
-			else if(type == AnimCurve::eRotation)
-				curve3 = transformCurve->rotation;
-			else if(type == AnimCurve::eScaling)
-				curve3 = transformCurve->scaling;
-			else
+			for(int i = 0; i < nkeys; ++i) {
+				curve->KeySetTangentMode(i, FbxAnimCurveDef::eTangentAuto);
+				Keyframe* key = new Keyframe();
+				key->value = curve->KeyGetValue(i);
+				key->leftTangent = curve->KeyGetLeftAuto(i);
+				key->rightTangent = curve->KeyGetRightAuto(i);
+				key->time = (float)curve->KeyGetTime(i).GetSecondDouble();
+				animCurve->keyframes[i] = key;
+			}
+		}
+
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveS(FbxAnimCurve * curve[], AnimTransformCurve * animCurve)
+		{
+			if(!curve || !animCurve) return;
+
+			auto& curve3 = animCurve->scaling;
+			ProcessAnimCurve(curve[0], curve3->curves[0]);
+			ProcessAnimCurve(curve[1], curve3->curves[1]);
+			ProcessAnimCurve(curve[2], curve3->curves[2]);
+		}
+
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveT(FbxAnimCurve * curve[], AnimTransformCurve * animCurve)
+		{
+			if(!curve || !animCurve) return;
+
+			auto& curve3 = animCurve->translation;
+			ProcessAnimCurve(curve[0], curve3->curves[0]);
+			ProcessAnimCurve(curve[1], curve3->curves[1]);
+			ProcessAnimCurve(curve[2], curve3->curves[2]);
+
+			if(axismode == eDirectX) {
+				auto& tcurve = curve3->curves[0];
+				for(int i = 0; i < tcurve->keyframes.size(); ++i) {
+					auto key = tcurve->keyframes[i];
+					key->value *= -1;
+					key->leftTangent *= -1;
+					key->rightTangent *= -1;
+				}
+			}
+		}
+
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveR(FbxAnimCurve * curve[], AnimTransformCurve * animCurve, FbxAMatrix & preRotation)
+		{
+			if(!curve || !animCurve) return;
+
+			auto& curve3 = animCurve->rotation;
+
+			int xKeys = curve[0]->KeyGetCount();
+			int yKeys = curve[1]->KeyGetCount();
+			int zKeys = curve[2]->KeyGetCount();
+
+			// check key sync
+			if(xKeys != yKeys || xKeys != zKeys)
 				return;
 
-			(*curve3)[0]->keyframes.assign(nKeys, nullptr);
-			(*curve3)[1]->keyframes.assign(nKeys, nullptr);
-			(*curve3)[2]->keyframes.assign(nKeys, nullptr);
+			int nKeys = xKeys;
+
+			curve3->curves[0]->keyframes.resize(nKeys);
+			curve3->curves[1]->keyframes.resize(nKeys);
+			curve3->curves[2]->keyframes.resize(nKeys);
 
 			for(int ki = 0; ki < nKeys; ++ki) {
 				auto xkey = new Keyframe();
@@ -657,26 +649,21 @@ namespace GameEngine
 				auto zlt = curve[2]->KeyGetLeftAuto(ki);
 				auto zrt = curve[2]->KeyGetRightAuto(ki);
 
-				if(type == AnimCurve::eTranslation) {
-					if(axismode == AxisMode::eDirectX) {
-						xvalue = -xvalue;
-						xlt = -xlt; xrt = -xrt;
-					}
-					xvalue *= factor; yvalue *= factor; zvalue *= factor;
+				FbxAMatrix temp;
+				temp.SetR(FbxVector4(xvalue, yvalue, zvalue));
+				auto R = (preRotation* temp).GetR();
+				xvalue = (float)R[0]; yvalue = (float)R[1]; zvalue = (float)R[2];
+				if(axismode == AxisMode::eDirectX) {
+					yvalue = -yvalue; zvalue = -zvalue;
+					ylt = -ylt; yrt = -yrt; zlt = -zlt; zrt = -zrt;
 				}
-				if(type == AnimCurve::eRotation) {
-					FbxAMatrix temp;
-					temp.SetR(FbxVector4(xvalue, yvalue, zvalue));
-					auto R = (preRotation* temp).GetR();
-					xvalue = (float)R[0]; yvalue = (float)R[1]; zvalue = (float)R[2];
-					if(axismode == AxisMode::eDirectX) {
-						yvalue = -yvalue; zvalue = -zvalue;
-						ylt = -ylt; yrt = -yrt; zlt = -zlt; zrt = -zrt;
-					}
-				}
+
 				float t = (float)curve[0]->KeyGetTime(ki).GetSecondDouble();
+
 				xkey->time = t; ykey->time = t; zkey->time = t;
+
 				xkey->value = xvalue; ykey->value = yvalue; zkey->value = zvalue;
+
 				xkey->leftTangent = xlt; xkey->rightTangent = xrt;
 				ykey->leftTangent = ylt; ykey->rightTangent = yrt;
 				zkey->leftTangent = zlt; zkey->rightTangent = zrt;
@@ -719,21 +706,11 @@ namespace GameEngine
 				R = global.GetR();
 			}
 
-			meshNode.mMatrix = Matrix(
+			meshNode.matrix = Matrix(
 				(float)global[0][0], (float)global[0][1], (float)global[0][2], (float)global[0][3],
 				(float)global[1][0], (float)global[1][1], (float)global[1][2], (float)global[1][3],
 				(float)global[2][0], (float)global[2][1], (float)global[2][2], (float)global[2][3],
 				(float)global[3][0], (float)global[3][1], (float)global[3][2], (float)global[3][3]);
-		}
-
-		int FbxLoader::GetBoneIndexByName(const std::string& name)
-		{
-			//const size_t BoneCount = Bones.size();
-			//for(int i = 0; i < BoneCount; i++) {
-			//	if(Bones[i]->name == name)
-			//		return i;
-			//}
-			return -1;
 		}
 
 		void FbxLoader::LoadAnimationClipData()
@@ -756,7 +733,7 @@ namespace GameEngine
 				int stopFrame = (int)stop.GetFrameCount(mode);
 				int animLength = stopFrame - startFrame + 1;
 
-				std::shared_ptr<AnimClip> clip = make_shared<AnimClip>();
+				AnimClip* clip = new AnimClip();
 				clip->name = animStackName;
 				animationClips[clip->name] = clip;
 			}

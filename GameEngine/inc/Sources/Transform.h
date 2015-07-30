@@ -13,9 +13,11 @@ namespace GameEngine
 
 	typedef Align Pivot;
 
-	class GAMEENGINE_API Transform : public Node<Transform>
+	class GAMEENGINE_API Transform : public Object
 	{
 		friend class GameObject;
+	public :
+		Node<Transform> node;
 	public:
 		GameObject* gameObject;
 		//local

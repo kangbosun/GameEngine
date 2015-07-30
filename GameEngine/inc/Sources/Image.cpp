@@ -29,7 +29,7 @@ namespace GameEngine
 		vertices[3].tex = Math::Vector2(0, 1);
 
 		std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
-		mesh->Initialize(&vertices[0], &indices[0], 4, 6, 0, 0, GraphicDevice::Instance()->device);
+		mesh->Initialize(vertices, indices, { vertices.size });
 		renderer()->mesh = mesh;
 	}
 

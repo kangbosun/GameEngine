@@ -37,7 +37,6 @@ namespace GameEngine
 	{
 		auto go = new GameObject();
 		go->name = name;
-		go->AddComponent<Transform>();
 		return go;
 	}
 
@@ -79,8 +78,9 @@ namespace GameEngine
 		if(this->name == name)
 			return this;
 		GameObject* result = nullptr;
-		for(auto child : transform.children) {
-			result = FindGameObjectInChildren(name);
+		for(int i = 0; i < transform.node.GetChildCount(); ++i) {
+			auto child = transform.node.GetChild(i);
+			result = child->gameObject->FindGameObjectInChildren(name);
 			if(result) break;
 		}
 		return result;
@@ -90,9 +90,9 @@ namespace GameEngine
 	{
 		if(this->name == name)
 			result.push_back(this);
-		GameObject* ptr = nullptr;
-		for(auto child : transform.children) {
-			FindGameObjectsInChildren(name, result);
+		for(int i = 0; i < transform.node.GetChildCount(); ++i) {
+			auto child = transform.node.GetChild(i);
+			child->gameObject->FindGameObjectsInChildren(name, result);
 		}
 	}
 
@@ -100,9 +100,9 @@ namespace GameEngine
 	{
 		auto node = Instantiate(this);
 
-		for(auto child : transform.children) {
-			auto pc = child->gameObject->CopyRecursive(&node->transform);
-			node->transform.AddChild(&pc->transform);
+		for(int i = 0; i < transform.node.GetChildCount(); ++i) {
+			auto pc = transform.node.GetChild(i)->gameObject->CopyRecursive(&node->transform);
+			node->transform.node.AddChild(&pc->transform);
 		}
 		return node;
 	}
@@ -116,7 +116,7 @@ namespace GameEngine
 	{
 		if(_com) {
 			components.push_back(_com);
-			_com->gameObject = this;
+			_com->_gameObject = this;
 			if(isRegistered)
 				Component::Register(_com);
 		}

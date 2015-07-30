@@ -17,10 +17,10 @@ namespace GameEngine
 	protected :
 		bool registered = false;
 		bool destroy = false;
-		GameObject* gameObject;
+		GameObject* _gameObject = nullptr;
 
 	public:
-		
+		readonly<GameObject*> gameObject{ prop_get { return _gameObject; } };
 		Transform* const transform();
 		const std::shared_ptr<Renderer> renderer();
 		bool enabled = true;

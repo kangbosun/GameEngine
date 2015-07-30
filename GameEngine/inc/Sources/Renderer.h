@@ -51,12 +51,12 @@ namespace GameEngine
 	public:
 		//for skinning
 		std::string rootBoneName = "";
-		std::vector<std::shared_ptr<Transform>> bones;
+		std::vector<Transform*> bones;
 
 		std::vector<Math::Matrix> matrices;
 
 	protected:
-		void SetBone(const std::shared_ptr<GameObject>& rootBone);
+		void SetBone(Transform* rootBone);
 		virtual void Render(const CameraData& cam, const std::shared_ptr<Shader>& shader);
 	public:
 		virtual void Start();
