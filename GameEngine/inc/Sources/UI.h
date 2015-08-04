@@ -24,7 +24,7 @@ namespace GameEngine
 	{
 	public:
 		UIRenderMode renderMode = UIRenderMode::eOverlay;
-		Math::Color color = Math::Color::White;
+		Color color = Color::White;
 		bool isBillboard = true;
 
 		std::shared_ptr<Camera> renderCamera = Camera::ui;
@@ -36,13 +36,13 @@ namespace GameEngine
 	public:
 		UIBase() = default;
 		UIBase(const UIBase& ui) { color = ui.color; isBillboard = ui.isBillboard; renderCamera = ui.renderCamera; }
-		void SetColor(const Math::Color& color);
+		void SetColor(const Color& color);
 	};
 	//---------------------------------------------------------------------
 
 	class Font;
 
-	class GAMEENGINE_API Text final : public ClonableObject<UIBase, Text>
+	class GAMEENGINE_API Text final : public Cloneable<UIBase, Text>
 	{
 	private:
 		struct TextLine
@@ -68,18 +68,18 @@ namespace GameEngine
 		void SetFontSize(int size);
 		void SetFont(const std::shared_ptr<Font>& Font);
 		void Update();
-		static std::shared_ptr<Text> CreateText(const Math::Vector3& pos, const Math::Vector2& size, std::wstring str, const std::wstring& fontName);
+		static std::shared_ptr<Text> CreateText(const Vector3& pos, const Vector2& size, std::wstring str, const std::string& fontName);
 
 		std::wstring& GetText() { return text; }
 	};
 
-	class GAMEENGINE_API Image : public ClonableObject<UIBase, Image>
+	class GAMEENGINE_API Image : public Cloneable<UIBase, Image>
 	{
 	public:
 		void SetSize(int _width, int _height);
 		void SetTexture(const std::shared_ptr<Texture2D>& texture);
 		const std::shared_ptr<Texture2D>& GetTexture();
-		static std::shared_ptr<Image> CreateImage(const Math::Vector3& pos, const Math::Vector2& size, const std::shared_ptr<Texture2D>& texture = nullptr);
+		static std::shared_ptr<Image> CreateImage(const Vector3& pos, const Vector2& size);
 	};
 
 	struct UIStateParam
@@ -88,7 +88,7 @@ namespace GameEngine
 		bool lbuttonDown;
 	};
 
-	class GAMEENGINE_API SelectableUI : public ClonableObject<UIBase, SelectableUI>
+	class GAMEENGINE_API SelectableUI : public Cloneable<UIBase, SelectableUI>
 	{
 	public:
 		typedef std::function<void()> callback;
@@ -107,9 +107,9 @@ namespace GameEngine
 		callback onHoverExit;
 
 	public:
-		Math::Color colorUp = Math::Color(0.8f, 0.8f, 0.8f, 1);
-		Math::Color colorDown = Math::Color(0.5f, 0.5f, 0.5f, 1);
-		Math::Color colorHover = Math::Color(0.7f, 0.7f, 0.7f, 1);
+		Color colorUp = Color(0.8f, 0.8f, 0.8f, 1);
+		Color colorDown = Color(0.5f, 0.5f, 0.5f, 1);
+		Color colorHover = Color(0.7f, 0.7f, 0.7f, 1);
 
 		SelectableUI();
 		SelectableUI(const SelectableUI& o);
@@ -123,7 +123,7 @@ namespace GameEngine
 		void state_Hover(const UIStateParam& param);
 	};
 
-	class GAMEENGINE_API Button : public ClonableObject<SelectableUI, Button>
+	class GAMEENGINE_API Button : public Cloneable<SelectableUI, Button>
 	{
 	private:
 		std::shared_ptr<Image> _image;
@@ -134,12 +134,12 @@ namespace GameEngine
 		void SetText(const std::wstring& str);
 		const std::shared_ptr<Text>& GetText() { return _text; }
 		void SetSize(int width, int height);
-		static std::shared_ptr<Button> CreateButton(const Math::Vector3& pos, const Math::Vector2& size, const std::wstring& str);
+		static std::shared_ptr<Button> CreateButton(const Vector3& pos, const Vector2& size, const std::wstring& str);
 	};
 
 	bool operator <(const std::weak_ptr<UIBase>& lhs, const std::weak_ptr<UIBase>& rhs);
 
-	class GAMEENGINE_API UIInputManager : public ClonableObject<Component, UIInputManager>
+	class GAMEENGINE_API UIInputManager : public Cloneable<Component, UIInputManager>
 	{
 	public:
 		static std::shared_ptr<UIInputManager> GetInstance();
@@ -149,12 +149,12 @@ namespace GameEngine
 		static std::list<std::weak_ptr<SelectableUI>> registedUI;
 
 	public:
-		static Math::Vector2 ConvertMousePos(const Math::Vector2& pos);
+		static Vector2 ConvertMousePos(const Vector2& pos);
 		void Update();
 		void Register(const std::shared_ptr<SelectableUI>& ui);
 	};
 
-	class GAMEENGINE_API UISelector : public ClonableObject < Component, UISelector >
+	class GAMEENGINE_API UISelector : public Cloneable < Component, UISelector >
 	{
 	public:
 		void Start();

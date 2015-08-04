@@ -32,9 +32,9 @@ namespace GameEngine
 		virtual void Render(const CComPtr<ID3D11DeviceContext>& context, int n, int offset = 0) = 0;
 		virtual void SetVariable(const std::string& name, void* pData, size_t size) = 0;
 		virtual void SetShaderResource(const std::string& name, ID3D11ShaderResourceView* resource) = 0;
-		virtual void SetMatrix(const std::string& name, const Math::Matrix& matrix) = 0;
+		virtual void SetMatrix(const std::string& name, const Matrix& matrix) = 0;
 		virtual void SetVector(const std::string& name, float* pData) = 0;
-		virtual void SetMatrixArray(const std::string& name, Math::Matrix* matrices, int cnt) = 0;
+		virtual void SetMatrixArray(const std::string& name, Matrix* matrices, int cnt) = 0;
 	};
 
 	class GAMEENGINE_API Shader : public IShader
@@ -99,22 +99,22 @@ namespace GameEngine
 
 		void SetVariable(const std::string& name, void* pData, size_t size) override;
 		void SetShaderResource(const std::string& name, ID3D11ShaderResourceView* resource) override;
-		void SetMatrix(const std::string& name, const Math::Matrix& matrix) override;
+		void SetMatrix(const std::string& name, const Matrix& matrix) override;
 		void SetVector(const std::string& name, float* pData) override;
-		void SetMatrixArray(const std::string& name, Math::Matrix* matrices, int cnt) override;
+		void SetMatrixArray(const std::string& name, Matrix* matrices, int cnt) override;
 
 		void SetDiffuseMap(const Texture2D* const diffuseMap);
 		void SetNormalMap(const Texture2D* const normalMap);
 		void SetSpecularMap(const Texture2D* const specularMap);
-		void SetShadowMap(const Texture2D* const shadowMap, const Math::Matrix* const shadowMatrix);
+		void SetShadowMap(const Texture2D* const shadowMap, const Matrix* const shadowMatrix);
 
 		void SetLight(const LightData* const lightData);
 		void SetMaterial(const MaterialData* const material);
 		void SetCamera(const CameraData* const camera);
 		void SetGlobalSetting(const GraphicSetting* const globalSetting);
 
-		void SetWorldMatrix(const Math::Matrix* const world);
-		void SetBoneMatrices(const Math::Matrix* const matrices, int cnt);
+		void SetWorldMatrix(const Matrix* const world);
+		void SetBoneMatrices(const Matrix* const matrices, uint32_t cnt);
 	};
 }
 #pragma warning(pop)

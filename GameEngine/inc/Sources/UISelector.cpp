@@ -8,7 +8,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	using namespace Math;
+	
 
 	weak_ptr<SelectableUI> UIInputManager::selectedUI;
 	list<weak_ptr<SelectableUI>> UIInputManager::registedUI;
@@ -31,7 +31,7 @@ namespace GameEngine
 		}
 	}
 
-	Vector2 UIInputManager::ConvertMousePos(const Math::Vector2& pos)
+	Vector2 UIInputManager::ConvertMousePos(const Vector2& pos)
 	{
 		int cameraWidth = Camera::ui->width;
 		int cameraHeight = Camera::ui->height;
@@ -72,7 +72,7 @@ namespace GameEngine
 					ui->SetState({ false, false });
 				}
 				else {
-					auto& transform = ui->transform();
+					auto transform = ui->transform();
 					Vector3 center = { 0, 0, 0 };
 					Vector3 extends = Vector3(transform->width / 2, transform->height / 2, 0);
 					BoundingBox box = { center, extends };

@@ -305,10 +305,10 @@ namespace GameEngine
 
 		void FbxLoader::ProcessMaterialAttribute(FbxSurfaceMaterial* mat, FMaterial& material)
 		{
-			FbxDouble3 d3;
-			FbxDouble d1;
+			//FbxDouble3 d3;
+			//FbxDouble d1;
 
-			material.type = FMaterial::MT_INVALID;
+			//material.type = FMaterial::MT_INVALID;
 			//material->mName = mat->GetName();
 
 			//legacy material type
@@ -440,7 +440,7 @@ namespace GameEngine
 			if(nClusters < 1) return;
 
 			for(auto& clip : animationClips)
-				clip.second->transformCurves.assign(nClusters, nullptr);
+				clip.second->transformCurves.resize(nClusters);
 
 			meshNode.bones.resize(nClusters);
 			const int animCount = scene->GetSrcObjectCount<FbxAnimStack>();
@@ -490,8 +490,8 @@ namespace GameEngine
 					scene->SetCurrentAnimationStack(animStack);
 					std::string animName = animStack->GetName();
 					auto& clip = animationClips[animName];
-					auto transformCurve = new AnimTransformCurve();
-					transformCurve->boneName = boneName;
+					auto& transformCurve = clip->transformCurves[ci];
+					transformCurve.boneName = boneName;
 
 					auto animLayer = animStack->GetMember<FbxAnimLayer>(0);
 					FbxAnimCurve* fbxTCurves[3];
@@ -514,7 +514,7 @@ namespace GameEngine
 					fbxSCurves[1] = boneNode->LclScaling.GetCurve(animLayer, "Y");
 					fbxSCurves[2] = boneNode->LclScaling.GetCurve(animLayer, "Z");
 
-					transformCurve->boneName = boneName;
+					transformCurve.boneName = boneName;
 
 					// set & apply filter
 					FbxAnimCurveFilterKeyReducer keyReducer;
@@ -542,7 +542,6 @@ namespace GameEngine
 						ProcessAnimCurveS(fbxSCurves, transformCurve);
 						ProcessAnimCurveR(fbxRCurves, transformCurve, preRot);
 					}
-					clip->transformCurves[ci] = transformCurve;
 				} // animations loop
 			} // cluster loop
 
@@ -553,7 +552,7 @@ namespace GameEngine
 				std::string animName = animStack->GetName();
 				auto& clip = animationClips[animName];
 				auto& curve = clip->transformCurves[ti];
-				while(curve == nullptr && ti < nClusters)
+				while( == nullptr && ti < nClusters)
 					curve = clip->transformCurves[ti++];
 				float endTime = curve->translation->curves[0]->keyframes.back()->time;
 				clip->startTime = 0;
@@ -562,59 +561,58 @@ namespace GameEngine
 			}
 		}
 
-		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurve(FbxAnimCurve * curve, AnimCurve * animCurve)
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurve(FbxAnimCurve* curve, AnimCurve& animCurve)
 		{
-			if(!curve || !animCurve) return;
+			if(!curve) return;
 
 			int nkeys = curve->KeyGetCount();
-			animCurve->keyframes.resize(nkeys);
+			animCurve.keyframes.resize(nkeys);
 
 			for(int i = 0; i < nkeys; ++i) {
 				curve->KeySetTangentMode(i, FbxAnimCurveDef::eTangentAuto);
-				Keyframe* key = new Keyframe();
-				key->value = curve->KeyGetValue(i);
-				key->leftTangent = curve->KeyGetLeftAuto(i);
-				key->rightTangent = curve->KeyGetRightAuto(i);
-				key->time = (float)curve->KeyGetTime(i).GetSecondDouble();
-				animCurve->keyframes[i] = key;
+				auto& key = animCurve.keyframes[i];
+				key.value = curve->KeyGetValue(i);
+				key.leftTangent = curve->KeyGetLeftAuto(i);
+				key.rightTangent = curve->KeyGetRightAuto(i);
+				key.time = (float)curve->KeyGetTime(i).GetSecondDouble();
 			}
 		}
 
-		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveS(FbxAnimCurve * curve[], AnimTransformCurve * animCurve)
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveS(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve)
 		{
-			if(!curve || !animCurve) return;
+			if(!curve) return;
 
-			auto& curve3 = animCurve->scaling;
-			ProcessAnimCurve(curve[0], curve3->curves[0]);
-			ProcessAnimCurve(curve[1], curve3->curves[1]);
-			ProcessAnimCurve(curve[2], curve3->curves[2]);
+			auto& curve3 = animCurve.scaling;
+			ProcessAnimCurve(curve[0], curve3.curves[0]);
+			ProcessAnimCurve(curve[1], curve3.curves[1]);
+			ProcessAnimCurve(curve[2], curve3.curves[2]);
 		}
 
-		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveT(FbxAnimCurve * curve[], AnimTransformCurve * animCurve)
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveT(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve)
 		{
-			if(!curve || !animCurve) return;
+			if(!curve) return;
 
-			auto& curve3 = animCurve->translation;
-			ProcessAnimCurve(curve[0], curve3->curves[0]);
-			ProcessAnimCurve(curve[1], curve3->curves[1]);
-			ProcessAnimCurve(curve[2], curve3->curves[2]);
+			auto& curve3 = animCurve.translation;
+			ProcessAnimCurve(curve[0], curve3.curves[0]);
+			ProcessAnimCurve(curve[1], curve3.curves[1]);
+			ProcessAnimCurve(curve[2], curve3.curves[2]);
 
 			if(axismode == eDirectX) {
-				auto& tcurve = curve3->curves[0];
-				for(int i = 0; i < tcurve->keyframes.size(); ++i) {
-					auto key = tcurve->keyframes[i];
-					key->value *= -1;
-					key->leftTangent *= -1;
-					key->rightTangent *= -1;
+				auto& tcurve = curve3.curves[0];
+				for(int i = 0; i < tcurve.keyframes.size(); ++i) {
+					auto key = tcurve.keyframes[i];
+					key.value *= -1;
+					key.leftTangent *= -1;
+					key.rightTangent *= -1;
 				}
 			}
 		}
 
-		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveR(FbxAnimCurve * curve[], AnimTransformCurve * animCurve, FbxAMatrix & preRotation)
+		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveR(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve, FbxAMatrix & preRotation)
 		{
-			if(!curve || !animCurve) return;
+			if(!curve) return;
 
-			auto& curve3 = animCurve->rotation;
+			auto& curve3 = animCurve.rotation;
 
 			int xKeys = curve[0]->KeyGetCount();
 			int yKeys = curve[1]->KeyGetCount();
@@ -626,14 +624,14 @@ namespace GameEngine
 
 			int nKeys = xKeys;
 
-			curve3->curves[0]->keyframes.resize(nKeys);
-			curve3->curves[1]->keyframes.resize(nKeys);
-			curve3->curves[2]->keyframes.resize(nKeys);
+			curve3.curves[0].keyframes.resize(nKeys);
+			curve3.curves[1].keyframes.resize(nKeys);
+			curve3.curves[2].keyframes.resize(nKeys);
 
 			for(int ki = 0; ki < nKeys; ++ki) {
-				auto xkey = new Keyframe();
-				auto ykey = new Keyframe();
-				auto zkey = new Keyframe();
+				auto& xkey = curve3.curves[0].keyframes[ki];
+				auto& ykey = curve3.curves[1].keyframes[ki];
+				auto& zkey = curve3.curves[2].keyframes[ki];
 
 				curve[0]->KeySetTangentMode(ki, FbxAnimCurveDef::eTangentAuto);
 				curve[1]->KeySetTangentMode(ki, FbxAnimCurveDef::eTangentAuto);
@@ -660,17 +658,13 @@ namespace GameEngine
 
 				float t = (float)curve[0]->KeyGetTime(ki).GetSecondDouble();
 
-				xkey->time = t; ykey->time = t; zkey->time = t;
+				xkey.time = t; ykey.time = t; zkey.time = t;
 
-				xkey->value = xvalue; ykey->value = yvalue; zkey->value = zvalue;
+				xkey.value = xvalue; ykey.value = yvalue; zkey.value = zvalue;
 
-				xkey->leftTangent = xlt; xkey->rightTangent = xrt;
-				ykey->leftTangent = ylt; ykey->rightTangent = yrt;
-				zkey->leftTangent = zlt; zkey->rightTangent = zrt;
-
-				curve3->curves[0]->keyframes[ki] = (xkey);
-				curve3->curves[1]->keyframes[ki] = (ykey);
-				curve3->curves[2]->keyframes[ki] = (zkey);
+				xkey.leftTangent = xlt; xkey.rightTangent = xrt;
+				ykey.leftTangent = ylt; ykey.rightTangent = yrt;
+				zkey.leftTangent = zlt; zkey.rightTangent = zrt;
 			}
 		}
 

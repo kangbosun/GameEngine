@@ -13,7 +13,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	using namespace Math;
+	
 
 	void ShadowMap::Bind(std::shared_ptr<GraphicDevice>& graphicDevice)
 	{
@@ -65,7 +65,7 @@ namespace GameEngine
 	Light::Light()
 	{
 		shadowMapSize = GlobalSetting::graphicSetting.shadowMapSize;
-		shadowShader = Resource::GetShader(L"Standard");
+		shadowShader = Resource::shaders.Find("VSMBuild");
 		shadowTransform = Matrix::Identity;
 	}
 

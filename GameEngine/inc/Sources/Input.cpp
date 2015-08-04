@@ -3,7 +3,7 @@
 
 namespace GameEngine
 {
-	using namespace Math;
+	
 
 	Vector2 Input::screenSize = { 0, 0 };
 	Vector2 Input::mousePos = { 0, 0 };

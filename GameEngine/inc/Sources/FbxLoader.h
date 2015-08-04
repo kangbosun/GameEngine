@@ -10,7 +10,7 @@ namespace GameEngine
 		using std::shared_ptr;
 		using std::unordered_map;
 
-		using namespace Math;
+		
 
 		struct BlendWeightPair
 		{
@@ -67,7 +67,7 @@ namespace GameEngine
 			std::vector<CtrlPoint> controlPoints;
 			std::vector<std::string> materialNames;
 			std::vector<unsigned long> vertIndices;
-			std::vector<int> vertexCountOfSubMesh;
+			std::vector<UINT> vertexCountOfSubMesh;
 			std::vector<Vertex> meshes;
 			std::vector<Node> childNodes;
 			std::vector<Bone> bones;
@@ -97,7 +97,7 @@ namespace GameEngine
 			Node rootNode = { "root", "" };
 			std::string relativeFolder;
 			unordered_map<std::string, FMaterial> materials;
-			unordered_map<std::string, AnimClip*> animationClips;
+			unordered_map<std::string, std::shared_ptr<AnimClip>> animationClips;
 			bool useNormalMap = false;
 			AxisMode axismode = FbxLoader::eOpenGL;
 
@@ -131,11 +131,11 @@ namespace GameEngine
 
 			void ProcessBoneAndAnimation(FbxNode* node, Node& meshNode);
 		
-			void ProcessAnimCurve(FbxAnimCurve* curve, AnimCurve* animCurve);
-
-			void ProcessAnimCurveS(FbxAnimCurve* curve[], AnimTransformCurve* animCurve);
-			void ProcessAnimCurveT(FbxAnimCurve* curve[], AnimTransformCurve* animCurve);
-			void ProcessAnimCurveR(FbxAnimCurve* curve[], AnimTransformCurve* animCurve, FbxAMatrix& preRotation);
+			void ProcessAnimCurve(FbxAnimCurve* curve, AnimCurve& animCurve);
+			
+			void ProcessAnimCurveS(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve);
+			void ProcessAnimCurveT(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve);
+			void ProcessAnimCurveR(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve, FbxAMatrix& preRotation);
 
 			void LoadAnimationClipData();
 		};

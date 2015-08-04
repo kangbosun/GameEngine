@@ -3,13 +3,13 @@
 
 
 
-class Grid : public ClonableObject<Component, Grid>
+class Grid : public Cloneable<Component, Grid>
 {
 public:
 	void Start()
 	{
-		Vertex vertices[404];
-		unsigned long indices[404];
+		vector<Vertex> vertices(404);
+		vector<unsigned long> indices(404);
 
 		for(int i = 0; i < 202; i += 2) {
 			float offset = (i / 200.0f) - 0.5f;
@@ -29,14 +29,14 @@ public:
 		auto dx = GraphicDevice::Instance();
 		auto mesh = make_shared<Mesh>();
 		int n[1] = { 404 };
-		mesh->Initialize(vertices, indices, 404, 404, n, 1, dx->device, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		mesh->Initialize(vertices, indices, 0, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 		auto& _renderer = gameObject->AddComponent<MeshRenderer>();
 		_renderer->mesh = mesh;
 
-		auto mat = Resource::GetMaterial("default")->Clone();
+		auto mat = Resource::materials.Find("default")->Clone();
 		_renderer->materials.push_back(mat);
-		_renderer->materials[0]->shader = Resource::GetShader(L"Uber");
+		_renderer->materials[0]->shader = Resource::shaders.Find("Standard");
 		_renderer->materials[0]->data.color = Color::Black;
 		transform()->scale = Vector3(100, 100, 100);
 		_renderer->castShadow = false;

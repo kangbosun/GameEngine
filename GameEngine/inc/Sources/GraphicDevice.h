@@ -71,7 +71,7 @@ namespace GameEngine
 		void SetDepthEnable(bool b);
 		void SetFillMode(D3D11_FILL_MODE mode);
 
-		void ClearRenderTarget(const Math::Color& color);
+		void ClearRenderTarget(const Color& color);
 		void ClearDepthStencil();
 
 		void SetRenderTarget(const std::shared_ptr<RenderTarget>& renderTarget);
@@ -87,7 +87,7 @@ namespace GameEngine
 		std::wstring VideoCardName();
 
 		void SetAlphaBlend(bool b);
-		Math::Vector2 GetViewportSize() { return Math::Vector2(viewPort.Width, viewPort.Height); }
+		Vector2 GetViewportSize() { return Vector2(viewPort.Width, viewPort.Height); }
 
 		int MSAA() { return sampleDesc.Count; }
 

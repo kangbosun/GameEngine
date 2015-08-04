@@ -50,12 +50,12 @@ namespace GameEngine
 		}
 	}
 
-	Math::Vector2 GlyphPool::FindSpace(int w, int h)
+	Vector2 GlyphPool::FindSpace(int w, int h)
 	{
 		for(int j = 0; j < tileHeight; ++j) {
 			for(int i = 0; i < tileWidth; ++i) {
 				if(TestSpace(i, j, w, h))
-					return Math::Vector2((float)i, (float)j);
+					return Vector2((float)i, (float)j);
 			}
 		}
 		// if no empty space
@@ -65,18 +65,18 @@ namespace GameEngine
 		for(int j = 0; j < tileHeight; ++j) {
 			for(int i = 0; i < tileWidth; ++i) {
 				if(TestSpace(i, j, w, h))
-					return Math::Vector2((float)i, (float)j);
+					return Vector2((float)i, (float)j);
 			}
 		}
 
 		// error
-		return Math::Vector2(-1, 0);
+		return Vector2(-1, 0);
 	}
 
 	GlyphData GlyphPool::GetGlyph(const std::shared_ptr<Font>& font, wchar_t c, int size)
 	{
 		using namespace std;
-		using namespace Math;
+		
 
 		FT_Face _face = font->GetFace();
 		Glyph glyph = { _face, c, size };
@@ -107,7 +107,7 @@ namespace GameEngine
 		if(p.x == -1)
 			return data;
 
-		Math::Vector2 texPos = { p.x * tileSize, p.y * tileSize };
+		Vector2 texPos = { p.x * tileSize, p.y * tileSize };
 		int a = _face->glyph->metrics.horiAdvance >> 6;
 		data.advX = _face->glyph->advance.x >> 6;
 		data.advY = _face->glyph->advance.y >> 6;

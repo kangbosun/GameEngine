@@ -4,7 +4,7 @@ namespace GameEngine
 {
 	struct GAMEENGINE_API GraphicSetting
 	{
-		Math::Color ambientColor = Math::Color(0.1f, 0.1f, 0.1f, 1.0f);
+		Color ambientColor = Color(0.1f, 0.1f, 0.1f, 1.0f);
 		int shadowMapSize = 2048;
 	};
 

@@ -33,19 +33,19 @@ namespace GameEngine
 		return _renderer.lock();
 	}
 
-	GameObject* GameObject::Instantiate(const string& name)
+	shared_ptr<GameObject> GameObject::Instantiate(const string& name)
 	{
 		auto go = new GameObject();
 		go->name = name;
-		return go;
+		return shared_ptr<GameObject>(go);
 	}
 
-	GameObject* GameObject::Instantiate(GameObject * go)
+	shared_ptr<GameObject> GameObject::Instantiate(const shared_ptr<GameObject>& go)
 	{
-		return new GameObject(*go);
+		return shared_ptr<GameObject>(new GameObject(*go.get()));
 	}
 
-	void GameObject::Register(GameObject * go)
+	void GameObject::Register(const shared_ptr<GameObject>& go)
 	{
 		if(go && !go->isRegistered) {
 			allGameObjects.insert({ go->name, go });
@@ -57,52 +57,54 @@ namespace GameEngine
 		}
 	}
 
-	GameObject * GameObject::FindGameObject(const std::string & name)
+	shared_ptr<GameObject> GameObject::FindGameObject(const std::string & name)
 	{
 		auto results = allGameObjects.equal_range(name);
 		if(results.first != allGameObjects.cend())
 			return results.first->second;
 	}
 
-	void GameObject::FindGameObjects(const std::string& name, std::vector<GameObject*>& result)
+	void GameObject::FindGameObjects(const std::string& name, std::vector<shared_ptr<GameObject>>& result)
 	{
 		auto results = allGameObjects.equal_range(name);
-		int size = 0;
 		for(auto iter = results.first; iter != results.second; ++iter) {
 			result.push_back(iter->second);
 		}
 	}
 
-	GameObject * GameObject::FindGameObjectInChildren(const std::string & name)
+	shared_ptr<GameObject> GameObject::FindGameObjectInChildren(const std::string & name)
 	{
+		shared_ptr<GameObject> result = nullptr;
 		if(this->name == name)
-			return this;
-		GameObject* result = nullptr;
-		for(int i = 0; i < transform.node.GetChildCount(); ++i) {
-			auto child = transform.node.GetChild(i);
-			result = child->gameObject->FindGameObjectInChildren(name);
-			if(result) break;
+			result = shared_from_this();
+		else {
+			for(int i = 0; i < transform.GetChildCount(); ++i) {
+				auto child = transform.GetChild(i);
+				result = child->gameObject->FindGameObjectInChildren(name);
+				if(result) break;
+			}
 		}
 		return result;
 	}
 
-	void GameObject::FindGameObjectsInChildren(const std::string & name, std::vector<GameObject*>& result)
+	void GameObject::FindGameObjectsInChildren(const std::string & name, std::vector<shared_ptr<GameObject>>& result)
 	{
 		if(this->name == name)
-			result.push_back(this);
-		for(int i = 0; i < transform.node.GetChildCount(); ++i) {
-			auto child = transform.node.GetChild(i);
+			result.push_back(shared_from_this());
+		for(int i = 0; i < transform.GetChildCount(); ++i) {
+			auto child = transform.GetChild(i);
 			child->gameObject->FindGameObjectsInChildren(name, result);
 		}
 	}
 
-	GameObject* GameObject::CopyRecursive(Transform * parent)
+	GameObject* GameObject::CopyRecursive(Transform* parent)
 	{
-		auto node = Instantiate(this);
+		auto node = new GameObject(*this);
+		if(parent)
+			node->transform.SetParent(parent);
 
-		for(int i = 0; i < transform.node.GetChildCount(); ++i) {
-			auto pc = transform.node.GetChild(i)->gameObject->CopyRecursive(&node->transform);
-			node->transform.node.AddChild(&pc->transform);
+		for(int i = 0; i < transform.GetChildCount(); ++i) {
+			auto pc = transform.GetChild(i)->gameObject->CopyRecursive(&node->transform);
 		}
 		return node;
 	}
@@ -111,6 +113,7 @@ namespace GameEngine
 	{
 		return CopyRecursive(nullptr);
 	}
+
 
 	std::shared_ptr<Component> GameObject::AddComponent(const std::shared_ptr<Component>& _com)
 	{

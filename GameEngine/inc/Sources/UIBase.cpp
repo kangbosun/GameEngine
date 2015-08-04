@@ -23,7 +23,7 @@ namespace GameEngine
 		return _renderer.lock();
 	}
 
-	void UIBase::SetColor(const Math::Color& _color)
+	void UIBase::SetColor(const Color& _color)
 	{
 		color = _color;
 		renderer()->material.data.color = color;

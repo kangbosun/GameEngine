@@ -10,12 +10,12 @@ namespace GameEngine
 {
 	struct CameraData
 	{
-		Math::Matrix viewMatrix;
-		Math::Matrix projMatrix;
-		Math::Vector3 position;
+		Matrix viewMatrix;
+		Matrix projMatrix;
+		Vector3 position;
 	};
 
-	class GAMEENGINE_API Camera final : public ClonableObject<Component, Camera>
+	class GAMEENGINE_API Camera final : public Cloneable<Component, Camera>
 	{
 	private:
 		static std::list<std::weak_ptr<Camera>> allCameras;
@@ -30,7 +30,7 @@ namespace GameEngine
 		static std::shared_ptr<Camera> main;
 		static std::shared_ptr<Camera> ui;
 
-		Math::Vector3 target = Math::Vector3::Zero;
+		Vector3 target = Vector3::Zero;
 		bool lockTarget = false;
 
 		float fov = 60.0f;
@@ -46,7 +46,7 @@ namespace GameEngine
 		Viewport viewport;
 	public:
 		void BuildViewProjMatrix();
-		void LockTarget(const Math::Vector3& targetPos) { lockTarget = true; target = targetPos; }
+		void LockTarget(const Vector3& targetPos) { lockTarget = true; target = targetPos; }
 		void UnlockTarget() { lockTarget = false; }
 		const CameraData& GetCameraData() const { return cameraData; }
 		virtual void Update();

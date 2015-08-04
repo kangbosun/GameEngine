@@ -53,7 +53,7 @@ namespace GameEngine
 		wchar_t& MapAt(int x, int y) { return tiles[x + (y * tileWidth)]; }
 		bool TestSpace(int x, int y, int w, int h);
 		void FillSpace(int x, int y, int w, int h, wchar_t c);
-		Math::Vector2 FindSpace(int w, int h);
+		Vector2 FindSpace(int w, int h);
 		void GC();
 
 	public:

@@ -5,10 +5,8 @@
 
 namespace GameEngine
 {
-	namespace Math
-	{
-		struct Vertex;
-	};
+
+	struct Vertex;
 
 	class GAMEENGINE_API Mesh final
 	{
@@ -26,20 +24,22 @@ namespace GameEngine
 		UINT offset = 0;
 		D3D11_PRIMITIVE_TOPOLOGY primitiveType;
 		bool valid = false;
+		
+		std::vector<UINT> vertCountOfSubMesh;
 
 	public:
-		std::vector<Math::Matrix> bindPoseInv;
-		std::vector<int> vertCountOfSubMesh;
+		std::vector<Matrix> bindPoseInverse;
 		MeshType type;
 
 	public:
 		Mesh() {}
 
-		virtual bool Initialize(std::vector<Math::Vertex>& vertices, std::vector<unsigned long>& indices, std::vector<int>& vertsOfSub,
+		virtual bool Initialize(std::vector<Vertex>& vertices, std::vector<unsigned long>& indices, std::vector<UINT>* vertsOfSub = nullptr,
 								D3D11_PRIMITIVE_TOPOLOGY primitive = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		UINT nIndices() { return nIndex; }
 		bool IsValid() { return valid; }
+		UINT GetSubMeshCount(UINT index);
 	};
 }
 

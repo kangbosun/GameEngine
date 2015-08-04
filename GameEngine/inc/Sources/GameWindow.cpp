@@ -111,7 +111,7 @@ namespace GameEngine
 
 			//rendering
 			if(graphicDevice) {
-				graphicDevice->ClearRenderTarget(Math::Color::CornflowerBlue);
+				graphicDevice->ClearRenderTarget(Color::CornflowerBlue);
 				graphicDevice->ClearDepthStencil();
 				Render();
 				//swap buffers

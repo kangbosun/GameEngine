@@ -11,7 +11,7 @@ namespace GameEngine
 	void Image::SetSize(int _width, int _height)
 	{
 		transform()->SetSize(_width, _height);
-		std::vector<Math::Vertex> vertices(4);
+		std::vector<Vertex> vertices(4);
 		std::vector<unsigned long> indices = { 0, 1, 3, 1, 2, 3 };
 
 		float left = -_width * 0.5f;
@@ -19,17 +19,17 @@ namespace GameEngine
 		float top = _height * 0.5f;
 		float bottom = -top;
 
-		vertices[0].pos = Math::Vector3(left, top, 0);
-		vertices[0].tex = Math::Vector2(0, 0);
-		vertices[1].pos = Math::Vector3(right, top, 0);
-		vertices[1].tex = Math::Vector2(1, 0);
-		vertices[2].pos = Math::Vector3(right, bottom, 0);
-		vertices[2].tex = Math::Vector2(1, 1);
-		vertices[3].pos = Math::Vector3(left, bottom, 0);
-		vertices[3].tex = Math::Vector2(0, 1);
+		vertices[0].pos = Vector3(left, top, 0);
+		vertices[0].tex = Vector2(0, 0);
+		vertices[1].pos = Vector3(right, top, 0);
+		vertices[1].tex = Vector2(1, 0);
+		vertices[2].pos = Vector3(right, bottom, 0);
+		vertices[2].tex = Vector2(1, 1);
+		vertices[3].pos = Vector3(left, bottom, 0);
+		vertices[3].tex = Vector2(0, 1);
 
 		std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
-		mesh->Initialize(vertices, indices, { vertices.size });
+		mesh->Initialize(vertices, indices);
 		renderer()->mesh = mesh;
 	}
 
@@ -43,14 +43,11 @@ namespace GameEngine
 		return renderer()->material.diffuseMap;
 	}
 
-	std::shared_ptr<Image> Image::CreateImage(const Math::Vector3& pos, const Math::Vector2& size, const std::shared_ptr<Texture2D>& texture)
+	std::shared_ptr<Image> Image::CreateImage(const Vector3& pos, const Vector2& size)
 	{
 		auto g = GameObject::Instantiate("Image");
 		auto i = g->AddComponent<Image>();
-		if(texture)
-			i->SetTexture(texture);
-		else
-			i->SetTexture(Resource::GetTexture2D(L"white"));
+		i->SetTexture(Resource::textures.Find("white"));
 		i->SetSize((int)size.x, (int)size.y);
 		g->transform.position = pos;
 

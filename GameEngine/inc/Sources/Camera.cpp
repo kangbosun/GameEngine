@@ -8,7 +8,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	using namespace Math;
+	
 
 	list<weak_ptr<Camera>> Camera::allCameras;
 

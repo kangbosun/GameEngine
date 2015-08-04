@@ -14,7 +14,7 @@
 
 namespace GameEngine
 {
-	using namespace Math;
+	
 	using namespace std;
 	// MeshRenderer
 
@@ -29,8 +29,8 @@ namespace GameEngine
 	{
 		if(rootBoneName != "") {
 			auto root = transform();
-			while(root->node.GetParent())
-				root = root->node.GetParent();
+			while(root->GetParent())
+				root = root->GetParent();
 			auto rootBone = root->gameObject->FindGameObjectInChildren(rootBoneName);
 			SetBone(&rootBone->transform);
 		}
@@ -41,26 +41,26 @@ namespace GameEngine
 	{
 		if(bone) {
 			bones.push_back(bone);
-			auto size = bone->node.GetChildCount();
+			auto size = bone->GetChildCount();
 			for(int i = 0; i < size; ++i)
-				SetBone(bone->node.GetChild(i));
+				SetBone(bone->GetChild(i));
 		}
 	}
 
 	void MeshRenderer::Update()
 	{
 		int boneSize = (int)bones.size();
-		int bindposeInvSize = (int)mesh->bindPoseInv.size();
+		int bindposeInvSize = (int)mesh->bindPoseInverse.size();
 		if(boneSize > 0 && boneSize == bindposeInvSize) {
 			matrices.clear();
 			matrices.reserve(bones.size());
 			Matrix offsetInv;
-			if(bones[0]->node.GetParent())
-				bones[0]->node.GetParent()->WorldMatrix().Inverse(offsetInv);
+			if(bones[0]->GetParent())
+				bones[0]->GetParent()->WorldMatrix().Inverse(offsetInv);
 			else offsetInv = Matrix::Identity;
 
 			for(int bi = 0; bi < boneSize; ++bi) {
-				Matrix& bindposeInv = mesh->bindPoseInv[bi];
+				Matrix& bindposeInv = mesh->bindPoseInverse[bi];
 				Matrix& world = bones[bi]->WorldMatrix();
 				Matrix& final = bindposeInv * world * offsetInv;
 				matrices.emplace_back(final);
@@ -111,8 +111,9 @@ namespace GameEngine
 			else
 				shader->SetShadowMap(0, 0);
 
-			shader->Render(graphicDevice->context, mesh->vertCountOfSubMesh[i], offset);
-			offset += mesh->vertCountOfSubMesh[i];
+			UINT subMeshCount = mesh->GetSubMeshCount(i);
+			shader->Render(graphicDevice->context, subMeshCount, offset);
+			offset += subMeshCount;
 		}
 	}
 
@@ -149,7 +150,7 @@ namespace GameEngine
 
 	UIRenderer::UIRenderer()
 	{
-		material.shader = Resource::GetShader(L"Tex");
+		material.shader = Resource::shaders.Find("Texture");
 		material.data.color = Color::White;
 		type = RendererType::eUI;
 	}

@@ -223,7 +223,7 @@ namespace GameEngine
 		swapChain->Present(vSync, 0);
 	}
 
-	void GraphicDevice::ClearRenderTarget(const Math::Color& color)
+	void GraphicDevice::ClearRenderTarget(const Color& color)
 	{
 		context->ClearRenderTargetView(currRenderTarget->renderTargetView, (float*)&color);
 	}

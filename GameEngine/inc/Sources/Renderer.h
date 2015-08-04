@@ -39,7 +39,7 @@ namespace GameEngine
 	};
 
 	///////////////////////
-	class GAMEENGINE_API MeshRenderer : public ClonableObject<Renderer, MeshRenderer>
+	class GAMEENGINE_API MeshRenderer : public Cloneable<Renderer, MeshRenderer>
 	{
 	protected:
 		static std::list<std::weak_ptr<MeshRenderer>> allMeshRenderers;
@@ -53,7 +53,7 @@ namespace GameEngine
 		std::string rootBoneName = "";
 		std::vector<Transform*> bones;
 
-		std::vector<Math::Matrix> matrices;
+		std::vector<Matrix> matrices;
 
 	protected:
 		void SetBone(Transform* rootBone);
@@ -72,7 +72,7 @@ namespace GameEngine
 
 	bool operator <(const std::weak_ptr<UIRenderer>& lhs, const std::weak_ptr<UIRenderer>& rhs);
 
-	class GAMEENGINE_API UIRenderer : public ClonableObject<Renderer, UIRenderer>
+	class GAMEENGINE_API UIRenderer : public Cloneable<Renderer, UIRenderer>
 	{
 	protected:
 		static std::list<std::weak_ptr<UIRenderer>> allUIRenderers;

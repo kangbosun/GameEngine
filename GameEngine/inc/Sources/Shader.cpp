@@ -17,7 +17,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	using namespace Math;
+	
 
 	ID3DX11EffectVariable* const Shader::GetVariable(std::string name) const
 	{
@@ -274,7 +274,7 @@ namespace GameEngine
 			}
 		}
 	}
-	void Shader::SetShadowMap(const Texture2D * const shadowMap, const Math::Matrix* const shadowMatrix)
+	void Shader::SetShadowMap(const Texture2D * const shadowMap, const Matrix* const shadowMatrix)
 	{
 		if(shaderVariables.shadowMap && shaderVariables.shadowMap->IsValid()) {
 			if(shadowMap && shadowMap->IsValid()) {
@@ -323,7 +323,7 @@ namespace GameEngine
 				shaderVariables.globalSetting->SetRawValue(globalSetting, 0, sizeof(GraphicSetting));
 		}
 	}
-	void Shader::SetWorldMatrix(const Math::Matrix * const world)
+	void Shader::SetWorldMatrix(const Matrix * const world)
 	{
 		if(shaderVariables.worldMatrix && shaderVariables.worldMatrix->IsValid()) {
 			if(world)
@@ -331,7 +331,7 @@ namespace GameEngine
 		}
 	}
 
-	void Shader::SetBoneMatrices(const Math::Matrix * const matrices, int cnt)
+	void Shader::SetBoneMatrices(const Matrix * const matrices, uint32_t cnt)
 	{
 		auto& var = shaderVariables.bones;
 		if(var && var->IsValid()) {

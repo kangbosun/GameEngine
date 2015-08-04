@@ -21,51 +21,64 @@ namespace GameEngine
 	class Material;
 	struct ShaderFlag;
 
+	template <class T>
+	struct resource_container_shared
+	{
+		std::unordered_map<std::string, std::shared_ptr<T>> map;
+		std::shared_ptr<T> Add(const std::string& name, const std::shared_ptr<T>& resource)
+		{
+			map.insert({ name, resource });
+		}
+		std::shared_ptr<T> Find(const std::string& name)
+		{
+			std::shared_ptr<T> ret = nullptr;
+			auto iter = map.find(name);
+			if(iter != map.cend())
+				ret = iter->second;
+			return ret;
+		}
+
+		bool Remove(const std::string& name)
+		{
+			auto iter = map.find(name);
+			if(iter == map.cend())
+				return false;
+			
+			map.erase(iter);
+			return true;
+		}
+	};
+
+
+
 	class GAMEENGINE_API Resource
 	{
 	private:
 		static std::wstring resourceFolder;
 
-		static std::unordered_map<std::wstring, std::shared_ptr<Shader>> shaders;
-		static std::unordered_map<std::wstring, std::shared_ptr<Texture2D>> Texture2Ds;
-		static std::unordered_map<std::wstring, std::shared_ptr<Font>> fonts;
-		static std::unordered_map<std::wstring, GameObject*> models;
-		static std::unordered_map<std::wstring, std::shared_ptr<AudioMusic>> musics;
-		static std::unordered_map<std::wstring, std::shared_ptr<AudioSFX>> soundEffects;
-		static std::unordered_map<std::string, std::shared_ptr<Material>> materials;
-
 		Resource() {}
-		static void ProcessMaterial(FbxLoader::FbxLoader& loader, std::wstring modelname);
-	public:
+		
+
+	public :
 		static void LoadDefaultResource();
-		static void AddShader(const std::wstring& name, const std::shared_ptr<Shader>& shader);
-		static void AddFont(const std::wstring& name, const std::wstring& folder, const std::wstring& filename);
-		static std::shared_ptr<Texture2D>& AddTexture2D(const std::wstring& name, const std::wstring& ptr, D3DX11_IMAGE_LOAD_INFO* loadInfo = 0);
-		static void AddModel(const std::wstring& name, const std::string& folder, const std::string& filename);
-		static void AddMusic(const std::wstring& name, const std::wstring& filename);
-		static void AddSFX(const std::wstring& name, const std::wstring& filename);
-		static void AddMaterial(const std::string& name, std::shared_ptr<Material>& material);
+		//Textures
 
-		static std::shared_ptr<Font> GetFont(const std::wstring& fontname);
-		static std::shared_ptr<Shader> GetShader(const std::wstring& shaderName);
-		static std::shared_ptr<Texture2D> GetTexture2D(const std::wstring& Texture2DName);
-		static GameObject* GetModel(const std::wstring& modelName);
-		static std::shared_ptr<AudioMusic> GetMusic(const std::wstring& musicName);
-		static std::shared_ptr<AudioSFX> GetSFX(const std::wstring& sfxName);
-		static std::shared_ptr<Material> GetMaterial(const std::string& materialName);
-
-		static bool RemoveShader(const std::wstring& name);
-		static bool RemoveFont(const std::wstring& name);
-		static bool RemoveTexture2D(const std::wstring& name);
-		static bool RemoveModel(const std::wstring& name);
-		static bool RemoveMusic(const std::wstring& name);
-		static bool RemoveSFX(const std::wstring& name);
-		static bool RemoveMaterial(const std::string& name);
-		static void RemoveAll();
-
+	public :
+		static resource_container_shared<Texture2D>		textures;
+		static resource_container_shared<Shader>		shaders;
+		static resource_container_shared<Font>			fonts;
+		static resource_container_shared<GameObject>	models;
+		static resource_container_shared<AudioMusic>	audios;
+		static resource_container_shared<Material>		materials;
+		static resource_container_shared<AnimClip>		animClips;
+		
+	public :
+		static void ClearAll();
 	private:
-		static void FbxToObject(const std::wstring& modelName, GameObject* object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader);
+		static std::shared_ptr<Texture2D> ProcessTexture(const std::string& name, FbxLoader::FbxLoader& loader);
+		static void ProcessMaterial(FbxLoader::FbxLoader& loader, std::wstring modelname);
+		static void FbxToObject(const std::wstring& modelName, const std::shared_ptr<GameObject>& object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader);
 	};
-}
+	}
 
 #pragma warning(pop)

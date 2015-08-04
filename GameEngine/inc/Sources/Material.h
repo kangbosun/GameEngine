@@ -11,11 +11,11 @@ namespace GameEngine
 
 	//struct GAMEENGINE_API MaterialData
 	//{
-	//	Math::Color Ambient = { 1, 1, 1, 1 };
-	//	Math::Color Diffuse = { 1, 1, 1, 1 };
-	//	Math::Color Emissive = { 0, 0, 0, 0 };
-	//	Math::Color Specular = { 1, 1, 1, 1 };
-	//	Math::Color Reflection = { 0, 0, 0, 0 };
+	//	Color Ambient = { 1, 1, 1, 1 };
+	//	Color Diffuse = { 1, 1, 1, 1 };
+	//	Color Emissive = { 0, 0, 0, 0 };
+	//	Color Specular = { 1, 1, 1, 1 };
+	//	Color Reflection = { 0, 0, 0, 0 };
 	//	float SpecularFactor = 1.0f;
 	//	float Shininess = 20.0f;
 	//	float ReflectionFactor = 1.0f;
@@ -24,7 +24,7 @@ namespace GameEngine
 
 	struct GAMEENGINE_API MaterialData
 	{
-		Math::Color color = Math::Color::White;
+		Color color = Color::White;
 		float metalic = 0.5f;
 		float roughness = 0.3f;
 	};

@@ -14,7 +14,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	using namespace Math;
+	
 
 	void Text::Update()
 	{
@@ -149,21 +149,20 @@ namespace GameEngine
 			yoffset -= heightPerLine + 1;
 		}
 		auto mesh = make_shared<Mesh>();
-		mesh->Initialize(&vertices[0], &indices[0], totalChars * 4, totalChars * 6, 0, 0, device);
+		mesh->Initialize(vertices, indices);
 		renderer()->mesh = mesh;
 		renderer()->material.diffuseMap = GlyphPool::GetInstance()->GetTexture();
 		textChanged = false;
 	}
 
-	std::shared_ptr<Text> Text::CreateText(const Math::Vector3& pos, const Math::Vector2& size, std::wstring str, const std::wstring& fontName)
+	std::shared_ptr<Text> Text::CreateText(const Vector3& pos, const Vector2& size, std::wstring str, const std::string& fontName)
 	{
-		shared_ptr<GameObject> temp = GameObject::Instantiate("Text");
+		auto temp = GameObject::Instantiate("Text");
 		auto& com = temp->AddComponent<Text>();
 		com->transform()->position = pos;
 		com->transform()->SetSize((int)size.x, (int)size.y);
 		com->SetText(str);
-		com->SetFont(Resource::GetFont(fontName));
-
+		com->SetFont(Resource::fonts.Find(fontName));
 		return com;
 	}
 }

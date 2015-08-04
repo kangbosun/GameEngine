@@ -5,21 +5,24 @@
 
 namespace GameEngine
 {
-	using namespace Math;
+	
 
-	bool Mesh::Initialize(std::vector<Math::Vertex>& vertices, std::vector<unsigned long>& indices, std::vector<int>& vertsOfSub,
+	bool Mesh::Initialize(std::vector<Vertex>& vertices, std::vector<unsigned long>& indices, std::vector<UINT>* vertsOfSub,
 							D3D11_PRIMITIVE_TOPOLOGY primitive)
 	{
 		primitiveType = primitive;
-		if(vertsOfSub)
-			vertCountOfSubMesh.swap(*vertsOfSub);
-
+		
 		D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 		D3D11_SUBRESOURCE_DATA vertexData, indexData;
 		HRESULT result;
 
-		nVertex = vertices.size();
-		nIndex = indices.size();
+		nVertex = (UINT)vertices.size();
+		nIndex = (UINT)indices.size();
+
+		if(vertsOfSub)
+			vertCountOfSubMesh.swap(*vertsOfSub);
+		else
+			vertCountOfSubMesh.push_back(nVertex);
 
 		stride = sizeof(Vertex);
 
@@ -61,5 +64,9 @@ namespace GameEngine
 		valid = true;
 		type = Mesh::eMesh;
 		return true;
+	}
+	inline UINT Mesh::GetSubMeshCount(UINT index)
+	{
+		return vertCountOfSubMesh[index];
 	}
 }

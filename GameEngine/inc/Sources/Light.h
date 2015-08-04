@@ -33,13 +33,13 @@ namespace GameEngine
 
 	struct GAMEENGINE_API LightData
 	{
-		Math::Color color;
-		Math::Vector3 dir;
+		Color color;
+		Vector3 dir;
 		int lightType;
-		Math::Vector3 position;
+		Vector3 position;
 	};
 
-	class GAMEENGINE_API Light final : public ClonableObject<Component, Light>
+	class GAMEENGINE_API Light final : public Cloneable<Component, Light>
 	{
 		enum LightType
 		{
@@ -59,14 +59,14 @@ namespace GameEngine
 		std::shared_ptr<ShadowMap> shadowMap;
 		int shadowMapSize;
 		std::shared_ptr<Shader> shadowShader;
-		Math::Matrix shadowTransform;
+		Matrix shadowTransform;
 
 		void BuildShadowTransform();
 		void BuildShadowMap();
 
 	public:
 		CameraData cameraData;
-		Math::Color lightColor = Math::Color::White;
+		Color lightColor = Color::White;
 
 		bool renderShadow = true;
 
@@ -76,7 +76,7 @@ namespace GameEngine
 		LightData& GetLightData();
 
 		std::shared_ptr<ShadowMap>& GetShadowMap() { return shadowMap; }
-		const Math::Matrix& GetShadowTransform() { return shadowTransform; }
+		const Matrix& GetShadowTransform() { return shadowTransform; }
 
 		static std::shared_ptr<Light> CreateDirectionalLight();
 		static std::shared_ptr<Light> CreatePointLight();

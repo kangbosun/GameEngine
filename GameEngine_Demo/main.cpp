@@ -23,7 +23,7 @@ public:
 };
 
 
-class MousePos : public ClonableObject < Component, MousePos >
+class MousePos : public Cloneable < Component, MousePos >
 {
 public:
 	weak_ptr<Text> text;

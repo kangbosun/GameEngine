@@ -14,7 +14,7 @@ namespace GameEngine
 	class SkinnedMeshRenderer;
 	class Transform;
 
-	class GAMEENGINE_API Animation : public ClonableObject<Component, Animation>
+	class GAMEENGINE_API Animation : public Cloneable<Component, Animation>
 	{
 	private:
 		float elaspedTime = 0;
@@ -22,8 +22,8 @@ namespace GameEngine
 		bool isValid = false;
 
 	public:
-		std::unordered_map<std::string, std::shared_ptr<Math::AnimClip>> clips;
-		std::shared_ptr<Math::AnimClip> clip = nullptr;
+		std::unordered_map<std::string, std::shared_ptr<AnimClip>> clips;
+		std::shared_ptr<AnimClip> clip = nullptr;
 
 		float speed = 1.0f;
 		bool loop = true;

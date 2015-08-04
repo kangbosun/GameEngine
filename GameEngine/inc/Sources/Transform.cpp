@@ -6,7 +6,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	using namespace Math;
+	
 
 	void Transform::SetSize(int _width, int _height)
 	{
@@ -81,7 +81,7 @@ namespace GameEngine
 		changed = true;
 	}
 
-	void Transform::Scale(const Math::Vector3& s)
+	void Transform::Scale(const Vector3& s)
 	{
 		scale = scale * s;
 		changed = true;
@@ -112,7 +112,7 @@ namespace GameEngine
 
 	void Transform::SetPivot(Align pivot)
 	{
-		using namespace Math;
+		
 
 		pivotFlags = pivot;
 		float x = 0;
@@ -138,7 +138,7 @@ namespace GameEngine
 		changed = true;
 	}
 
-	void Transform::LookAt(const Math::Vector3& p)
+	void Transform::LookAt(const Vector3& p)
 	{
 		if(p == position)
 			return;

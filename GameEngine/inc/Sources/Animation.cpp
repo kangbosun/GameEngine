@@ -9,7 +9,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	using namespace Math;
+	
 
 	void Animation::Play(const string& clipName)
 	{
@@ -24,13 +24,13 @@ namespace GameEngine
 			if(clip->transformCurves.size() > 0) {
 				//find top object
 				auto root = transform();
-				while(root->node.GetParent())
-					root = root->node.GetParent();
+				while(root->GetParent())
+					root = root->GetParent();
 				//done
 
 				transforms.reserve(clip->transformCurves.size());
 				for(auto& curve : clip->transformCurves) {
-					auto g = root->gameObject->FindGameObjectInChildren(curve->boneName);
+					auto g = root->gameObject->FindGameObjectInChildren(curve.boneName);
 					transforms.push_back(&g->transform);
 				}
 			}
@@ -72,11 +72,11 @@ namespace GameEngine
 			auto& transformCurve = clip->transformCurves[i];
 			auto& transform = transforms[i];
 			//translation
-			transform->position = transformCurve->EvaluateT(elaspedTime);
+			transform->position = transformCurve.EvaluateT(elaspedTime);
 			//scaling
-			transform->scale = transformCurve->EvaluateS(elaspedTime);
+			transform->scale = transformCurve.EvaluateS(elaspedTime);
 			//rotation
-			transform->SetRotation(transformCurve->EvaluateR(elaspedTime));
+			transform->SetRotation(transformCurve.EvaluateR(elaspedTime));
 		}
 	}
 }
