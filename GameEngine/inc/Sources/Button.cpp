@@ -27,7 +27,7 @@ namespace GameEngine
 		img->SetSize((int)size.x, (int)size.y);
 		img->SetTexture(Resource::textures.Find("white"));
 
-		g->transform.AddChild(text->transform());
+		text->transform()->SetParent(&g->transform);
 		auto& button = g->AddComponent<Button>();
 		button->SetSize((int)size.x, (int)size.y);
 		button->transform()->position = pos;

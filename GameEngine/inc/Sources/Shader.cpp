@@ -1,7 +1,7 @@
 #include "enginepch.h"
 #include "Shader.h"
 #include "GraphicDevice.h"
-#include "DXUtil.h"
+#include "Debug.h"
 #include "Material.h"
 #include "GameObject.h"
 #include "Renderer.h"
@@ -61,13 +61,13 @@ namespace GameEngine
 
 		HRESULT result = D3DX11CompileFromFile(filename.c_str(), 0, 0, 0, "fx_5_0", shaderFlags, 0, 0, &compileShader.p, &compilationMsgs.p, 0);
 		if(compilationMsgs.p) {
-			Debug((char*)compilationMsgs->GetBufferPointer());
+			Debug::Log((char*)compilationMsgs->GetBufferPointer());
 			compileShader.Release();
 			return false;
 		}
 
 		if(FAILED(result)) {
-			Debug(L"Failed to Compile " + wstring(filename));
+			Debug::Log(L"Failed to Compile " + wstring(filename));
 			return false;
 		}
 
@@ -79,7 +79,7 @@ namespace GameEngine
 
 		result = D3DX11CreateEffectFromMemory(compileShader->GetBufferPointer(), compileShader->GetBufferSize(), 0, device, &effect.p);
 		if(FAILED(result)) {
-			Debug("Failed to D3DX11CreateEffectFromMemory");
+			Debug::Log("Failed to D3DX11CreateEffectFromMemory");
 			return false;
 		}
 
@@ -140,14 +140,14 @@ namespace GameEngine
 		auto pass = tech->GetPassByIndex(0);
 
 		if(!pass) {
-			Debug("Failed to GetPassByName");
+			Debug::Log("Failed to GetPassByName");
 			return false;
 		}
 		D3DX11_PASS_DESC passDesc;
 		result = pass->GetDesc(&passDesc);
 
 		if(FAILED(result)) {
-			Debug("Failed to GetDesc");
+			Debug::Log("Failed to GetDesc");
 			return false;
 		}
 
@@ -194,7 +194,7 @@ namespace GameEngine
 		result = device->CreateInputLayout(pDesc, 6, passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &layout.p);
 
 		if(FAILED(result)) {
-			Debug("Failed to create input vertex layout");
+			Debug::Log("Failed to create input vertex layout");
 			layout = nullptr;
 			return false;
 		}

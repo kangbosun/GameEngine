@@ -1,7 +1,7 @@
 #include "enginepch.h"
 
 #include "GameWindow.h"
-#include "DXUtil.h"
+#include "Debug.h"
 #include "Camera.h"
 #include "Resource.h"
 #include "GraphicDevice.h"

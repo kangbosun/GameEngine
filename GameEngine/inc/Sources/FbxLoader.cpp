@@ -308,7 +308,7 @@ namespace GameEngine
 			//FbxDouble3 d3;
 			//FbxDouble d1;
 
-			//material.type = FMaterial::MT_INVALID;
+			material.type = FMaterial::MT_INVALID;
 			//material->mName = mat->GetName();
 
 			//legacy material type

@@ -6,7 +6,7 @@
 namespace GameEngine
 {
 	using namespace std;
-	
+
 
 	void Transform::SetSize(int _width, int _height)
 	{
@@ -90,12 +90,65 @@ namespace GameEngine
 	void Transform::SetLocalTransform(const Matrix& mat)
 	{
 		Matrix::Decompose(mat, position, rotation, scale);
-		changed = true;
 	}
 
-	void Transform::BuildLocalMatrix()
+	inline Vector3 Transform::up()
 	{
-		Matrix::CreateTransform(localMatrix, position - pivot, rotation, scale, pivot);
+		updateSelf();
+		return worldMatrix.Up();
+	}
+
+	inline Vector3 Transform::forward()
+	{
+		updateSelf();
+		return worldMatrix.Forward();
+	}
+
+	inline Vector3 Transform::right()
+	{
+		updateSelf();
+		return worldMatrix.Right();
+	}
+
+	void Transform::updateSelf()
+	{
+		worldChanged = false;
+		if(changed) {
+			Matrix::CreateTransform(localMatrix, position - pivot, rotation, scale, pivot);
+			changed = false;
+			if(parent)
+				Matrix::Multiply(localMatrix, parent->worldMatrix, worldMatrix);
+			else
+				worldMatrix = localMatrix;
+			worldChanged = true;
+		}
+		else {
+			if(parent && parent->worldChanged) {
+				Matrix::Multiply(localMatrix, parent->worldMatrix, worldMatrix);
+				worldChanged = true;
+			}
+			else if(parent == nullptr) {
+				worldMatrix = localMatrix;
+				worldChanged = true;
+			}
+		}
+	}
+
+	void Transform::Update()
+	{
+		updateSelf();
+		for(auto child : children) {
+			child->Update();
+		}
+	}
+
+
+	Transform::Transform()
+	{
+		if(this != &root) {
+			root.children.push_back(this);
+			parent = nullptr;
+		}
 	}
 
 	Transform::Transform(const Transform & rhs)
@@ -112,8 +165,6 @@ namespace GameEngine
 
 	void Transform::SetPivot(Align pivot)
 	{
-		
-
 		pivotFlags = pivot;
 		float x = 0;
 		float y = 0;
@@ -144,17 +195,9 @@ namespace GameEngine
 			return;
 		Matrix m, parentMatrix, inv;
 
-		BuildLocalMatrix();
+		updateSelf();
 
-		if(parent)
-			parentMatrix = parent->worldMatrix;
-		else
-			parentMatrix.SetIdentity();
-
-		Matrix::Multiply(localMatrix, parentMatrix, worldMatrix);
-		auto _up = worldMatrix.Up();
-
-		Matrix::LookAtLH(position, p, _up, m);
+		Matrix::LookAtLH(position, p, up(), m);
 		m.Inverse(inv);
 		Matrix::Multiply(inv, worldMatrix, worldMatrix);
 		parentMatrix.Inverse(inv);
@@ -166,6 +209,44 @@ namespace GameEngine
 	{
 		LookAt(t->position);
 	}
+
+
+#pragma region Hierarchy
+	Transform Transform::root;
+	void Transform::removeChild(Transform* child)
+	{
+		if(child) {
+			children.remove(child);
+		}
+	}
+
+	void Transform::SetParent(Transform* _parent)
+	{
+		if(parent)
+			parent->removeChild(this);
+		if(_parent) {
+			_parent->children.push_back(this);
+			parent = _parent;
+		}
+		else {
+			root.children.push_back(this);
+			this->parent = nullptr;
+		}
+	}
+
+	Transform* Transform::GetChild(int n)
+	{
+		if(n < children.size()) {
+			auto iter = children.begin();
+			for(int i = 0; i < n; ++i)
+				++iter;
+			return *iter;
+		}
+		else
+			return nullptr;
+	}
+#pragma endregion
+
 }
 
 

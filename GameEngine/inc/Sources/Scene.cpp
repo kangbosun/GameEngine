@@ -9,14 +9,10 @@
 
 namespace GameEngine
 {
-	void Scene::Register(GameObject * go)
-	{
-		if(go) {
-			rootTransform.AddChild(&go->transform);
-		}
-	}
+
 	void Scene::Update()
 	{
+		Transform::root.Update();
 		Component::UpdateAll();
 	}
 

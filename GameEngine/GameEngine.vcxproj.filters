@@ -130,9 +130,6 @@
     <ClCompile Include="inc\Sources\Transform.cpp">
       <Filter>Source\Base</Filter>
     </ClCompile>
-    <ClCompile Include="inc\Sources\DXUtil.cpp">
-      <Filter>Source\Utilities</Filter>
-    </ClCompile>
     <ClCompile Include="inc\Sources\Font.cpp">
       <Filter>Source\FontEngine</Filter>
     </ClCompile>
@@ -231,9 +228,6 @@
     <ClInclude Include="inc\Sources\Transform.h">
       <Filter>Source\Base</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Sources\DXUtil.h">
-      <Filter>Source\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="inc\Sources\Font.h">
       <Filter>Source\FontEngine</Filter>
     </ClInclude>
@@ -253,5 +247,11 @@
       <Filter>Source\Core</Filter>
     </ClInclude>
     <ClInclude Include="inc\GameEngine.h" />
+    <ClInclude Include="inc\Sources\Debug.h">
+      <Filter>Source\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\resource_conatiner.h">
+      <Filter>Source\Resource</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

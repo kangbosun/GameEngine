@@ -7,11 +7,6 @@ namespace GameEngine
 {
 	namespace FbxLoader
 	{
-		using std::shared_ptr;
-		using std::unordered_map;
-
-		
-
 		struct BlendWeightPair
 		{
 			int boneIndex = 0;
@@ -85,6 +80,8 @@ namespace GameEngine
 
 		class FbxLoader
 		{
+		private :
+			FbxScene* scene = nullptr;
 		public:
 			enum AxisMode
 			{
@@ -93,11 +90,11 @@ namespace GameEngine
 			};
 		public:
 			float factor = 1;
-			FbxScene* scene = nullptr;
+			
 			Node rootNode = { "root", "" };
 			std::string relativeFolder;
-			unordered_map<std::string, FMaterial> materials;
-			unordered_map<std::string, std::shared_ptr<AnimClip>> animationClips;
+			std::unordered_map<std::string, FMaterial> materials;
+			std::unordered_map<std::string, std::shared_ptr<AnimClip>> animationClips;
 			bool useNormalMap = false;
 			AxisMode axismode = FbxLoader::eOpenGL;
 

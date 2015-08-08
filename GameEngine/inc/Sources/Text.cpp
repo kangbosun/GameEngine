@@ -6,7 +6,7 @@
 #include "Font.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "DXUtil.h"
+#include "Debug.h"
 #include "GameObject.h"
 #include "GraphicDevice.h"
 #include "GlyphPool.h"
@@ -50,7 +50,7 @@ namespace GameEngine
 		auto& graphicDevice = GraphicDevice::Instance();
 		auto& device = graphicDevice->device;
 		if(device == nullptr) {
-			Debug("GraphicDevice is invalid");
+			Debug::Log("GraphicDevice is invalid");
 			return;
 		}
 

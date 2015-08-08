@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "Shader.h"
 #include "GraphicDevice.h"
+#include "FbxLoader.h"
 
 namespace GameEngine
 {
@@ -47,7 +48,7 @@ namespace GameEngine
 			clone->AddComponent(go->components[i]->CloneShared());
 		}
 		for(auto child : go->transform.children) {
-			clone->transform.AddChild(&Instantiate(child->gameObject)->transform);
+			Instantiate(child->gameObject)->transform.SetParent(&clone->transform);
 		}
 		return clone;
 	}

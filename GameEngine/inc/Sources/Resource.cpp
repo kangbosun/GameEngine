@@ -11,12 +11,11 @@
 #include "Transform.h"
 #include "Animation.h"
 #include "FbxLoader.h"
-#include "DXUtil.h"
+#include "Debug.h"
 #include "Texture2D.h"
 
 namespace GameEngine
 {
-
 	using namespace std;
 
 	resource_container_shared<Texture2D>		Resource::textures;
@@ -31,7 +30,7 @@ namespace GameEngine
 	{
 		auto s = make_shared<Shader>();
 		s->InitShader(L"resources\\shaders\\Texture.fx");
-		Resource::shaders.Add("Tex", s);
+		Resource::shaders.Add("Texture", s);
 
 		auto s2 = make_shared<Shader>();
 		s2->InitShader(L"resources\\shaders\\Standard.fx");
@@ -43,19 +42,43 @@ namespace GameEngine
 
 		auto nanumGothic = Font::LoadFont("NanumGothic", "resources\\Fonts\\NanumGothic.ttf");
 		Resource::fonts.Add("NanumGothic", nanumGothic);
-
-
+		
 		auto defaultMaterial = make_shared<Material>();
 		defaultMaterial->shader = Resource::shaders.Find("Standard");
 		Resource::materials.Add("default", defaultMaterial);
 
-		//Resource::AddModel(L"sphere", "resources\\models\\primitive", "sphere.fbx");
-		//Resource::AddModel(L"plane", "resources\\models\\primitive", "plane.fbx");
+		Resource::LoadFromFbx("sphere", "resources\\models\\primitive", "sphere.fbx");
+		Resource::LoadFromFbx("plane", "resources\\models\\primitive", "plane.fbx");
+	}
+
+	GameObject* Resource::LoadFromFbx(const std::string& name, const std::string & folder, const std::string & filename)
+	{
+		FbxLoader::FbxLoader loader = { FbxLoader::FbxLoader::eDirectX };
+		loader.LoadFromFile(folder, filename);
+
+		auto* pRoot = &loader.rootNode;
+		//check meshdata 
+		Debug::Log("#Load : " + folder + "\\" + filename);
+		if(pRoot->vertIndices.size() == 0 && pRoot->childNodes.size() == 0) {
+			Debug::Log("Fail : No Mesh Datas", Debug::Red);
+			return nullptr;
+		}
+		//check meaningless root node
+		if(pRoot->vertIndices.size() == 0 && pRoot->childNodes.size() == 1)
+			pRoot = &pRoot->childNodes[0];
+
+		ProcessMaterial(loader, name);
+
+		GameObject* obj = GameObject::Instantiate(name);
+		FbxToObject(name, obj, *pRoot, loader);
+
+		models.Add(name, obj);
+		Debug::Log("Success", Debug::Green);
+		return obj->Clone();
 	}
 
 
-
-	void Resource::FbxToObject(const wstring& modelName, GameObject* object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader)
+	void Resource::FbxToObject(const string& modelName, GameObject* object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader)
 	{
 		auto device = GraphicDevice::Instance()->device;
 
@@ -98,7 +121,6 @@ namespace GameEngine
 			if(material) renderer->materials.push_back(material);
 		}
 
-
 		// initial transform
 		object->transform.SetLocalTransform(meshNode.matrix.m[0]);
 
@@ -125,7 +147,7 @@ namespace GameEngine
 		return ret;
 	}
 
-	void Resource::ProcessMaterial(FbxLoader::FbxLoader& loader, wstring modelname)
+	void Resource::ProcessMaterial(FbxLoader::FbxLoader& loader, string modelname)
 	{
 		const int materialCount = (int)loader.materials.size();
 		auto iter = loader.materials.begin();
@@ -137,16 +159,12 @@ namespace GameEngine
 			auto normalMap = ProcessTexture(mat.normalMapName, loader);
 			auto specularMap = ProcessTexture(mat.specularMapName, loader);
 
-			if(mat.type == FbxLoader::FMaterial::MT_INVALID) {
-				Debug(L"FbxLoader::ToObject() => No Materials!(" + modelname + L")");
-			}
-
 			auto tempMat = make_shared<Material>();
 			tempMat->diffuseMap = diffuseMap;
 			tempMat->normalMap = normalMap;
 			tempMat->name = mat.name;
-
 			tempMat->shader = Resource::shaders.Find("Standard");
+
 			Resource::materials.Add(tempMat->name, tempMat);
 		}
 	}

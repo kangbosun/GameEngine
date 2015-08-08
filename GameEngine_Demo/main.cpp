@@ -11,7 +11,7 @@ using namespace GameEngine::Math;
 #include "Grid.h"
 #include "KeyCam.h"
 
-class Rot : public Component
+class Rot : public Cloneable<Rot, Component>
 {
 public:
 	Vector3 axis = Vector3::Z;
@@ -73,7 +73,6 @@ public:
 		//plane->transform.Translate(0.0f, -0.01f, 0.0f);
 		//GameObject::Register(plane);
 
-
 		Camera::main->transform()->position = Vector3(0.0f, 1.0f, 2.0f);
 		Camera::main->transform()->LookAt(Vector3(0, 0, 0));
 		Camera::main->gameObject->AddComponent<KeyCam>();
@@ -131,8 +130,6 @@ public:
 
 void main()
 {
-	cout << "hello" << endl;
-	Vector3 v;
 	GameWindow window;
 	window.Initialize(L"GameEngine", 640, 360, 60);
 	window.LoadScene(std::make_shared<Scene01>());

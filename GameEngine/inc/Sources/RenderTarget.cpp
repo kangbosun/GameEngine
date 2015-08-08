@@ -1,7 +1,7 @@
 #include "enginepch.h"
 #include "Texture2D.h"
 #include "GraphicDevice.h"
-#include "DXUtil.h"
+#include "Debug.h"
 
 namespace GameEngine
 {
@@ -21,7 +21,7 @@ namespace GameEngine
 
 		HRESULT hr = device->CreateRenderTargetView(texture2D, 0, &renderTargetView.p);
 		if(FAILED(hr)) {
-			Debug(ToString() + " - failed to create RTV");
+			Debug::Log(ToString() + " - failed to create RTV");
 			isValid = false;
 			return;
 		}
@@ -41,7 +41,7 @@ namespace GameEngine
 
 		HRESULT hr = device->CreateRenderTargetView(buffer, 0, &renderTargetView.p);
 		if(FAILED(hr)) {
-			Debug(ToString() + " - failed to create RTV");
+			Debug::Log(ToString() + " - failed to create RTV");
 			isValid = false;
 			return;
 		}

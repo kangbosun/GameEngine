@@ -3,7 +3,7 @@
 #include "Resource.h"
 #include "GraphicDevice.h"
 #include "GlyphPool.h"
-#include "DXUtil.h"
+#include "Debug.h"
 
 namespace GameEngine
 {
@@ -16,7 +16,7 @@ namespace GameEngine
 			FT_Done_Face(font->face);
 		auto lib = GlyphPool::GetInstance()->GetLibrary();
 		if(FT_New_Face(lib, path.c_str(), 0, &font->face)) {
-			Debug("Failed - FT_New_Face(" + path + ")");
+			Debug::Log("Failed - FT_New_Face(" + path + ")");
 			return font;
 		}
 		font->fontName = fontname;

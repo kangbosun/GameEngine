@@ -1,7 +1,7 @@
 #include "enginepch.h"
 #include "GraphicDevice.h"
 #include "Mesh.h"
-#include "DXUtil.h"
+#include "Debug.h"
 
 namespace GameEngine
 {
@@ -41,7 +41,7 @@ namespace GameEngine
 
 		result = graphicDevice->device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 		if(FAILED(result)) {
-			Debug("Failed to create Vertex Buffer");
+			Debug::Log("Failed to create Vertex Buffer");
 			return false;
 		}
 
@@ -58,7 +58,7 @@ namespace GameEngine
 
 		result = graphicDevice->device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
 		if(FAILED(result)) {
-			Debug("Failed to create to Index Buffer");
+			Debug::Log("Failed to create to Index Buffer");
 			return false;
 		}
 		valid = true;

@@ -1,7 +1,7 @@
 #include "enginepch.h"
 #include "Physics.h"
 #include "GameObject.h"
-#include "DXUtil.h"
+#include "Debug.h"
 #include "Transform.h"
 
 namespace GameEngine
@@ -53,7 +53,7 @@ namespace GameEngine
 	void Physics::ProcessCollisionRecursive(GameObject* o1, GameObject* o2)
 	{
 		//if(CollisionTest(o1, o2))
-		//	Debug("collision detect(" + o1->name + ", " + o2->name + ")");
+		//	Debug::Log("collision detect(" + o1->name + ", " + o2->name + ")");
 
 		//auto& childs = o2->children;
 		//const size_t childCount = childs.size();

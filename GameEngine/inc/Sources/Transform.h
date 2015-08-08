@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable:4251)
+
 namespace GameEngine
 {
 	enum Align
@@ -13,9 +16,10 @@ namespace GameEngine
 
 	typedef Align Pivot;
 
-	class GAMEENGINE_API Transform final : public Object, public Node<Transform>
+	class GAMEENGINE_API Transform final : public Object
 	{
-		friend class GameObject;
+	friend class GameObject;
+	friend class Scene;
 	public:
 		GameObject* gameObject;
 		//local
@@ -29,21 +33,29 @@ namespace GameEngine
 		float height = 0;
 
 	private:
-		Matrix worldMatrix;
-		Matrix localMatrix;
+		Matrix localMatrix = Matrix::Identity;
+		Matrix worldMatrix = Matrix::Identity;
+		
 		bool changed = false;
+		bool worldChanged = false;
+
 		Pivot pivotFlags = Pivot(eCenter | eCenter);
 
 	public:
-		Vector3 up() { return worldMatrix.Up();  };
-		Vector3 forward() {  return worldMatrix.Forward();  };
-		Vector3 right() { return worldMatrix.Right();  };
-		Vector3 worldPosition() { return worldMatrix.GetT(); }
-	public:
-		void BuildLocalMatrix();
+		Vector3 up();
+		Vector3 forward();
+		Vector3 right();
 
+		Vector3 worldPosition() { return worldMatrix.GetT(); }
+		Quaternion worldRotation() { return worldMatrix.GetQ(); }
+		Vector3 worldScale() { return worldMatrix.GetS(); }
+	
+	private :
+		void updateSelf();
 	public:
-		Transform() = default;
+		void Update();
+	public:
+		Transform();
 		Transform(const Transform& rhs);
 		void SetPivot(Align _pivot);
 
@@ -68,5 +80,24 @@ namespace GameEngine
 		void WorldMatrix(Matrix& world) { worldMatrix = world; }
 
 		Matrix& LocalMatrix() { return localMatrix; }
+
+#pragma region Hierarchy
+	private :
+		static Transform root;
+		Transform* parent = nullptr;
+		std::list<Transform*> children;
+
+	private :
+		void removeChild(Transform* child);
+
+	public :
+		void SetParent(Transform* _parent);
+		inline Transform* GetParent() { return parent; }
+		inline size_t GetChildCount() { return children.size(); }
+		Transform* GetChild(int n);
+
+#pragma endregion
 	};
 }
+
+#pragma warning(pop)

@@ -103,7 +103,7 @@ namespace GameEngine
 	class GAMEENGINE_API AudioSFX : public AudioClip
 	{
 	private:
-		std::shared_ptr<BYTE> mBuffer;
+		std::vector<BYTE> mBuffer;
 		void Initialize();
 
 	public:

@@ -1,6 +1,6 @@
 #include "enginepch.h"
 #include "GraphicDevice.h"
-#include "DXUtil.h"
+#include "Debug.h"
 #include "GlobalSetting.h"
 #include "Texture2D.h"
 #include "Mesh.h"
@@ -28,21 +28,21 @@ namespace GameEngine
 
 		IDXGIFactory* factory;
 		result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-		if(FAILED(result)) Debug("failed to create DXGIFactory");
+		if(FAILED(result)) Debug::Log("failed to create DXGIFactory");
 
 		IDXGIAdapter* adapter;
 		result = factory->EnumAdapters(0, &adapter);
-		if(FAILED(result)) Debug("failed to factory->EnumAdapters");
+		if(FAILED(result)) Debug::Log("failed to factory->EnumAdapters");
 
 		IDXGIOutput* adapterOut;
 		result = adapter->EnumOutputs(0, &adapterOut);
-		if(FAILED(result)) Debug("failed to adapter->EnumOutputs");
+		if(FAILED(result)) Debug::Log("failed to adapter->EnumOutputs");
 
 		unsigned int numModes;
 		result = adapterOut->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
 		DXGI_MODE_DESC* displayModeList = new DXGI_MODE_DESC[numModes];
 		result = adapterOut->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
-		if(FAILED(result)) Debug("failed to adapterOut->GetDisplayModeList");
+		if(FAILED(result)) Debug::Log("failed to adapterOut->GetDisplayModeList");
 
 		int numerator = displayModeList[numModes - 1].RefreshRate.Numerator;
 		int denominator = displayModeList[numModes - 1].RefreshRate.Denominator;
@@ -55,13 +55,13 @@ namespace GameEngine
 
 		DXGI_ADAPTER_DESC adapterDesc;
 		result = adapter->GetDesc(&adapterDesc);
-		if(FAILED(result)) Debug("failed to adapter->GetDesc");
+		if(FAILED(result)) Debug::Log("failed to adapter->GetDesc");
 		videoMemory = (int)(adapterDesc.DedicatedVideoMemory >> 20);
 
 		videoCardDesc = adapterDesc.Description;
 
 		videoCardDesc += (L"(" + to_wstring(videoMemory) + L"MB)");
-		Debug(videoCardDesc);
+		Debug::Log(videoCardDesc);
 
 		delete[] displayModeList;
 		adapterOut->Release();
@@ -90,7 +90,7 @@ namespace GameEngine
 		result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE::D3D_DRIVER_TYPE_HARDWARE, 0, 0, featureLevels,
 											   ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &scd, &swapChain, &device, NULL, &context);
 		if(FAILED(result))
-			Debug("failed to create Device and Swapchain");
+			Debug::Log("failed to create Device and Swapchain");
 
 		renderTarget = std::make_shared<RenderTarget>();
 		depthStencil = std::make_shared<DepthStencil>();
@@ -134,7 +134,7 @@ namespace GameEngine
 		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 		result = device->CreateRasterizerState(&rasterizerDesc, &rasterizeState.p);
-		if(FAILED(result)) Debug("failed to create RasterizerState");
+		if(FAILED(result)) Debug::Log("failed to create RasterizerState");
 
 		context->RSSetState(rasterizeState);
 
@@ -149,11 +149,11 @@ namespace GameEngine
 		bdesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 		result = device->CreateBlendState(&bdesc, &blendState);
-		if(FAILED(result)) Debug("failed to create BlendState");
+		if(FAILED(result)) Debug::Log("failed to create BlendState");
 
 		bdesc.RenderTarget[0].BlendEnable = false;
 		result = device->CreateBlendState(&bdesc, &disableBlendState);
-		if(FAILED(result)) Debug("failed to create BlendState");
+		if(FAILED(result)) Debug::Log("failed to create BlendState");
 
 		currDepthStencil = depthStencil;
 		currRenderTarget = renderTarget;

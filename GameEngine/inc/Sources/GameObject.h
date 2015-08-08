@@ -11,7 +11,6 @@ namespace GameEngine
 	class Transform;
 	class Renderer;
 
-
 	class GAMEENGINE_API GameObject final : public Object
 	{
 	private :

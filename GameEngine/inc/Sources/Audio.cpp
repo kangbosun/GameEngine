@@ -1,6 +1,6 @@
 #include "enginepch.h"
 #include "Audio.h"
-#include "DXUtil.h"
+#include "Debug.h"
 
 namespace GameEngine
 {
@@ -12,7 +12,7 @@ namespace GameEngine
 
 		HRESULT hr = MFShutdown();
 		if(FAILED(hr)) {
-			Debug("MFShutdown Failed");
+			Debug::Log("MFShutdown Failed");
 		}
 
 		CoUninitialize();
@@ -24,16 +24,16 @@ namespace GameEngine
 
 		HRESULT hr = XAudio2Create(&mXAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
 		if(FAILED(hr)) {
-			Debug("Failed to XAudio2Create");
+			Debug::Log("Failed to XAudio2Create");
 		}
 		hr = mXAudio2->CreateMasteringVoice(&mMasterVoice);
 		if(FAILED(hr)) {
-			Debug("Failed to CreateMasteringVoice");
+			Debug::Log("Failed to CreateMasteringVoice");
 		}
 
 		hr = MFStartup(MF_VERSION);
 		if(FAILED(hr)) {
-			Debug("MFCStartup Failed");
+			Debug::Log("MFCStartup Failed");
 		}
 	}
 
@@ -63,14 +63,14 @@ namespace GameEngine
 		HRESULT hr = MFCreateSourceReaderFromURL(filename.c_str(), nullptr, &mReader.p);
 
 		if(FAILED(hr)) {
-			Debug("MFCreateSourceReaderFromURL Failed");
+			Debug::Log("MFCreateSourceReaderFromURL Failed");
 			return false;
 		}
 
 		CComPtr<IMFMediaType> mediaType, outMediaType;
 		hr = MFCreateMediaType(&mediaType.p);
 		if(FAILED(hr)) {
-			Debug("MFCreateMediaType Failed");
+			Debug::Log("MFCreateMediaType Failed");
 			return false;
 		}
 
@@ -83,14 +83,14 @@ namespace GameEngine
 
 		hr = mReader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, &outMediaType.p);
 		if(FAILED(hr)) {
-			Debug("GetCurrentMediaType Failed");
+			Debug::Log("GetCurrentMediaType Failed");
 			return false;
 		}
 
 		unsigned int formatSize = 0;
 		hr = MFCreateWaveFormatExFromMFMediaType(outMediaType.p, &mWaveFormat, &formatSize);
 		if(FAILED(hr)) {
-			Debug("MFCreateWaveFormatExFromMFMediaType Failed");
+			Debug::Log("MFCreateWaveFormatExFromMFMediaType Failed");
 			return false;
 		}
 
@@ -98,7 +98,7 @@ namespace GameEngine
 		hr = mReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE, MF_PD_DURATION, &var);
 
 		if(FAILED(hr)) {
-			Debug("GetPresentationAttribute Failed");
+			Debug::Log("GetPresentationAttribute Failed");
 			return false;
 		}
 
@@ -121,7 +121,7 @@ namespace GameEngine
 
 		HRESULT hr = mReader->ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, 0, &dwFlags, NULL, &sample.p);
 		if(FAILED(hr)) {
-			Debug("ReadSample failed");
+			Debug::Log("ReadSample failed");
 			return false;
 		}
 
@@ -165,7 +165,7 @@ namespace GameEngine
 		while(true) {
 			HRESULT hr = mReader->ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, 0, &dwFlags, NULL, &sample.p);
 			if(FAILED(hr)) {
-				Debug("ReadSample failed");
+				Debug::Log("ReadSample failed");
 				return 0;
 			}
 
@@ -206,6 +206,13 @@ namespace GameEngine
 			mSourceVoice->DestroyVoice();
 			mSourceVoice = nullptr;
 		}
+	}
+
+	float clamp(float val, float _min, float _max)
+	{
+		val = max(_min, val);
+		val = min(_max, val);
+		return val;
 	}
 
 	void AudioClip::SetVolume(float volume)
@@ -334,8 +341,8 @@ namespace GameEngine
 
 		int len = (int)mStreamer.mLengthInBytes;
 
-		mBuffer.reset(new BYTE[len], ArrayDeleter<BYTE>());
-		size_t n = mStreamer.GetEntireBuffer(mBuffer.get(), len);
+		mBuffer.resize(len);
+		size_t n = mStreamer.GetEntireBuffer(&mBuffer[0], len);
 		mStreamer.mReader.Release();
 	}
 
@@ -346,7 +353,7 @@ namespace GameEngine
 			mSourceVoice->SetVolume(mVolume);
 			XAUDIO2_BUFFER buffer = { 0 };
 			buffer.AudioBytes = mStreamer.mLengthInBytes;
-			buffer.pAudioData = mBuffer.get();
+			buffer.pAudioData = &mBuffer[0];
 			buffer.Flags = XAUDIO2_END_OF_STREAM;
 			mSourceVoice->SubmitSourceBuffer(&buffer);
 			state = AudioClip::ePlaying;
