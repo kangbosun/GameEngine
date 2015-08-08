@@ -135,7 +135,7 @@ namespace GameEngine
 		}
 
 		if(subResource.size() > 0) {
-			D3D11_BOX box = { texPos.x, texPos.y, 0, texPos.x + data.bmW, texPos.y + data.bmH, 1 };
+			D3D11_BOX box = { (UINT)texPos.x, (UINT)texPos.y, 0, (UINT)(texPos.x + data.bmW), (UINT)(texPos.y + data.bmH), 1 };
 			graphicDevice->context->UpdateSubresource(glyphMap->texture2D, 0, &box, &subResource[0], data.bmW << 2, 0);
 
 			FillSpace((int)p.x, (int)p.y, tileRectWidth, tileRectHeight, c);

@@ -24,28 +24,24 @@ namespace GameEngine
 		{
 			return new Object(*this);
 		}
-		virtual std::shared_ptr<Object> CloneShared()
-		{
-			return std::shared_ptr<Object>(Clone());
-		}
 	};
 
-	template <class Base, class Derived>
-	class Cloneable : public Base
+	template <class derived, class base>
+	class Cloneable : public base
 	{
 	public:
-		virtual Base* Clone()
+		virtual base* Clone()
 		{
-			return new Derived((*(Derived*)this));
+			return new derived((*(derived*)this));
 		}
-		std::shared_ptr<Object> CloneShared()
+		std::shared_ptr<derived> CloneShared()
 		{
-			return std::shared_ptr<Derived>((Derived*)Clone());
+			return std::shared_ptr<derived>((derived*)Clone());
 		}
 	};
 
 	template <class Content>
-	class GAMEENGINE_API Node 
+	class Node 
 	{
 	protected:
 		static Content root;
@@ -64,6 +60,9 @@ namespace GameEngine
 		size_t GetChildCount() { return children.size(); }
 		Content* GetChild(int n) { if(n < children.size()) return children[n]; else return nullptr; }
 	};
+
+	template<class Content>
+	Content Node<Content>::root;
 
 	template<class Content>
 	Node<Content>::Node()

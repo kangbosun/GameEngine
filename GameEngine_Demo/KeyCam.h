@@ -2,7 +2,7 @@
 
 #pragma once
 
-class KeyCam : public Cloneable<Component, KeyCam>
+class KeyCam : public Cloneable<KeyCam, Component>
 {
 public:
 	float speed = 5;

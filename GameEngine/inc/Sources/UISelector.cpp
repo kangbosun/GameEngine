@@ -17,7 +17,7 @@ namespace GameEngine
 	shared_ptr<UIInputManager> UIInputManager::GetInstance()
 	{
 		if(!instance) {
-			auto& g = GameObject::Instantiate("UIInputManager");
+			auto g = GameObject::Instantiate("UIInputManager");
 			instance = g->AddComponent<UIInputManager>();
 			GameObject::Register(g);
 		}

@@ -181,7 +181,6 @@
     <ClCompile Include="inc\Sources\Material.cpp" />
     <ClCompile Include="inc\Sources\MathLib.cpp" />
     <ClCompile Include="inc\Sources\Mesh.cpp" />
-    <ClCompile Include="inc\Sources\Object.cpp" />
     <ClCompile Include="inc\Sources\Physics.cpp" />
     <ClCompile Include="inc\Sources\property.cpp" />
     <ClCompile Include="inc\Sources\Renderer.cpp" />

@@ -131,8 +131,8 @@ namespace GameEngine
 
 			void ProcessBoneAndAnimation(FbxNode* node, Node& meshNode);
 		
-			void ProcessAnimCurve(FbxAnimCurve* curve, AnimCurve& animCurve);
-			
+			/*return end key time*/
+			float ProcessAnimCurve(FbxAnimCurve* curve, AnimCurve& animCurve);
 			void ProcessAnimCurveS(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve);
 			void ProcessAnimCurveT(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve);
 			void ProcessAnimCurveR(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve, FbxAMatrix& preRotation);

@@ -9,6 +9,8 @@ namespace GameEngine
 {
 	using namespace std;
 
+	vector<weak_ptr<Component>> Component::allComponents;
+
 	Component::Component() 
 	{
 	}

@@ -39,7 +39,7 @@ namespace GameEngine
 		Vector3 position;
 	};
 
-	class GAMEENGINE_API Light final : public Cloneable<Component, Light>
+	class GAMEENGINE_API Light final : public Cloneable<Light, Component>
 	{
 		enum LightType
 		{

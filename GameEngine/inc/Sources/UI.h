@@ -20,7 +20,7 @@ namespace GameEngine
 	class UIRenderer;
 
 	// ui object
-	class GAMEENGINE_API UIBase : public Component
+	class GAMEENGINE_API UIBase : public Cloneable<UIBase, Component>
 	{
 	public:
 		UIRenderMode renderMode = UIRenderMode::eOverlay;
@@ -42,7 +42,7 @@ namespace GameEngine
 
 	class Font;
 
-	class GAMEENGINE_API Text final : public Cloneable<UIBase, Text>
+	class GAMEENGINE_API Text final : public Cloneable<Text, UIBase>
 	{
 	private:
 		struct TextLine
@@ -73,7 +73,7 @@ namespace GameEngine
 		std::wstring& GetText() { return text; }
 	};
 
-	class GAMEENGINE_API Image : public Cloneable<UIBase, Image>
+	class GAMEENGINE_API Image : public Cloneable<Image, UIBase>
 	{
 	public:
 		void SetSize(int _width, int _height);
@@ -88,7 +88,7 @@ namespace GameEngine
 		bool lbuttonDown;
 	};
 
-	class GAMEENGINE_API SelectableUI : public Cloneable<UIBase, SelectableUI>
+	class GAMEENGINE_API SelectableUI : public Cloneable<SelectableUI, UIBase>
 	{
 	public:
 		typedef std::function<void()> callback;
@@ -123,7 +123,7 @@ namespace GameEngine
 		void state_Hover(const UIStateParam& param);
 	};
 
-	class GAMEENGINE_API Button : public Cloneable<SelectableUI, Button>
+	class GAMEENGINE_API Button : public Cloneable<Button, SelectableUI>
 	{
 	private:
 		std::shared_ptr<Image> _image;
@@ -139,7 +139,7 @@ namespace GameEngine
 
 	bool operator <(const std::weak_ptr<UIBase>& lhs, const std::weak_ptr<UIBase>& rhs);
 
-	class GAMEENGINE_API UIInputManager : public Cloneable<Component, UIInputManager>
+	class GAMEENGINE_API UIInputManager : public Cloneable<UIInputManager, Component>
 	{
 	public:
 		static std::shared_ptr<UIInputManager> GetInstance();
@@ -154,7 +154,7 @@ namespace GameEngine
 		void Register(const std::shared_ptr<SelectableUI>& ui);
 	};
 
-	class GAMEENGINE_API UISelector : public Cloneable < Component, UISelector >
+	class GAMEENGINE_API UISelector : public Cloneable <UISelector, Component>
 	{
 	public:
 		void Start();

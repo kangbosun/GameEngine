@@ -14,7 +14,7 @@ namespace GameEngine
 	class SkinnedMeshRenderer;
 	class Transform;
 
-	class GAMEENGINE_API Animation : public Cloneable<Component, Animation>
+	class GAMEENGINE_API Animation : public Cloneable<Animation, Component>
 	{
 	private:
 		float elaspedTime = 0;

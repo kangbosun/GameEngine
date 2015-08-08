@@ -23,7 +23,7 @@ namespace GameEngine
 		int useSkinning = false;
 	};
 
-	class GAMEENGINE_API Renderer  : public Component
+	class GAMEENGINE_API Renderer  : public Cloneable<Renderer, Component>
 	{
 	public:
 		enum RendererType
@@ -39,7 +39,7 @@ namespace GameEngine
 	};
 
 	///////////////////////
-	class GAMEENGINE_API MeshRenderer : public Cloneable<Renderer, MeshRenderer>
+	class GAMEENGINE_API MeshRenderer : public Cloneable<MeshRenderer, Renderer>
 	{
 	protected:
 		static std::list<std::weak_ptr<MeshRenderer>> allMeshRenderers;
@@ -72,7 +72,7 @@ namespace GameEngine
 
 	bool operator <(const std::weak_ptr<UIRenderer>& lhs, const std::weak_ptr<UIRenderer>& rhs);
 
-	class GAMEENGINE_API UIRenderer : public Cloneable<Renderer, UIRenderer>
+	class GAMEENGINE_API UIRenderer : public Cloneable<UIRenderer, Renderer>
 	{
 	protected:
 		static std::list<std::weak_ptr<UIRenderer>> allUIRenderers;

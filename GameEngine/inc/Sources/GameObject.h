@@ -12,18 +12,18 @@ namespace GameEngine
 	class Renderer;
 
 
-	class GAMEENGINE_API GameObject final : public Cloneable<Object, GameObject>, public std::enable_shared_from_this<GameObject>
+	class GAMEENGINE_API GameObject final : public Object
 	{
 	private :
-		static std::unordered_multimap<std::string, std::shared_ptr<GameObject>> allGameObjects;
+		static std::unordered_multimap<std::string, GameObject*> allGameObjects;
 		bool isRegistered = false;
 	public :
-		static void Register(const std::shared_ptr<GameObject>& go);
-		static std::shared_ptr<GameObject> FindGameObject(const std::string& name);
-		static void FindGameObjects(const std::string& name, std::vector<std::shared_ptr<GameObject>>& result);
+		static void Register(GameObject* go);
+		static GameObject* FindGameObject(const std::string& name);
+		static void FindGameObjects(const std::string& name, std::vector<GameObject*>& result);
 
-		std::shared_ptr<GameObject> FindGameObjectInChildren(const std::string& name);
-		void FindGameObjectsInChildren(const std::string& name, std::vector<std::shared_ptr<GameObject>>& result);
+		GameObject* FindGameObjectInChildren(const std::string& name);
+		void FindGameObjectsInChildren(const std::string& name, std::vector<GameObject*>& result);
 		
 	public:
 		std::string name;
@@ -34,7 +34,7 @@ namespace GameEngine
 
 	public:
 		GameObject(const GameObject& gameObject);
-
+		~GameObject() {}
 
 		// access renderer directly
 	private :
@@ -43,17 +43,17 @@ namespace GameEngine
 		std::shared_ptr<Renderer> renderer();
 
 	private :
-		GameObject* CopyRecursive(Transform* parent);
+		GameObject* CopyComponentsRecursive(GameObject* dst);
 		GameObject();
 		/* don't try implicit copy */
 		GameObject& operator=(const GameObject& rhs);
-		~GameObject() {}
+		
 	public :
-		GameObject* Clone() override;
+		GameObject* Clone();
 
 	public :
-		static std::shared_ptr<GameObject> Instantiate(const std::string& name = "");
-		static std::shared_ptr<GameObject> Instantiate(const std::shared_ptr<GameObject>& go);
+		static GameObject* Instantiate(const std::string& name = "");
+		static GameObject* Instantiate(const GameObject* go);
 
 #pragma region Component management methods
 	private:
@@ -93,33 +93,28 @@ namespace GameEngine
 	template <typename T>
 	std::shared_ptr<T> GameObject::GetComponent()
 	{
-		T* target = nullptr;
+		std::shared_ptr<T> target;
 		for(auto& com : components) {
-			target = dynamic_cast<T*>(com.get());
+			target = std::dynamic_pointer_cast<T>(com);
 			if(target)
 				break;
 		}
-		return std::shared_ptr<T>(target);
+		return target;
 	}
 	
 	template <typename T>
 	std::shared_ptr<T> GameObject::GetComponentInChildren()
 	{
-		T* target = nullptr;
-		for(auto com : components) {
-			auto target = dynamic_cast<T*>(com.get());
-			if(target)
-				break;
-		}
+		std::shared_ptr<T> target = GetComponent<T>();
 
 		if(!target) {
 			for(int i = 0; i < transform.GetChildCount(); ++i) {
 				auto child = transform.GetChild(i);
-				target = child->gameObject->GetComponentInChildren<T>().get();
+				target = child->gameObject->GetComponentInChildren<T>();
 				if(target) break;
 			}
 		}
-		return std::shared_ptr<T>(target);
+		return target;
 	}
 
 	template <typename T>
@@ -136,11 +131,6 @@ namespace GameEngine
 	}
 #pragma endregion
 
-}
-
-namespace std
-{
-	GAMEENGINE_API bool operator==(const weak_ptr<GameEngine::GameObject>& lhs, const weak_ptr<GameEngine::GameObject>& rhs);
 }
 
 #pragma warning(pop)

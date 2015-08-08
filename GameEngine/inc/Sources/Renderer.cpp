@@ -96,7 +96,7 @@ namespace GameEngine
 			shader->SetWorldMatrix(&transform()->WorldMatrix());
 
 			if(matrices.size() > 0)
-				shader->SetBoneMatrices(&(*matrices.begin()), matrices.size());
+				shader->SetBoneMatrices(&(*matrices.begin()), (uint32_t)matrices.size());
 			else
 				shader->SetBoneMatrices(0, 0);
 

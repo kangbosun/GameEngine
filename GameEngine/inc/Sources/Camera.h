@@ -15,7 +15,7 @@ namespace GameEngine
 		Vector3 position;
 	};
 
-	class GAMEENGINE_API Camera final : public Cloneable<Component, Camera>
+	class GAMEENGINE_API Camera final : public Cloneable<Camera, Component>
 	{
 	private:
 		static std::list<std::weak_ptr<Camera>> allCameras;

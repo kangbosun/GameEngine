@@ -271,7 +271,6 @@ namespace GameEngine
 		int index = 0;
 		Matrix bindPose;
 		Matrix bindPoseInverse;
-		~Bone();
 	};
 
 	struct GAMEENGINE_API Keyframe
@@ -318,8 +317,8 @@ namespace GameEngine
 		AnimCurve3 translation;
 		AnimCurve3 rotation;
 		AnimCurve3 scaling;
-		size_t begin;
-		size_t end;
+		float begin;
+		float end;
 
 		Vector3 EvaluateT(float time);
 		Vector3 EvaluateR(float time);

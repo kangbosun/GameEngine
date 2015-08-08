@@ -3,7 +3,7 @@
 
 
 
-class Grid : public Cloneable<Component, Grid>
+class Grid : public Cloneable<Grid, Component>
 {
 public:
 	void Start()

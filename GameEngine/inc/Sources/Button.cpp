@@ -18,7 +18,7 @@ namespace GameEngine
 		using namespace std;
 		auto g = GameObject::Instantiate("Button");
 
-		auto text = Text::CreateText(Vector3(0, 0, -0.1f), size, str, L"NanumGothic");
+		auto text = Text::CreateText(Vector3(0, 0, -0.1f), size, str, "NanumGothic");
 		text->SetColor(Color::Black);
 		text->SetAlign(Align(eCenter | eCenter));
 		text->SetFontSize((int)(size.y * 0.5f));

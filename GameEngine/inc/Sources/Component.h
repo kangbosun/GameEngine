@@ -9,7 +9,7 @@ namespace GameEngine
 	class Renderer;
 	class Transform;
 
-	class GAMEENGINE_API Component  : public Object
+	class GAMEENGINE_API Component : public Cloneable<Component, Object>
 	{
 		friend class Scene;
 		friend class GameObject;
@@ -17,9 +17,9 @@ namespace GameEngine
 	protected :
 		bool registered = false;
 		bool destroy = false;
-		GameObject* _gameObject = nullptr;
+		GameObject* _gameObject;
 
-	public:
+	public:	
 		readonly<GameObject*> gameObject{ prop_get { return _gameObject; } };
 		Transform* const transform();
 		const std::shared_ptr<Renderer> renderer();

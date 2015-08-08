@@ -23,7 +23,7 @@ public:
 };
 
 
-class MousePos : public Cloneable < Component, MousePos >
+class MousePos : public Cloneable<MousePos, Component>
 {
 public:
 	weak_ptr<Text> text;
@@ -47,7 +47,7 @@ public:
 class Scene01 : public Scene
 {
 public:
-	shared_ptr<GameObject> talia;
+	GameObject* talia;
 	shared_ptr<Light> light1;
 	void OnLoad()
 	{		
@@ -68,35 +68,35 @@ public:
 		//sphere->transform()->scale = Vector3(10, 10, 10);
 		//sphere->transform()->Translate(1, 0.5f, 0);
 
-		auto& plane = Resource::GetModel(L"plane");
-		plane->transform.scale = Vector3(200, 1, 200);
-		plane->transform.Translate(0.0f, -0.01f, 0.0f);
-		GameObject::Register(plane);
+		//auto& plane = Resource::models.Find("plane");
+		//plane->transform.scale = Vector3(200, 1, 200);
+		//plane->transform.Translate(0.0f, -0.01f, 0.0f);
+		//GameObject::Register(plane);
 
 
 		Camera::main->transform()->position = Vector3(0.0f, 1.0f, 2.0f);
 		Camera::main->transform()->LookAt(Vector3(0, 0, 0));
 		Camera::main->gameObject->AddComponent<KeyCam>();
 
-		Resource::AddModel(L"attack01", "resources\\models", "attack01.fbx");
-		auto& attack = Resource::GetModel(L"attack01");
-		auto& mat = attack->GetComponentInChildren<MeshRenderer>()->materials[0];
-		attack->transform()->Translate(-1, 0, 0);
-		attack->GetComponentInChildren<Animation>()->Play("Take 001");
-		attack->GetComponentInChildren<Animation>()->speed = 0.2f;
-		GameObject::Register(attack);
+		//Resource::models.Add("attack01", "resources\\models", "attack01.fbx");
+		//auto& attack = Resource::GetModel(L"attack01");
+		//auto& mat = attack->GetComponentInChildren<MeshRenderer>()->materials[0];
+		//attack->transform()->Translate(-1, 0, 0);
+		//attack->GetComponentInChildren<Animation>()->Play("Take 001");
+		//attack->GetComponentInChildren<Animation>()->speed = 0.2f;
+		//GameObject::Register(attack);
 
-		Resource::AddModel(L"NightWing", "resources\\models\\nightwing", "NW.fbx");
-		auto& nightwing = Resource::GetModel(L"NightWing");
-		nightwing->transform()->Scale(Vector3(10, 10, 10));
-		nightwing->transform()->Translate(1, 0, 0);
-		GameObject::Register(nightwing);
+		//Resource::AddModel(L"NightWing", "resources\\models\\nightwing", "NW.fbx");
+		//auto& nightwing = Resource::GetModel(L"NightWing");
+		//nightwing->transform()->Scale(Vector3(10, 10, 10));
+		//nightwing->transform()->Translate(1, 0, 0);
+		//GameObject::Register(nightwing);
 
-		Resource::AddModel(L"Talia", "resources\\models\\Talia", "Talia.fbx");
-		talia = Resource::GetModel(L"Talia");
+		//Resource::AddModel(L"Talia", "resources\\models\\Talia", "Talia.fbx");
+		//talia = Resource::GetModel(L"Talia");
 		//GameObject::Register(talia);
 
-		auto text2 = Text::CreateText(Vector3(960, 540, 2), Vector2(100, 100), L"a", L"NanumGothic");
+		auto text2 = Text::CreateText(Vector3(960, 540, 2), Vector2(100, 100), L"a", "NanumGothic");
 		text2->transform()->SetPivot(Align(eRight | eTop));
 		text2->SetFontSize(32);
 		text2->SetAlign(Align(eRight | eTop));
@@ -104,7 +104,8 @@ public:
 		text2->SetColor(Color::White);
 		GameObject::Register(text2->gameObject);
 		text2->SetMesh();
-		auto img = Image::CreateImage(Vector3(-960, 540, 1), Vector2(400, 400), text2->renderer()->material.diffuseMap);
+		auto img = Image::CreateImage(Vector3(-960, 540, 1), Vector2(400, 400));
+		img->SetTexture(text2->renderer()->material.diffuseMap);
 		string name = img->ToString();
 		img->transform()->SetPivot(Pivot(eLeft | eTop));
 		GameObject::Register(img->gameObject);
@@ -115,9 +116,9 @@ public:
 		button->SetText(L"Button1");
 		button->onClick = bind([&]() { GameObject::Register(talia); });
 
-		auto button2 = dynamic_pointer_cast<GameObject>(button->gameObject->Clone());
+		auto button2 = button->gameObject->Clone();
 		GameObject::Register(button2);
-		button2->transform()->Translate(0, 70, 1);
+		button2->transform.Translate(0, 70, 1);
 		button2->GetComponent<Button>()->SetText(L"Shadow On/Off");
 		button2->GetComponentInChildren<Text>()->SetFontSize(24);
 		button2->GetComponent<Button>()->onClick = bind([&]() { light1->renderShadow = !light1->renderShadow; });

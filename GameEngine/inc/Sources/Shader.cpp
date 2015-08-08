@@ -133,9 +133,9 @@ namespace GameEngine
 			//variables[varDesc.Name] = var;
 		}
 
-		for(int i = 0; i < nInterface; ++i) {
-			D3DX11_EFFECT_VARIABLE_DESC varDesc;
-		}
+		//for(int i = 0; i < nInterface; ++i) {
+		//	D3DX11_EFFECT_VARIABLE_DESC varDesc;
+		//}
 
 		auto pass = tech->GetPassByIndex(0);
 

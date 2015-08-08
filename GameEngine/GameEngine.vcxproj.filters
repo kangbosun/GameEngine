@@ -67,9 +67,6 @@
     <ClCompile Include="inc\Sources\Component.cpp">
       <Filter>Source\Base</Filter>
     </ClCompile>
-    <ClCompile Include="inc\Sources\Object.cpp">
-      <Filter>Source\Base</Filter>
-    </ClCompile>
     <ClCompile Include="inc\Sources\GameObject.cpp">
       <Filter>Source\Base</Filter>
     </ClCompile>

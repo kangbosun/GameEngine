@@ -22,18 +22,18 @@ namespace GameEngine
 	resource_container_shared<Texture2D>		Resource::textures;
 	resource_container_shared<Shader>			Resource::shaders;
 	resource_container_shared<Font>				Resource::fonts;
-	resource_container_shared<GameObject>		Resource::models;
+	resource_container<GameObject>				Resource::models;
 	resource_container_shared<AudioMusic>		Resource::audios;
 	resource_container_shared<Material>			Resource::materials;
 	resource_container_shared<AnimClip>			Resource::animClips;
 
 	void Resource::LoadDefaultResource()
 	{
-		auto s = shared_ptr<Shader>();
+		auto s = make_shared<Shader>();
 		s->InitShader(L"resources\\shaders\\Texture.fx");
 		Resource::shaders.Add("Tex", s);
 
-		auto s2 = shared_ptr<Shader>();
+		auto s2 = make_shared<Shader>();
 		s2->InitShader(L"resources\\shaders\\Standard.fx");
 		Resource::shaders.Add("Standard", s2);
 
@@ -41,7 +41,7 @@ namespace GameEngine
 		white->LoadFromFile(L"resources\\textures\\white.png");
 		Resource::textures.Add("white", white);
 
-		auto nanumGothic = Font::LoadFont("NanumGothic.ttf", "resources\\Fonts");
+		auto nanumGothic = Font::LoadFont("NanumGothic", "resources\\Fonts\\NanumGothic.ttf");
 		Resource::fonts.Add("NanumGothic", nanumGothic);
 
 
@@ -55,7 +55,7 @@ namespace GameEngine
 
 
 
-	void Resource::FbxToObject(const wstring& modelName, const shared_ptr<GameObject>& object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader)
+	void Resource::FbxToObject(const wstring& modelName, GameObject* object, FbxLoader::Node& meshNode, FbxLoader::FbxLoader& loader)
 	{
 		auto device = GraphicDevice::Instance()->device;
 
