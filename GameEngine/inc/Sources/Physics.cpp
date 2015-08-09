@@ -1,7 +1,7 @@
 #include "enginepch.h"
 #include "Physics.h"
 #include "GameObject.h"
-#include "Debug.h"
+#include "DebugClass.h"
 #include "Transform.h"
 
 namespace GameEngine

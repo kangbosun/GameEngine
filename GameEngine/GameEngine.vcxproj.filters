@@ -247,11 +247,11 @@
       <Filter>Source\Core</Filter>
     </ClInclude>
     <ClInclude Include="inc\GameEngine.h" />
-    <ClInclude Include="inc\Sources\Debug.h">
-      <Filter>Source\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="inc\Sources\resource_conatiner.h">
       <Filter>Source\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Sources\DebugClass.h">
+      <Filter>Source\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

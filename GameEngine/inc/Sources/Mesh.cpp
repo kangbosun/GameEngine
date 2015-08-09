@@ -1,7 +1,7 @@
 #include "enginepch.h"
 #include "GraphicDevice.h"
 #include "Mesh.h"
-#include "Debug.h"
+#include "DebugClass.h"
 
 namespace GameEngine
 {

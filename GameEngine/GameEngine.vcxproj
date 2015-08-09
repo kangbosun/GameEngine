@@ -204,7 +204,7 @@
     <ClInclude Include="inc\Sources\Audio.h" />
     <ClInclude Include="inc\Sources\Camera.h" />
     <ClInclude Include="inc\Sources\Component.h" />
-    <ClInclude Include="inc\Sources\Debug.h" />
+    <ClInclude Include="inc\Sources\DebugClass.h" />
     <ClInclude Include="inc\Sources\EngineDefines.h" />
     <ClInclude Include="inc\Sources\enginepch.h" />
     <ClInclude Include="inc\Sources\FbxLoader.h" />

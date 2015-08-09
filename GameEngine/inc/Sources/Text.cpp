@@ -6,7 +6,7 @@
 #include "Font.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "Debug.h"
+#include "DebugClass.h"
 #include "GameObject.h"
 #include "GraphicDevice.h"
 #include "GlyphPool.h"

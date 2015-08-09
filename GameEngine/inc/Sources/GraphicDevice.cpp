@@ -1,6 +1,6 @@
 #include "enginepch.h"
 #include "GraphicDevice.h"
-#include "Debug.h"
+#include "DebugClass.h"
 #include "GlobalSetting.h"
 #include "Texture2D.h"
 #include "Mesh.h"

@@ -1,5 +1,5 @@
 #include "enginepch.h"
-#include "Debug.h"
+#include "DebugClass.h"
 #include "Texture2D.h"
 #include "GraphicDevice.h"
 

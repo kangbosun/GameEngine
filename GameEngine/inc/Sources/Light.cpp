@@ -6,7 +6,7 @@
 #include "Resource.h"
 #include "GameObject.h"
 #include "GlobalSetting.h"
-#include "Debug.h"
+#include "DebugClass.h"
 #include "Renderer.h"
 #include "Texture2D.h"
 

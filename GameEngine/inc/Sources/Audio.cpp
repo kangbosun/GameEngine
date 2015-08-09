@@ -1,6 +1,6 @@
 #include "enginepch.h"
 #include "Audio.h"
-#include "Debug.h"
+#include "DebugClass.h"
 
 namespace GameEngine
 {

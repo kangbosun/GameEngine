@@ -3,7 +3,7 @@
 #include "Resource.h"
 #include "GraphicDevice.h"
 #include "GlyphPool.h"
-#include "Debug.h"
+#include "DebugClass.h"
 
 namespace GameEngine
 {

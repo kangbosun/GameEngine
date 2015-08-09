@@ -37,7 +37,7 @@
 #include "Sources\MathLib.h"
 #include "Sources\Object.h"
 #include "Sources\Component.h"
-#include "Sources\Debug.h"
+#include "Sources\DebugClass.h"
 
 #include "Sources\Texture2D.h"
 #include "Sources\GraphicDevice.h"

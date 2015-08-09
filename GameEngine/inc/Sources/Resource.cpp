@@ -11,7 +11,7 @@
 #include "Transform.h"
 #include "Animation.h"
 #include "FbxLoader.h"
-#include "Debug.h"
+#include "DebugClass.h"
 #include "Texture2D.h"
 
 namespace GameEngine
