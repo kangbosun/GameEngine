@@ -41,7 +41,7 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dx11.lib")
 
-#pragma comment(lib, "Effects11.lib")
+
 
 #define FBXSDK_SHARED
 #include <fbxsdk.h>
@@ -51,11 +51,7 @@
 #include FT_FREETYPE_H
 #include FT_MODULE_H
 
-#ifdef _DEBUG
-#pragma comment(lib, "freetype26d.lib")
-#else
-#pragma comment(lib, "freetype26.lib")
-#endif
+
 
 #endif
 

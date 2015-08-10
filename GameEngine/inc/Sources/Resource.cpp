@@ -60,7 +60,7 @@ namespace GameEngine
 		//check meshdata 
 		Debug::Log("#Load : " + folder + "\\" + filename);
 		if(pRoot->vertIndices.size() == 0 && pRoot->childNodes.size() == 0) {
-			Debug::Log("Fail : No Mesh Datas", Debug::Red);
+			Debug::Failed("No Mesh Datas");
 			return nullptr;
 		}
 		//check meaningless root node
@@ -73,7 +73,7 @@ namespace GameEngine
 		FbxToObject(name, obj, *pRoot, loader);
 
 		models.Add(name, obj);
-		Debug::Log("Success", Debug::Green);
+		Debug::Success();
 		return obj->Clone();
 	}
 

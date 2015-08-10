@@ -51,6 +51,12 @@ namespace GameEngine
 
 	bool Shader::InitShader(const wstring& filename)
 	{
+		auto dx = GraphicDevice::Instance();
+		if(!dx)
+			return false;
+
+		auto device = dx->device;
+
 		DWORD shaderFlags = 0;
 #if defined(_DEBUG)
 		shaderFlags |= D3DCOMPILE_DEBUG;
@@ -58,31 +64,31 @@ namespace GameEngine
 #endif
 
 		CComPtr<ID3DBlob> compileShader, compilationMsgs;
-
-		HRESULT result = D3DX11CompileFromFile(filename.c_str(), 0, 0, 0, "fx_5_0", shaderFlags, 0, 0, &compileShader.p, &compilationMsgs.p, 0);
-		if(compilationMsgs.p) {
-			Debug::Log((char*)compilationMsgs->GetBufferPointer());
-			compileShader.Release();
-			return false;
-		}
-
+		
+		Debug::Log(L"#Load : " + filename);
+		
+		auto result = D3DCompileFromFile(filename.c_str(), 0, D3D_COMPILE_STANDARD_FILE_INCLUDE, 0, "fx_5_0", shaderFlags, 0, &compileShader.p, &compilationMsgs.p);
 		if(FAILED(result)) {
-			Debug::Log(L"Failed to Compile " + wstring(filename));
+			if(compilationMsgs.p) {
+				Debug::Log((char*)compilationMsgs->GetBufferPointer(), Debug::Red);
+				compileShader.Release();
+			}
+			Debug::Failed("D3DCompileFromFile");
 			return false;
 		}
+		else {
+			if(compilationMsgs.p) {
+				Debug::Log((char*)compilationMsgs->GetBufferPointer(), Debug::Yellow);
+			}
+		}
 
-		auto dx = GraphicDevice::Instance();
-		if(!dx)
-			return false;
-
-		auto device = dx->device;
-
-		result = D3DX11CreateEffectFromMemory(compileShader->GetBufferPointer(), compileShader->GetBufferSize(), 0, device, &effect.p);
+		result = D3DX11CreateEffectFromMemory(compileShader->GetBufferPointer(), compileShader->GetBufferSize(), 0, dx->device, &effect.p);
+		
 		if(FAILED(result)) {
-			Debug::Log("Failed to D3DX11CreateEffectFromMemory");
+			Debug::Failed("CreateEffectFromMemory()");
 			return false;
 		}
-
+		
 		D3DX11_EFFECT_DESC effectDesc;
 		effect->GetDesc(&effectDesc);
 		const int nTechs = effectDesc.Techniques;
@@ -126,12 +132,12 @@ namespace GameEngine
 		classInstances.skinningEnable = effect->GetVariableByName("skinningEnable")->AsClassInstance();
 		classInstances.skinningDisable = effect->GetVariableByName("skinningDisable")->AsClassInstance();
 
-		for(int i = 0; i < nVars; ++i) {
-			D3DX11_EFFECT_VARIABLE_DESC varDesc;
-			auto var = effect->GetVariableByIndex(i);
-			var->GetDesc(&varDesc);
-			//variables[varDesc.Name] = var;
-		}
+		//for(int i = 0; i < nVars; ++i) {
+		//	D3DX11_EFFECT_VARIABLE_DESC varDesc;
+		//	auto var = effect->GetVariableByIndex(i);
+		//	var->GetDesc(&varDesc);
+		//	//variables[varDesc.Name] = var;
+		//}
 
 		//for(int i = 0; i < nInterface; ++i) {
 		//	D3DX11_EFFECT_VARIABLE_DESC varDesc;
@@ -140,14 +146,14 @@ namespace GameEngine
 		auto pass = tech->GetPassByIndex(0);
 
 		if(!pass) {
-			Debug::Log("Failed to GetPassByName");
+			Debug::Failed("GetPassByIndex()");
 			return false;
 		}
 		D3DX11_PASS_DESC passDesc;
 		result = pass->GetDesc(&passDesc);
 
 		if(FAILED(result)) {
-			Debug::Log("Failed to GetDesc");
+			Debug::Failed("pass->GetDesc()");
 			return false;
 		}
 
@@ -194,12 +200,13 @@ namespace GameEngine
 		result = device->CreateInputLayout(pDesc, 6, passDesc.pIAInputSignature, passDesc.IAInputSignatureSize, &layout.p);
 
 		if(FAILED(result)) {
-			Debug::Log("Failed to create input vertex layout");
+			Debug::Failed("CreateInpuLayout()");
 			layout = nullptr;
 			return false;
 		}
 
 		delete[] pDesc;
+		Debug::Success();
 		return true;
 	}
 

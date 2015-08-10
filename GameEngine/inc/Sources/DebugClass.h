@@ -14,6 +14,7 @@ struct Debug
 		LightAqua = 11, LightRed = 12, LightPurple= 13, LightYellow = 14, LightWhite = 15
 	};
 
+	
 	template <typename T>
 	static void Log(const T& msg, DebugColor color = White)
 	{
@@ -32,6 +33,16 @@ struct Debug
 		std::wcout << msg << std::endl;
 		if(color != White)
 			SetConsoleTextAttribute(handle, (WORD)White);
+	}
+
+	static void Success()
+	{
+		Log("Success", Debug::Green);
+	}
+
+	static void Failed(const std::string& msg)
+	{
+		Log("Failed - " + msg, Debug::Red);
 	}
 #else
 #error There is no implement of 'Debug' class
