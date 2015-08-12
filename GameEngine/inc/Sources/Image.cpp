@@ -10,7 +10,7 @@ namespace GameEngine
 {
 	void Image::SetSize(int _width, int _height)
 	{
-		transform()->SetSize(_width, _height);
+		GetTransform()->SetSize(_width, _height);
 		std::vector<Vertex> vertices(4);
 		std::vector<unsigned long> indices = { 0, 1, 3, 1, 2, 3 };
 
@@ -49,7 +49,7 @@ namespace GameEngine
 		auto i = g->AddComponent<Image>();
 		i->SetTexture(Resource::textures.Find("white"));
 		i->SetSize((int)size.x, (int)size.y);
-		g->transform.position = pos;
+		g->transform.SetPosition(pos);
 
 		return i;
 	}

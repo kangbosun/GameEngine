@@ -18,6 +18,7 @@ namespace GameEngine
 		bool isRegistered = false;
 	public :
 		static void Register(GameObject* go);
+		static void UnRegister(GameObject* go);
 		static GameObject* FindGameObject(const std::string& name);
 		static void FindGameObjects(const std::string& name, std::vector<GameObject*>& result);
 
@@ -33,6 +34,8 @@ namespace GameEngine
 
 	public:
 		GameObject(const GameObject& gameObject);
+	private :
+
 		~GameObject() {}
 
 		// access renderer directly
@@ -53,6 +56,7 @@ namespace GameEngine
 	public :
 		static GameObject* Instantiate(const std::string& name = "");
 		static GameObject* Instantiate(const GameObject* go);
+		static void Destroy(GameObject*& object);
 
 #pragma region Component management methods
 	private:

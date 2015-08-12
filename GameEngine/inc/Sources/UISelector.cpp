@@ -72,7 +72,7 @@ namespace GameEngine
 					ui->SetState({ false, false });
 				}
 				else {
-					auto transform = ui->transform();
+					auto transform = ui->GetTransform();
 					Vector3 center = { 0, 0, 0 };
 					Vector3 extends = Vector3(transform->width / 2, transform->height / 2, 0);
 					BoundingBox box = { center, extends };

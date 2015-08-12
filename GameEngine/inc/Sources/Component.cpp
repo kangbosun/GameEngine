@@ -11,7 +11,7 @@ namespace GameEngine
 
 	vector<weak_ptr<Component>> Component::allComponents;
 
-	Component::Component() 
+	Component::Component()
 	{
 	}
 
@@ -29,6 +29,14 @@ namespace GameEngine
 		}
 	}
 
+	void Component::UnRegister(const std::shared_ptr<Component>& com)
+	{
+		if(com && com->registered) {
+			com->registered = false;
+			//do something
+		}
+	}
+
 	void Component::UpdateAll()
 	{
 		vector<std::weak_ptr<Component>> forSwap;
@@ -37,27 +45,31 @@ namespace GameEngine
 			auto& weak = allComponents[i];
 			if(!weak.expired()) {
 				auto& strong = weak.lock();
-				if(strong->enabled)
-					strong->Update();
-				forSwap.emplace_back(move(weak));
+				if(strong->registered) {
+					if(strong->enabled)
+						strong->Update();
+					forSwap.emplace_back(move(weak));
+				}
 			}
 		}
 		allComponents.swap(forSwap);
 	}
 
-	Transform* const Component::transform()
+	Transform* const Component::GetTransform()
 	{
-		if(gameObject)
-			return &gameObject->transform;
+		if(_gameObject)
+			return &_gameObject->transform;
 		else
 			return nullptr;
 	}
 
 	const std::shared_ptr<Renderer> Component::renderer()
 	{
-		if(gameObject)
-			return gameObject->renderer();
+		if(_gameObject)
+			return _gameObject->renderer();
 		else
 			return std::shared_ptr<Renderer>();
 	}
 }
+
+

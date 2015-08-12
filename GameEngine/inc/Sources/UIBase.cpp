@@ -6,7 +6,7 @@ namespace GameEngine
 {
 	bool operator <(const std::weak_ptr<UIBase>& lhs, const std::weak_ptr<UIBase>& rhs)
 	{
-		return (lhs.lock()->transform()->worldPosition().z < rhs.lock()->transform()->worldPosition().z);
+		return (lhs.lock()->GetTransform()->worldPosition().z < rhs.lock()->GetTransform()->worldPosition().z);
 	}
 
 	const std::shared_ptr<UIRenderer> UIBase::renderer()

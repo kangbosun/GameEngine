@@ -73,7 +73,7 @@ namespace GameEngine
 				Debug::Log((char*)compilationMsgs->GetBufferPointer(), Debug::Red);
 				compileShader.Release();
 			}
-			Debug::Failed("D3DCompileFromFile");
+			Debug::Failed("D3DCompileFromFile()");
 			return false;
 		}
 		else {

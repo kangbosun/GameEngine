@@ -27,10 +27,10 @@ namespace GameEngine
 		img->SetSize((int)size.x, (int)size.y);
 		img->SetTexture(Resource::textures.Find("white"));
 
-		text->transform()->SetParent(&g->transform);
+		text->GetTransform()->SetParent(&g->transform);
 		auto& button = g->AddComponent<Button>();
 		button->SetSize((int)size.x, (int)size.y);
-		button->transform()->position = pos;
+		button->GetTransform()->SetPosition(pos);
 
 		g->AddComponent<UISelector>();
 
@@ -48,7 +48,7 @@ namespace GameEngine
 	{
 		if(_text) {
 			_text->SetFontSize((int)(height * 0.8f));
-			_text->transform()->SetSize(width, height);
+			_text->GetTransform()->SetSize(width, height);
 			_image->SetSize(width, height);
 		}
 	}

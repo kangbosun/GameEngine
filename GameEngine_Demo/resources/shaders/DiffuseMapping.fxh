@@ -5,7 +5,7 @@
 Texture2D diffuseMap;
 SamplerState diffuseMapSamplerState
 {
-	Filter = MIN_MAG_MIP_POINT;
+	Filter = MIN_MAG_MIP_LINEAR;
 	AddressU = Clamp;
 	AddressV = Clamp;
 };

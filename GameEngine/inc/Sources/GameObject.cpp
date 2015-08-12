@@ -16,14 +16,14 @@ namespace GameEngine
 
 	GameObject::GameObject()
 	{
+		components.reserve(5);
 		transform.gameObject = this;
 	}
 	
-	GameObject::GameObject(const GameObject& gameObject)
+	GameObject::GameObject(const GameObject& gameObject) :
+		transform(gameObject.transform), name(gameObject.name), active(gameObject.active)
 	{
-		name = gameObject.name;
-		active = gameObject.active;
-		transform = gameObject.transform;
+		components.reserve(5);
 		transform.gameObject = this;
 	}
 
@@ -53,32 +53,72 @@ namespace GameEngine
 		return clone;
 	}
 
+	void GameObject::Destroy(GameObject*& object)
+	{
+		if(object) {
+			UnRegister(object);
+			for(auto child : object->transform.children) {
+				Destroy(child->gameObject);
+			}
+			delete object;
+			object = nullptr;
+		}
+	}
+
 	void GameObject::Register(GameObject* go)
 	{
 		if(go && !go->isRegistered) {
 			allGameObjects.insert({ go->name, go });
 			go->isRegistered = true;
+			if(go->transform.parent == nullptr) {
+				go->transform.SetParent(&Transform::root);
+			}
 
 			for(int i = 0; i < go->components.size(); ++i) {
 				Component::Register(go->components[i]);
+			}
+
+			for(auto child : go->transform.children)
+				Register(child->gameObject);
+		}
+	}
+
+	void GameObject::UnRegister(GameObject * go)
+	{
+		if(go && go->isRegistered) {
+			auto pair = allGameObjects.equal_range(go->name);
+			for(auto i = pair.first; i != pair.second; ++i) {
+				if(i->second == go) {
+					allGameObjects.erase(i);
+					break;
+				}
+			}
+			// component
+			for(auto& com : go->components)
+				Component::UnRegister(com);
+			// transform
+			go->transform.SetParent(nullptr);
+			for(auto child : go->transform.children) {
+				child->parent = nullptr;
+				UnRegister(child->gameObject);
 			}
 		}
 	}
 
 	GameObject* GameObject::FindGameObject(const std::string & name)
 	{
-		GameObject* ret;
-		auto results = allGameObjects.equal_range(name);
-		if(results.first != allGameObjects.cend())
-			ret = results.first->second;
+		GameObject* ret = nullptr;
+		auto pair = allGameObjects.equal_range(name);
+		if(pair.first != allGameObjects.cend())
+			ret = pair.first->second;
 		return ret;
 	}
 
 	void GameObject::FindGameObjects(const std::string& name, std::vector<GameObject*>& result)
 	{
-		auto results = allGameObjects.equal_range(name);
-		for(auto iter = results.first; iter != results.second; ++iter) {
-			result.push_back(iter->second);
+		auto pair = allGameObjects.equal_range(name);
+		for(auto i = pair.first; i != pair.second; ++i) {
+			result.push_back(i->second);
 		}
 	}
 
@@ -114,9 +154,8 @@ namespace GameEngine
 				auto& clone = com->CloneShared();
 				dst->AddComponent(clone);
 			}
-			for(int i = 0; i < transform.GetChildCount(); ++i) {
+			for(int i = 0; i < transform.GetChildCount(); ++i) 
 				transform.GetChild(i)->gameObject->CopyComponentsRecursive(dst->transform.GetChild(i)->gameObject);
-			}
 		}
 		return dst;
 	}

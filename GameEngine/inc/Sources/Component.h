@@ -21,7 +21,7 @@ namespace GameEngine
 
 	public:	
 		readonly<GameObject*> gameObject{ prop_get { return _gameObject; } };
-		Transform* const transform();
+		Transform* const GetTransform();
 		const std::shared_ptr<Renderer> renderer();
 		bool enabled = true;
 		
@@ -41,6 +41,7 @@ namespace GameEngine
 	private :
 		static std::vector<std::weak_ptr<Component>> allComponents;
 		static void Register(const std::shared_ptr<Component>& com);
+		static void UnRegister(const std::shared_ptr<Component>& com);
 		static void UpdateAll();
 		static void Clear() { allComponents.clear(); }
 	};

@@ -18,9 +18,13 @@ namespace GameEngine
 
 	class GAMEENGINE_API Transform final : public Object
 	{
-	friend class GameObject;
-	friend class Scene;
-	public:
+		friend class Scene;
+		friend class GameObject;
+	public :		
+		float width = 0;
+		float height = 0;
+
+	private :
 		GameObject* gameObject;
 		//local
 		Vector3 position = { 0, 0, 0 };
@@ -29,15 +33,27 @@ namespace GameEngine
 		//local
 		Vector3 scale = { 1, 1, 1 };
 		Vector3 pivot = { 0, 0, 0 };
-		float width = 0;
-		float height = 0;
+
+	public :
+		auto GetGameObject() { return gameObject; }
+
+		void SetPosition(const Vector3& p) { position = p; localChanged = true; }
+		void SetRotation(const Quaternion& q) { rotation = q; localChanged = true; }
+		void SetRotation(Vector3& euler);
+		void SetScale(const Vector3& s) { scale = s; localChanged = true; }
+		void SetPivot(const Vector3& pv) { pivot = pv; localChanged = true; }
+
+		auto GetPosition() { return position; }
+		auto GetRotation() { return rotation; }
+		auto GetScale() { return scale; }
+		auto GetPivot() { return pivot; }
 
 	private:
-		Matrix localMatrix = Matrix::Identity;
-		Matrix worldMatrix = Matrix::Identity;
+		Matrix localMatrix;
+		Matrix worldMatrix;
 		
-		bool changed = false;
-		bool worldChanged = false;
+		bool localChanged = true;
+		bool worldChanged = true;
 
 		Pivot pivotFlags = Pivot(eCenter | eCenter);
 
@@ -61,7 +77,6 @@ namespace GameEngine
 
 		void Rotate(const Vector3& axis, float angle);
 		void Rotate(const Quaternion& quaternion);
-		void SetRotation(Vector3& euler);
 		void RotateSelf(const Vector3& axis, float angle);
 		void RotateSelf(float x, float y, float z);
 

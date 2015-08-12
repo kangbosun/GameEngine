@@ -19,13 +19,13 @@ namespace GameEngine
 	{
 		auto& q = Quaternion::AxisAngle(axis, MathUtil::ToRadians(angle));
 		rotation *= q;
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::Rotate(const Quaternion& quaternion)
 	{
 		rotation *= quaternion;
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::RotateSelf(const Vector3& axis, float angle)
@@ -34,7 +34,7 @@ namespace GameEngine
 		Vector3::Rotate(axis, rotation, _axis);
 		auto& q = Quaternion::AxisAngle(_axis, MathUtil::ToRadians(angle));
 		rotation *= q;
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::SetRotation(Vector3& euler)
@@ -45,7 +45,7 @@ namespace GameEngine
 
 		rotation = qx * qy * qz;
 
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::RotateSelf(float x, float y, float z)
@@ -56,20 +56,20 @@ namespace GameEngine
 
 		rotation *= (qx * qy * qz);
 
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::Translate(Vector3& v)
 	{
 		position += v;
-		changed = true;
+		localChanged = true;
 	}
 	void Transform::Translate(float x, float y, float z)
 	{
 		position.x += x;
 		position.y += y;
 		position.z += z;
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::TranslateSelf(float x, float y, float z)
@@ -78,13 +78,13 @@ namespace GameEngine
 		Vector3::Rotate(m, rotation, m);
 
 		position += m;
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::Scale(const Vector3& s)
 	{
 		scale = scale * s;
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::SetLocalTransform(const Matrix& mat)
@@ -113,9 +113,9 @@ namespace GameEngine
 	void Transform::updateSelf()
 	{
 		worldChanged = false;
-		if(changed) {
+		if(localChanged) {
 			Matrix::CreateTransform(localMatrix, position - pivot, rotation, scale, pivot);
-			changed = false;
+			localChanged = false;
 			if(parent)
 				Matrix::Multiply(localMatrix, parent->worldMatrix, worldMatrix);
 			else
@@ -125,10 +125,6 @@ namespace GameEngine
 		else {
 			if(parent && parent->worldChanged) {
 				Matrix::Multiply(localMatrix, parent->worldMatrix, worldMatrix);
-				worldChanged = true;
-			}
-			else if(parent == nullptr) {
-				worldMatrix = localMatrix;
 				worldChanged = true;
 			}
 		}
@@ -145,10 +141,7 @@ namespace GameEngine
 
 	Transform::Transform()
 	{
-		if(this != &root) {
-			root.children.push_back(this);
-			parent = nullptr;
-		}
+
 	}
 
 	Transform::Transform(const Transform & rhs)
@@ -160,8 +153,8 @@ namespace GameEngine
 		height = rhs.height;
 		pivot = rhs.pivot;
 		pivotFlags = rhs.pivotFlags;
-		localMatrix = rhs.localMatrix;
 	}
+
 
 	void Transform::SetPivot(Align pivot)
 	{
@@ -186,7 +179,7 @@ namespace GameEngine
 			y = 0;
 
 		this->pivot = Vector3(x, y, 0);
-		changed = true;
+		localChanged = true;
 	}
 
 	void Transform::LookAt(const Vector3& p)
@@ -199,9 +192,10 @@ namespace GameEngine
 
 		Matrix::LookAtLH(position, p, up(), m);
 		m.Inverse(inv);
+
 		Matrix::Multiply(inv, worldMatrix, worldMatrix);
-		parentMatrix.Inverse(inv);
-		Matrix::Multiply(inv, worldMatrix, localMatrix);
+		//parentMatrix.Inverse(inv);
+		Matrix::Multiply(inv, localMatrix, localMatrix);
 		SetLocalTransform(localMatrix);
 	}
 
@@ -226,11 +220,10 @@ namespace GameEngine
 			parent->removeChild(this);
 		if(_parent) {
 			_parent->children.push_back(this);
-			parent = _parent;
-		}
-		else {
-			root.children.push_back(this);
-			this->parent = nullptr;
+			if(_parent != &root)
+				parent = _parent;
+			else
+				parent = nullptr;
 		}
 	}
 

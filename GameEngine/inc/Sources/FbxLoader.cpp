@@ -66,16 +66,14 @@ namespace GameEngine
 			importer->GetFileVersion(fileMajor, fileMinor, fileRevision);
 
 			FbxNode* root = scene->GetRootNode();
-
-			FbxAxisSystem axisSystem = scene->GetGlobalSettings().GetAxisSystem();
-			if(axisSystem != FbxAxisSystem::OpenGL)
-				FbxAxisSystem::OpenGL.ConvertScene(scene);
-
+			
 			FbxGeometryConverter geometryConverter(fbxManager);
+			geometryConverter.Triangulate(scene, true);
 
-			geometryConverter.Triangulate(scene, false);
-
-			factor = (float)scene->GetGlobalSettings().GetSystemUnit().GetConversionFactorTo(FbxSystemUnit::m);
+			FbxAxisSystem directXAxisSys(FbxAxisSystem::EUpVector::eYAxis,
+										 FbxAxisSystem::EFrontVector::eParityEven,
+										 FbxAxisSystem::eRightHanded);
+			directXAxisSys.ConvertScene(scene);
 
 			ProcessMaterial(scene);
 
@@ -128,11 +126,9 @@ namespace GameEngine
 			meshNode.controlPoints.resize(ctrlPointCount);
 
 			for(int i = 0; i < ctrlPointCount; i++) {
-				FbxVector4 p = currMesh->GetControlPointAt(i) * factor;
+				FbxVector4 p = currMesh->GetControlPointAt(i);
 				auto& cp = meshNode.controlPoints[i];
 				cp.position = { (float)p[0], (float)p[1], (float)p[2] };
-				if(axismode = AxisMode::eDirectX)
-					cp.position.x *= -1;
 			}
 		}
 
@@ -165,7 +161,7 @@ namespace GameEngine
 				if(elementMaterial)
 					mi = currMesh->GetElementMaterial()->GetIndexArray()[i];
 
-				for(int j = polySize - 1; j >= 0; --j) {
+				for(int j = 0; j < 3; ++j) {
 					int ctrlIndex = currMesh->GetPolygonVertex(i, j);
 
 					auto& currCtrlPoint = meshNode.controlPoints[ctrlIndex];
@@ -189,13 +185,6 @@ namespace GameEngine
 						FbxVector2 UV;
 						currMesh->GetPolygonVertexUV(i, j, uvSetNames[k], UV, unmapped);
 						uv = { (float)UV[0], (float)UV[1] };
-					}
-
-					if(axismode == AxisMode::eDirectX) {
-						normal.x *= -1;
-						tangent.x *= -1;
-						uv.y = 1 - uv.y;
-						uv.x = uv.x;
 					}
 
 					Vector4 weights = { 0, 0, 0, 0 };
@@ -296,10 +285,10 @@ namespace GameEngine
 			const int materialCount = scene->GetMaterialCount();
 			for(int i = 0; i < materialCount; i++) {
 				FbxSurfaceMaterial* surfaceMaterial = scene->GetMaterial(i);
-				string name = surfaceMaterial->GetName();
-				auto& material = materials.insert({ name, FMaterial() }).first->second;
+				FMaterial material;
 				ProcessMaterialAttribute(surfaceMaterial, material);
 				ProcessMaterialTexture2D(surfaceMaterial, material);
+				materials.insert({ material.name, std::move(material) });
 			}
 		}
 
@@ -309,6 +298,7 @@ namespace GameEngine
 			//FbxDouble d1;
 
 			material.type = FMaterial::MT_INVALID;
+			material.name = mat->GetName();
 			//material->mName = mat->GetName();
 
 			//legacy material type
@@ -412,6 +402,7 @@ namespace GameEngine
 
 			if(material.diffuseMapName != "") {
 				std::string n = FbxPathUtils::GetFileName(material.diffuseMapName.c_str(), false).Buffer();
+				material.name = n;
 				mat->SetName(n.c_str());
 			}
 		}
@@ -455,21 +446,13 @@ namespace GameEngine
 				cluster->GetTransformMatrix(transformMatrix);
 				cluster->GetTransformLinkMatrix(transformLinkMatrix);
 				globalBindposeInverse = transformLinkMatrix.Inverse() * geometryTransform * transformMatrix;
-				globalBindposeInverse.SetT(globalBindposeInverse.GetT() * factor);
+				globalBindposeInverse.SetT(globalBindposeInverse.GetT());
 
 				FbxNode* boneNode = cluster->GetLink();
 				Bone& bone = meshNode.bones[ci];
 				bone.name = boneName;
 				bone.index = ci;
 
-				if(axismode == AxisMode::eDirectX) {
-					auto& bT = globalBindposeInverse.GetT();
-					auto& bR = globalBindposeInverse.GetR();
-					bT[0] *= -1;
-					bR[1] *= -1; bR[2] *= -1;
-					globalBindposeInverse.SetT(bT);
-					globalBindposeInverse.SetR(bR);
-				}
 				ConvertMatrix(bone.bindPoseInverse, globalBindposeInverse);
 
 				const int nCtrl = cluster->GetControlPointIndicesCount();
@@ -536,7 +519,7 @@ namespace GameEngine
 					tss.Apply(fbxSCurves, 3);
 
 					// process curves
-					if(fbxTCurves[0]->KeyGetCount() > 0) {		
+					if(fbxTCurves[0]->KeyGetCount() > 0) {
 						ProcessAnimCurveT(fbxTCurves, transformCurve);
 						ProcessAnimCurveS(fbxSCurves, transformCurve);
 						ProcessAnimCurveR(fbxRCurves, transformCurve, preRot);
@@ -571,7 +554,7 @@ namespace GameEngine
 		void GameEngine::FbxLoader::FbxLoader::ProcessAnimCurveS(FbxAnimCurve* curve[3], AnimTransformCurve& animCurve)
 		{
 			if(!curve) return;
-		
+
 			auto& curve3 = animCurve.scaling;
 			float endTime = 0;
 			endTime = max(endTime, ProcessAnimCurve(curve[0], curve3.curves[0]));
@@ -590,15 +573,11 @@ namespace GameEngine
 			endTime = max(endTime, ProcessAnimCurve(curve[1], curve3.curves[1]));
 			endTime = max(endTime, ProcessAnimCurve(curve[2], curve3.curves[2]));
 
-			if(axismode == eDirectX) {
-				auto& tcurve = curve3.curves[0];
-				for(int i = 0; i < tcurve.keyframes.size(); ++i) {
-					auto key = tcurve.keyframes[i];
-					key.value *= -1;
-					key.leftTangent *= -1;
-					key.rightTangent *= -1;
-				}
-			}
+
+			auto& xcurve = curve3.curves[0];
+			auto& ycurve = curve3.curves[1];
+			auto& zcurve = curve3.curves[2];
+
 			animCurve.end = max(animCurve.end, endTime);
 		}
 
@@ -623,7 +602,7 @@ namespace GameEngine
 			curve3.curves[2].keyframes.resize(nKeys);
 
 			animCurve.end = (float)curve[0]->KeyGetTime(nKeys - 1).GetSecondDouble();
-			
+
 
 			for(int ki = 0; ki < nKeys; ++ki) {
 				auto& xkey = curve3.curves[0].keyframes[ki];
@@ -648,10 +627,6 @@ namespace GameEngine
 				temp.SetR(FbxVector4(xvalue, yvalue, zvalue));
 				auto R = (preRotation* temp).GetR();
 				xvalue = (float)R[0]; yvalue = (float)R[1]; zvalue = (float)R[2];
-				if(axismode == AxisMode::eDirectX) {
-					yvalue = -yvalue; zvalue = -zvalue;
-					ylt = -ylt; yrt = -yrt; zlt = -zlt; zrt = -zrt;
-				}
 
 				float t = (float)curve[0]->KeyGetTime(ki).GetSecondDouble();
 
@@ -683,18 +658,6 @@ namespace GameEngine
 				else {
 					global = evaluator->GetNodeGlobalTransform(node, time);
 				}
-			}
-
-			if(axismode == AxisMode::eDirectX) {
-				auto& T = global.GetT() * factor;
-				auto& R = global.GetR();
-				T[0] *= -1;
-				R[1] *= -1;
-				R[2] *= -1;
-				global.SetT(T);
-				global.SetR(R);
-
-				R = global.GetR();
 			}
 
 			meshNode.matrix = Matrix(

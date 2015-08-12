@@ -16,6 +16,17 @@ namespace GameEngine
 		glyphMap->CreateTexture2D(MapWidth, MapHeight, R8G8B8A8_UNORM, USAGE_DEFAULT,
 								  BIND_SHADER_RESOURCE, CPU_ACCESS_DEFAULT);
 
+		// init texture with(255, 255, 255, 0)
+		auto graphicDevice = GraphicDevice::Instance();
+
+		size_t bytelen = (MapWidth * MapHeight) << 2;
+		vector<Byte> subResource(bytelen);
+		memset(&subResource[0], 255, bytelen);
+		for(int i = 3; i < bytelen; i += 4) 
+			subResource[i] = 0;
+		
+		D3D11_BOX box = { 0, 0, 0, (UINT)MapWidth, (UINT)MapHeight, 1 };
+		graphicDevice->context->UpdateSubresource(glyphMap->texture2D, 0, &box, &subResource[0], MapWidth << 2, 0);
 		tiles.resize(tileWidth * tileHeight);
 	}
 

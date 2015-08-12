@@ -32,7 +32,7 @@ class CSkinningEnabled : ISkinning
 						0, 0, 0, 0,
 						0, 0, 0, 0};
 		[unroll]
-		for(int i = 0; i > 4; ++i) {
+		for(int i = 0; i < 4; ++i) {
 			ret += gBones[index[i]] * weights[i];
 		}
 		return ret;

@@ -69,8 +69,8 @@ namespace GameEngine
 			lines.emplace_back(std::move(line));
 		}
 
-		int width = (int)transform()->width;
-		int height = (int)transform()->height;
+		int width = (int)GetTransform()->width;
+		int height = (int)GetTransform()->height;
 
 		int heightPerLine = fontsize;
 		int maxWidth = width;
@@ -159,8 +159,8 @@ namespace GameEngine
 	{
 		auto temp = GameObject::Instantiate("Text");
 		auto& com = temp->AddComponent<Text>();
-		com->transform()->position = pos;
-		com->transform()->SetSize((int)size.x, (int)size.y);
+		com->GetTransform()->SetPosition(pos);
+		com->GetTransform()->SetSize((int)size.x, (int)size.y);
 		com->SetText(str);
 		com->SetFont(Resource::fonts.Find(fontName));
 		return com;

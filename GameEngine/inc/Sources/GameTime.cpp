@@ -15,6 +15,8 @@ namespace GameEngine
 	float GameTime::_unscaledDeltaTime = 0;
 	float GameTime::_timeScale = 1.0f;
 	double GameTime::_totalTime = 0.0f;
+	float GameTime::updateTime = 0.0f;
+	float GameTime::frameTime = 0.0f;
 
 	readonly<float> GameTime::deltaTime = { GameTime::_deltaTime };
 	readonly<float> GameTime::unscaledDeltaTime = { GameTime::_unscaledDeltaTime };

@@ -35,10 +35,11 @@ public:
 		_renderer->mesh = mesh;
 
 		auto mat = Resource::materials.Find("default")->Clone();
+		mat->shader = Resource::shaders.Find("Texture");
+		mat->data.color = Color::Black;
 		_renderer->materials.push_back(mat);
-		_renderer->materials[0]->shader = Resource::shaders.Find("Standard");
-		_renderer->materials[0]->data.color = Color::Black;
-		transform()->scale = Vector3(100, 100, 100);
+		
+		GetTransform()->SetScale(Vector3(100, 100, 100));
 		_renderer->castShadow = false;
 		_renderer->receiveShadow = false;
 	}

@@ -3,7 +3,6 @@
 #include "GameObject.h"
 #include "Renderer.h"
 #include "GameTime.h"
-
 #include "Transform.h"
 
 namespace GameEngine
@@ -23,14 +22,14 @@ namespace GameEngine
 			// has transform curves;
 			if(clip->transformCurves.size() > 0) {
 				//find top object
-				auto root = transform();
+				auto root = GetTransform();
 				while(root->GetParent())
 					root = root->GetParent();
 				//done
 
 				transforms.reserve(clip->transformCurves.size());
 				for(auto& curve : clip->transformCurves) {
-					auto g = root->gameObject->FindGameObjectInChildren(curve.boneName);
+					auto g = root->GetGameObject()->FindGameObjectInChildren(curve.boneName);
 					transforms.push_back(&g->transform);
 				}
 			}
@@ -72,9 +71,9 @@ namespace GameEngine
 			auto& transformCurve = clip->transformCurves[i];
 			auto& transform = transforms[i];
 			//translation
-			transform->position = transformCurve.EvaluateT(elaspedTime);
+			transform->SetPosition(transformCurve.EvaluateT(elaspedTime));
 			//scaling
-			transform->scale = transformCurve.EvaluateS(elaspedTime);
+			transform->SetScale(transformCurve.EvaluateS(elaspedTime));
 			//rotation
 			transform->SetRotation(transformCurve.EvaluateR(elaspedTime));
 		}

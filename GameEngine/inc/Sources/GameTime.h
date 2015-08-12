@@ -17,12 +17,15 @@ namespace GameEngine
 		static float _deltaTime;
 		static float _unscaledDeltaTime;
 		static float _timeScale;
+		
 		static double _totalTime;
 	public:
 		static readonly<float> deltaTime;
 		static readonly<float> unscaledDeltaTime;
 		static property<float> timeScale;
 		static readonly<double> totalTime;
+		static float updateTime;
+		static float frameTime;
 
 		static void Update();
 		static void StopwatchStart(int num);

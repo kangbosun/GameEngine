@@ -51,8 +51,6 @@
 #include FT_FREETYPE_H
 #include FT_MODULE_H
 
-
-
 #endif
 
 //engine

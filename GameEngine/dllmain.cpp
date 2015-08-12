@@ -1,6 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 
-#include <SDKDDKVer.h>
+//#include <SDKDDKVer.h>
 #include <Windows.h>
 
 BOOL APIENTRY DllMain(HMODULE hModule,

@@ -21,17 +21,16 @@ namespace GameEngine
 
 	void Camera::BuildViewProjMatrix()
 	{
-		cameraData.position = transform()->position;
+		cameraData.position = GetTransform()->GetPosition();
 		float aspect = GlobalSetting::aspectRatio;
 		// view matrix
-		auto& forward = transform()->forward();
+		auto forward = GetTransform()->forward();
 		Vector3 look;
 		if(lockTarget)
 			look = target;
 		else
-			look = transform()->position + forward;
-
-		Matrix::LookAtLH(transform()->position, look, transform()->up(), cameraData.viewMatrix);
+			look = cameraData.position + forward;
+    	Matrix::LookAtLH(cameraData.position, look, GetTransform()->up(), cameraData.viewMatrix);
 
 		float f = MathUtil::ToRadians(fov);
 

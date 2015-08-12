@@ -126,17 +126,22 @@ namespace GameEngine
 		elaspedTime += GameTime::unscaledDeltaTime;
 
 		if(elaspedTime >= updateTime) {
+			GameTime::StopwatchStart(333);
 			Input::Update(width, height, hWnd);
 			if(currScene)
 				currScene->Update();
 			elaspedTime -= GameTime::unscaledDeltaTime;
+			//elaspedTime = 0;
+			GameTime::updateTime = GameTime::StopwatchStop(333);
 		}
 	}
 
 	void GameWindow::Render()
 	{
+		GameTime::StopwatchStart(333);
 		if(currScene)
 			currScene->Render();
+		GameTime::frameTime = GameTime::StopwatchStop(333);
 	}
 
 	void GameWindow::LoadScene(const shared_ptr<Scene>& scene)

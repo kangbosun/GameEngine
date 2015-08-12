@@ -104,8 +104,8 @@ namespace GameEngine
 
 	LightData& Light::GetLightData()
 	{
-		data.position = transform()->position;
-		data.dir = transform()->forward();
+		data.position = GetTransform()->GetPosition();
+		data.dir = GetTransform()->forward();
 		data.lightType = type;
 		data.color = lightColor;
 		return data;
@@ -121,8 +121,8 @@ namespace GameEngine
 
 	void Light::BuildShadowTransform()
 	{
-		cameraData.position = transform()->position;
-		Matrix::LookAtLH(transform()->position, Vector3::Zero, transform()->up(), cameraData.viewMatrix);
+		cameraData.position = GetTransform()->GetPosition();
+		Matrix::LookAtLH(cameraData.position, Vector3::Zero, GetTransform()->up(), cameraData.viewMatrix);
 		Matrix::OrthographicOffCenterLH(-2, 2, -2, 2, nearplane, farplane, cameraData.projMatrix);
 		//Matrix::PerspectiveFovLH(MathUtil::ToRadians(45), 1, nearplane, farplane, cameraData.projMatrix);
 

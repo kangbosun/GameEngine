@@ -28,10 +28,10 @@ namespace GameEngine
 	void MeshRenderer::Start()
 	{
 		if(rootBoneName != "") {
-			auto root = transform();
+			auto root = GetTransform();
 			while(root->GetParent())
 				root = root->GetParent();
-			auto rootBone = root->gameObject->FindGameObjectInChildren(rootBoneName);
+			auto rootBone = root->GetGameObject()->FindGameObjectInChildren(rootBoneName);
 			SetBone(&rootBone->transform);
 		}
 		allMeshRenderers.push_back(gameObject->GetComponent<MeshRenderer>());
@@ -93,7 +93,7 @@ namespace GameEngine
 
 			shader->SetGlobalSetting(&GlobalSetting::graphicSetting);
 			shader->SetCamera(&cam);
-			shader->SetWorldMatrix(&transform()->WorldMatrix());
+			shader->SetWorldMatrix(&GetTransform()->WorldMatrix());
 
 			if(matrices.size() > 0)
 				shader->SetBoneMatrices(&(*matrices.begin()), (uint32_t)matrices.size());
@@ -102,6 +102,7 @@ namespace GameEngine
 
 			auto& light = lights.begin()->lock();
 			shader->SetLight(&light->GetLightData());
+
 			shader->SetMaterial(&material->data);
 			shader->SetDiffuseMap(material->diffuseMap.get());
 			shader->SetNormalMap(material->normalMap.get());
@@ -176,7 +177,7 @@ namespace GameEngine
 		Vector3 s, t;
 		Quaternion q;
 
-		Matrix world = transform()->WorldMatrix();
+		Matrix world = GetTransform()->WorldMatrix();
 		world.Decompose(t, q, s);
 
 		float sx = GlobalSetting::UIScaleFactorX;
@@ -213,8 +214,8 @@ namespace GameEngine
 
 	bool operator <(const std::weak_ptr<UIRenderer>& lhs, const std::weak_ptr<UIRenderer>& rhs)
 	{
-		float a = lhs.lock()->transform()->worldPosition().z;
-		float b = rhs.lock()->transform()->worldPosition().z;
+		float a = lhs.lock()->GetTransform()->worldPosition().z;
+		float b = rhs.lock()->GetTransform()->worldPosition().z;
 
 		return a > b;
 	}

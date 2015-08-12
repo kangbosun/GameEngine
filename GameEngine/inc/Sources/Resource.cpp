@@ -106,21 +106,18 @@ namespace GameEngine
 				for(auto& clip : aniCom->clips)
 					Resource::animClips.Add(clip.first, clip.second);
 			}
+
+			// materials
+			renderer->materials.reserve(materialCount);
+			for(int j = 0; j < materialCount; j++) {
+				string materialName = meshNode.materialNames[j];
+				auto material = materials.Find(materialName);
+				if(!material)
+					material = materials.Find("default");
+
+				if(material) renderer->materials.push_back(material);
+			}
 		}
-
-		// materials
-		auto& renderer = object->renderer();
-		renderer->materials.reserve(materialCount);
-		for(int j = 0; j < materialCount; j++) {
-			std::shared_ptr<Texture2D> diffuse;
-			string materialName = meshNode.materialNames[j];
-			auto material = materials.Find(materialName);
-			if(!material)
-				material = materials.Find("default");
-
-			if(material) renderer->materials.push_back(material);
-		}
-
 		// initial transform
 		object->transform.SetLocalTransform(meshNode.matrix.m[0]);
 
@@ -151,7 +148,7 @@ namespace GameEngine
 	{
 		const int materialCount = (int)loader.materials.size();
 		auto iter = loader.materials.begin();
-		for(int i = 0; i < materialCount; i++, iter++) {
+		for(int i = 0; i < materialCount; ++i, ++iter) {
 			auto matname = iter->first;
 			auto& mat = iter->second;
 
@@ -164,7 +161,6 @@ namespace GameEngine
 			tempMat->normalMap = normalMap;
 			tempMat->name = mat.name;
 			tempMat->shader = Resource::shaders.Find("Standard");
-
 			Resource::materials.Add(tempMat->name, tempMat);
 		}
 	}

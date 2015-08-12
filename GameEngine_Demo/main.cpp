@@ -18,7 +18,7 @@ public:
 	float speed = 15;
 	void Update()
 	{
-		transform()->Rotate(axis, speed * GameTime::deltaTime);
+		GetTransform()->Rotate(axis, speed * GameTime::deltaTime);
 	}
 };
 
@@ -56,72 +56,78 @@ public:
 
 		auto g = GameObject::Instantiate("Grid");
 		g->AddComponent<Grid>();
-		GameObject::Register(g);
+		//GameObject::Register(g);
 
 		light1 = Light::CreateDirectionalLight();
-		light1->transform()->Translate(1, 3, 2);
-		light1->transform()->LookAt(Vector3(0, 0, 0));
+		light1->GetTransform()->Translate(1, 3, -2);
+		light1->GetTransform()->LookAt(Vector3(0, 0, 0));
 		light1->renderShadow = false;
 		GameObject::Register(light1->gameObject);
 
-		//auto& sphere = Resource::GetModel(L"sphere");
-		//sphere->transform()->scale = Vector3(10, 10, 10);
-		//sphere->transform()->Translate(1, 0.5f, 0);
+		auto sphere = Resource::models.Find("sphere");
+		sphere->transform.SetScale(Vector3(10, 10, 10));
+		sphere->transform.Translate(1, 0.5f, 0);
+		//GameObject::Register(sphere);
 
-		//auto& plane = Resource::models.Find("plane");
-		//plane->transform.scale = Vector3(200, 1, 200);
-		//plane->transform.Translate(0.0f, -0.01f, 0.0f);
+		auto plane = Resource::models.Find("plane");
+		plane->transform.SetScale(Vector3(200, 1, 200));
+		plane->transform.Translate(0.0f, -0.01f, 0.0f);
 		//GameObject::Register(plane);
 
-		Camera::main->transform()->position = Vector3(0.0f, 1.0f, 2.0f);
-		Camera::main->transform()->LookAt(Vector3(0, 0, 0));
+		Camera::main->GetTransform()->SetPosition(Vector3(0.0f, 1.0f, -10.0f));
+		Camera::main->GetTransform()->LookAt(Vector3(0, 0, 0));
 		Camera::main->gameObject->AddComponent<KeyCam>();
 
-		//Resource::models.Add("attack01", "resources\\models", "attack01.fbx");
-		//auto& attack = Resource::GetModel(L"attack01");
-		//auto& mat = attack->GetComponentInChildren<MeshRenderer>()->materials[0];
-		//attack->transform()->Translate(-1, 0, 0);
-		//attack->GetComponentInChildren<Animation>()->Play("Take 001");
-		//attack->GetComponentInChildren<Animation>()->speed = 0.2f;
-		//GameObject::Register(attack);
+		Resource::LoadFromFbx("attack01", "resources\\models", "attack01.fbx");
+		auto attack = Resource::models.Find("attack01");
+		auto& mat = attack->GetComponentInChildren<MeshRenderer>()->materials[0];
+		attack->transform.Translate(-1, 0, 0);
+		attack->transform.SetScale(Vector3(0.1f, 0.1f, 0.1f));
+		attack->GetComponentInChildren<Animation>()->Play("Take 001");
+		attack->GetComponentInChildren<Animation>()->speed = 0.2f;
+		GameObject::Register(attack);
 
-		//Resource::AddModel(L"NightWing", "resources\\models\\nightwing", "NW.fbx");
-		//auto& nightwing = Resource::GetModel(L"NightWing");
-		//nightwing->transform()->Scale(Vector3(10, 10, 10));
-		//nightwing->transform()->Translate(1, 0, 0);
+		Resource::LoadFromFbx("NightWing", "resources\\models\\nightwing", "NW.fbx");
+		auto nightwing = Resource::models.Find("NightWing");
+		nightwing->transform.SetScale(Vector3(10, 10, 10));
+		nightwing->transform.Translate(1, 0, 0);
 		//GameObject::Register(nightwing);
 
 		//Resource::AddModel(L"Talia", "resources\\models\\Talia", "Talia.fbx");
 		//talia = Resource::GetModel(L"Talia");
 		//GameObject::Register(talia);
 
-		auto text2 = Text::CreateText(Vector3(960, 540, 2), Vector2(100, 100), L"a", "NanumGothic");
-		text2->transform()->SetPivot(Align(eRight | eTop));
-		text2->SetFontSize(32);
-		text2->SetAlign(Align(eRight | eTop));
+		auto text2 = Text::CreateText(Vector3(-960, 540, 1), Vector2(100, 100), L" ", "NanumGothic");
+		text2->GetTransform()->SetPivot(Align(eLeft | eTop));
+		text2->SetFontSize(30);
+		text2->SetAlign(Align(eLeft | eTop));
 		text2->gameObject->AddComponent<MousePos>();
 		text2->SetColor(Color::White);
-		GameObject::Register(text2->gameObject);
 		text2->SetMesh();
-		auto img = Image::CreateImage(Vector3(-960, 540, 1), Vector2(400, 400));
+		//GameObject::Register(text2->gameObject);
+
+
+		auto img = Image::CreateImage(Vector3(960, 540, 1), Vector2(400, 400));
 		img->SetTexture(text2->renderer()->material.diffuseMap);
 		string name = img->ToString();
-		img->transform()->SetPivot(Pivot(eLeft | eTop));
-		GameObject::Register(img->gameObject);
+		img->GetTransform()->SetPivot(Pivot(eRight | eTop));
+		//GameObject::Register(img->gameObject);
 
 		auto button = Button::CreateButton(Vector3(960, -540, 1), Vector2(200, 60), L"Button");
-		button->transform()->SetPivot(Pivot(eRight | eBottom));
-		GameObject::Register(button->gameObject);
+		button->GetTransform()->SetPivot(Pivot(eRight | eBottom));
+		//GameObject::Register(button->gameObject);
 		button->SetText(L"Button1");
 		button->onClick = bind([&]() { GameObject::Register(talia); });
 
 		auto button2 = button->gameObject->Clone();
-		GameObject::Register(button2);
+		//GameObject::Register(button2);
 		button2->transform.Translate(0, 70, 1);
 		button2->GetComponent<Button>()->SetText(L"Shadow On/Off");
-		button2->GetComponentInChildren<Text>()->SetFontSize(24);
+		button2->GetComponentInChildren<Text>()->SetFontSize(26);
 		button2->GetComponent<Button>()->onClick = bind([&]() { light1->renderShadow = !light1->renderShadow; });
 
+		vector<GameObject*> vec;
+		GameObject::FindGameObjects("Text", vec);
 		//GraphicDevice::Instance()->vSync = false;
 		//GraphicDevice::Instance()->SetFillMode(D3D11_FILL_WIREFRAME);
 	}

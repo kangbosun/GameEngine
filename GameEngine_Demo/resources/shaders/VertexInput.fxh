@@ -8,7 +8,7 @@ struct VertexInput
 	float2 texcoord : TEXCOORD0;
 	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
-	uint4   boneIndices : BLENDINDICES;
+	uint4  boneIndices : BLENDINDICES;
 	float4 weights : BLENDWEIGHTS;
 };
 
