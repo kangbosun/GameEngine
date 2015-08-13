@@ -97,11 +97,14 @@ namespace GameEngine
 			for(auto& com : go->components)
 				Component::UnRegister(com);
 			// transform
-			go->transform.SetParent(nullptr);
+
+			if(go->transform.parent == nullptr)
+				Transform::root.removeChild(&go->transform);
+
 			for(auto child : go->transform.children) {
-				child->parent = nullptr;
 				UnRegister(child->gameObject);
 			}
+			go->isRegistered = false;
 		}
 	}
 

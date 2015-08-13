@@ -12,9 +12,15 @@ namespace GameEngine
 		Debug::Log(L"#Load : " + path);
 		isValid = false;
 		auto& device = GraphicDevice::Instance()->device;
+
+		ilInit();
+		
+		auto result = ilLoadImage((ILconst_string)path.c_str());
+		auto strcat = ilGetString(result);
+
 		HRESULT hr = D3DX11CreateTextureFromFile(device, path.c_str(), 0, 0, (ID3D11Resource**)&texture2D.p, 0);
 		if(FAILED(hr)) {
-			Debug::Log("Failed(D3DXCreateTextureFromFile)", Debug::Red);
+			Debug::Failed("D3DXCreateTextureFromFile");
 			return;
 		}
 		D3D11_TEXTURE2D_DESC texDesc;
@@ -23,10 +29,10 @@ namespace GameEngine
 		height = texDesc.Height;
 		hr = device->CreateShaderResourceView(texture2D, 0, &srv.p);
 		if(FAILED(hr)) {
-			Debug::Log("Failed(CreateShaderResourceView)", Debug::Red);
+			Debug::Failed("CreateShaderResourceView");
 			return;
 		}
-		Debug::Log("Success", Debug::Green);
+		Debug::Success();
 		isValid = true;
 	}
 
@@ -49,14 +55,14 @@ namespace GameEngine
 
 		HRESULT hr = device->CreateTexture2D(&texDesc, 0, &texture2D.p);
 		if(FAILED(hr)) {
-			Debug::Log(ToString() + " - failed to create Texture2D");
+			Debug::Failed("CreateTexture2D(" + ToString() + ")");
 			return;
 		}
 
 		if(bindFlag & D3D11_BIND_SHADER_RESOURCE) {
 			hr = device->CreateShaderResourceView(texture2D, 0, &srv.p);
 			if(FAILED(hr)) {
-				Debug::Log(ToString() + " - failed to create SRV");
+				Debug::Failed("CreateShaderResourceView(" + ToString() + ")");
 				return;
 			}
 		}

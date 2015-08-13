@@ -41,16 +41,17 @@ namespace GameEngine
 			scene->Clear();
 		}
 
-		FbxLoader::FbxLoader(FbxLoader::AxisMode mode)
+		FbxLoader::FbxLoader()
 		{
-			axismode = mode;
+			
 		}
 
-		void FbxLoader::LoadFromFile(const std::string& folder, const std::string& name)
+		void FbxLoader::LoadFromFile(const std::string& folder, const std::string& name, AxisMode axismode, float scaleFactor)
 		{
 			FbxManager* fbxManager = FbxManager::Create();
 			FbxIOSettings* ios = FbxIOSettings::Create(fbxManager, IOSROOT);
 			fbxManager->SetIOSettings(ios);
+
 
 			std::string path = folder + "\\" + name;
 			relativeFolder = folder;
@@ -60,26 +61,28 @@ namespace GameEngine
 			}
 			scene = FbxScene::Create(fbxManager, path.c_str());
 			importer->Import(scene);
-			importer->Destroy();
+			
 
 			int fileMajor, fileMinor, fileRevision;
 			importer->GetFileVersion(fileMajor, fileMinor, fileRevision);
+			importer->Destroy();
 
+			factor = scaleFactor;
+			this->axismode = axismode;
 			FbxNode* root = scene->GetRootNode();
 			
 			FbxGeometryConverter geometryConverter(fbxManager);
-			geometryConverter.Triangulate(scene, true);
-
-			FbxAxisSystem directXAxisSys(FbxAxisSystem::EUpVector::eYAxis,
-										 FbxAxisSystem::EFrontVector::eParityEven,
-										 FbxAxisSystem::eRightHanded);
-			directXAxisSys.ConvertScene(scene);
+						
+			FbxAxisSystem axis = FbxAxisSystem::MayaYUp;	
+			axis.ConvertScene(scene);
+			
+			geometryConverter.Triangulate(scene, false);
 
 			ProcessMaterial(scene);
 
 			LoadAnimationClipData();
 
-			ProcessMeshNode(root, rootNode);
+			ProcessMeshNode(root, rootNode);			
 		}
 
 		void FbxLoader::ProcessMeshNode(FbxNode* node, Node& mnode)
@@ -161,13 +164,12 @@ namespace GameEngine
 				if(elementMaterial)
 					mi = currMesh->GetElementMaterial()->GetIndexArray()[i];
 
-				for(int j = 0; j < 3; ++j) {
+				for(int j = 2; j >= 0; --j) {
 					int ctrlIndex = currMesh->GetPolygonVertex(i, j);
-
 					auto& currCtrlPoint = meshNode.controlPoints[ctrlIndex];
 					FbxVector4 v4;
 
-					auto& pos = currCtrlPoint.position;
+					auto& pos = currCtrlPoint.position * factor;
 					currMesh->GetPolygonVertexNormal(i, j, v4);
 					Vector3 normal = { (float)v4[0], (float)v4[1], (float)v4[2] };
 					Vector3 tangent = { 0, 0, 0 };
@@ -175,44 +177,47 @@ namespace GameEngine
 						ReadTangent(tangents, ctrlIndex, vertCounter, v4);
 						tangent = { (float)v4[0], (float)v4[1], (float)v4[2] };
 					}
-
+				
 					Vector2 uv;
 					FbxStringList uvSetNames;
 					currMesh->GetUVSetNames(uvSetNames);
-					int uvCounts = uvSetNames.GetCount();
 					bool unmapped = false;
-					for(int k = 0; k < uvCounts; k++) {
+					// supports one uv set only
+					if(uvSetNames.GetCount() > 0) {
 						FbxVector2 UV;
-						currMesh->GetPolygonVertexUV(i, j, uvSetNames[k], UV, unmapped);
+						currMesh->GetPolygonVertexUV(i, j, uvSetNames[0], UV, unmapped);
 						uv = { (float)UV[0], (float)UV[1] };
+					}
+				
+					if(axismode == eLeftHanded) {
+						pos.x *= -1; uv.y = 1 - uv.y;
+						normal.x *= -1; tangent.x *= -1;
 					}
 
 					Vector4 weights = { 0, 0, 0, 0 };
 					Byte4 indices = { 0, 0, 0, 0 };
 
-					if(meshNode.bones.size() > 0) {
+					int blendCount = (int)min(currCtrlPoint.blendWeigths.size(), 4);
+					if(blendCount > 0) {
 						meshNode.useSkinnedMesh = true;
-						int blendCount = (int)min(currCtrlPoint.blendWeigths.size(), 4);
 						if(currCtrlPoint.blendWeigths.size() > 4)
 							sort(currCtrlPoint.blendWeigths.begin(), currCtrlPoint.blendWeigths.end());
-
 						for(int i = 0; i < blendCount; i++) {
 							weights[i] = currCtrlPoint.blendWeigths[i].weight;
-							int index = currCtrlPoint.blendWeigths[i].boneIndex;
-							if(index == -1) index = 0;
-							indices.m[i] = index;
+							indices.m[i] = currCtrlPoint.blendWeigths[i].boneIndex;
 						}
 					}
+	
 					Vertex temp = { pos, uv, normal, tangent, indices, weights };
 					subMeshes[mi].push_back(temp);
 				}
-				vertCounter++;
+				++vertCounter;
 			}
 
 			if(subMeshes.size() > 0) {
 				int index = 0;
-				meshNode.meshes.reserve(vertCounter * 3);
-				meshNode.vertIndices.reserve(vertCounter * 3);
+				meshNode.meshes.reserve(vertCounter);
+				meshNode.vertIndices.reserve(vertCounter);
 				meshNode.vertexCountOfSubMesh.reserve(subMeshes.size());
 				for(auto& pair : subMeshes) {
 					auto& m = pair.second;
@@ -446,12 +451,20 @@ namespace GameEngine
 				cluster->GetTransformMatrix(transformMatrix);
 				cluster->GetTransformLinkMatrix(transformLinkMatrix);
 				globalBindposeInverse = transformLinkMatrix.Inverse() * geometryTransform * transformMatrix;
-				globalBindposeInverse.SetT(globalBindposeInverse.GetT());
 
 				FbxNode* boneNode = cluster->GetLink();
 				Bone& bone = meshNode.bones[ci];
 				bone.name = boneName;
 				bone.index = ci;
+
+				auto T = globalBindposeInverse.GetT() * factor;
+				
+				if(axismode == eLeftHanded) {
+					auto R = globalBindposeInverse.GetR();
+					T[0] *= -1; R[1] *= -1; R[2] *= -1;
+					globalBindposeInverse.SetR(R);
+				}
+				globalBindposeInverse.SetT(T);
 
 				ConvertMatrix(bone.bindPoseInverse, globalBindposeInverse);
 
@@ -486,7 +499,7 @@ namespace GameEngine
 
 					if(!fbxTCurves[0])
 						continue;
-
+					
 					fbxTCurves[1] = boneNode->LclTranslation.GetCurve(animLayer, "Y");
 					fbxTCurves[2] = boneNode->LclTranslation.GetCurve(animLayer, "Z");
 
@@ -517,6 +530,7 @@ namespace GameEngine
 					tss.Apply(fbxTCurves, 3);
 					tss.Apply(fbxRCurves, 3);
 					tss.Apply(fbxSCurves, 3);
+					//
 
 					// process curves
 					if(fbxTCurves[0]->KeyGetCount() > 0) {
@@ -573,10 +587,36 @@ namespace GameEngine
 			endTime = max(endTime, ProcessAnimCurve(curve[1], curve3.curves[1]));
 			endTime = max(endTime, ProcessAnimCurve(curve[2], curve3.curves[2]));
 
-
 			auto& xcurve = curve3.curves[0];
 			auto& ycurve = curve3.curves[1];
 			auto& zcurve = curve3.curves[2];
+
+			// apply scale factor
+			for(int i = 0; i < xcurve.keyframes.size(); ++i) {
+				auto& keyframe = xcurve.keyframes[i];
+				if(axismode == eLeftHanded) {	
+					keyframe.value *= -factor;
+					keyframe.leftTangent *= -factor;
+					keyframe.rightTangent *= -factor;
+				}
+				else {
+					keyframe.value *= factor;
+					keyframe.leftTangent *= factor;
+					keyframe.rightTangent *= factor;
+				}
+			}
+			for(int i = 0; i < ycurve.keyframes.size(); ++i) {
+				auto& keyframe = ycurve.keyframes[i];
+				keyframe.value *= factor;
+				keyframe.leftTangent *= factor;
+				keyframe.rightTangent *= factor;
+			}
+			for(int i = 0; i < zcurve.keyframes.size(); ++i) {
+				auto& keyframe = zcurve.keyframes[i];
+				keyframe.value *= factor;
+				keyframe.leftTangent *= factor;
+				keyframe.rightTangent *= factor;
+			}
 
 			animCurve.end = max(animCurve.end, endTime);
 		}
@@ -602,7 +642,6 @@ namespace GameEngine
 			curve3.curves[2].keyframes.resize(nKeys);
 
 			animCurve.end = (float)curve[0]->KeyGetTime(nKeys - 1).GetSecondDouble();
-
 
 			for(int ki = 0; ki < nKeys; ++ki) {
 				auto& xkey = curve3.curves[0].keyframes[ki];
@@ -630,10 +669,13 @@ namespace GameEngine
 
 				float t = (float)curve[0]->KeyGetTime(ki).GetSecondDouble();
 
+				if(axismode == eLeftHanded) {
+					yvalue *= -1; ylt *= -1; yrt *= -1;
+					zvalue *= -1; zlt *= -1; zrt *= -1;
+				}
+
 				xkey.time = t; ykey.time = t; zkey.time = t;
-
 				xkey.value = xvalue; ykey.value = yvalue; zkey.value = zvalue;
-
 				xkey.leftTangent = xlt; xkey.rightTangent = xrt;
 				ykey.leftTangent = ylt; ykey.rightTangent = yrt;
 				zkey.leftTangent = zlt; zkey.rightTangent = zrt;
@@ -650,7 +692,7 @@ namespace GameEngine
 
 			FbxTime time;
 			time.SetSecondDouble(0.0);
-
+			
 			if(node != scene->GetRootNode()) {
 				if(local) {
 					global = evaluator->GetNodeLocalTransform(node, time);
@@ -659,6 +701,15 @@ namespace GameEngine
 					global = evaluator->GetNodeGlobalTransform(node, time);
 				}
 			}
+			auto T = global.GetT() * factor;
+			
+			if(axismode == eLeftHanded) {
+				auto R = global.GetR();
+				R[1] *= -1; R[2] *= -1;
+				T[0] *= -1;
+				global.SetR(R);
+			}
+			global.SetT(T);
 
 			meshNode.matrix = Matrix(
 				(float)global[0][0], (float)global[0][1], (float)global[0][2], (float)global[0][3],

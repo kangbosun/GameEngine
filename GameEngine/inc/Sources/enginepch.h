@@ -17,6 +17,7 @@
 #include <sstream>
 #include <tchar.h>
 #include <set>
+#include <queue>
 
 #ifdef _WIN64
 #include <Windows.h>
@@ -41,17 +42,17 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dx11.lib")
 
+#endif
 
-
+// external libararies
 #define FBXSDK_SHARED
 #include <fbxsdk.h>
-#pragma comment(lib, "libfbxsdk.lib")
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_MODULE_H
 
-#endif
+#include <IL\ilut.h>
 
 //engine
 #include "EngineDefines.h"

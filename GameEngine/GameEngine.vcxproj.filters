@@ -151,6 +151,9 @@
     <ClCompile Include="inc\Sources\DepthStencil.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
+    <ClCompile Include="inc\Sources\DebugClass.cpp">
+      <Filter>Source\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\Sources\Animation.h">

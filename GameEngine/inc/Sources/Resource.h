@@ -44,7 +44,7 @@ namespace GameEngine
 		
 	public :
 		static void ClearAll();
-		static GameObject* LoadFromFbx(const std::string& name, const std::string& folder, const std::string& filename);
+		static GameObject* LoadFromFbx(const std::string& name, const std::string& folder, const std::string& filename, float scaleFactor = 0.01f);
 	private:
 		static std::shared_ptr<Texture2D> ProcessTexture(const std::string& name, FbxLoader::FbxLoader& loader);
 		static void ProcessMaterial(FbxLoader::FbxLoader& loader, std::string modelname);

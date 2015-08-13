@@ -40,6 +40,8 @@ namespace GameEngine
 
 	private :
 		static std::vector<std::weak_ptr<Component>> allComponents;
+		static std::queue<std::weak_ptr<Component>> watingForRegister;
+
 		static void Register(const std::shared_ptr<Component>& com);
 		static void UnRegister(const std::shared_ptr<Component>& com);
 		static void UpdateAll();

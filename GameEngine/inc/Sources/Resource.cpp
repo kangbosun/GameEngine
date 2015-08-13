@@ -51,10 +51,10 @@ namespace GameEngine
 		Resource::LoadFromFbx("plane", "resources\\models\\primitive", "plane.fbx");
 	}
 
-	GameObject* Resource::LoadFromFbx(const std::string& name, const std::string & folder, const std::string & filename)
+	GameObject* Resource::LoadFromFbx(const std::string& name, const std::string & folder, const std::string & filename, float scaleFactor)
 	{
-		FbxLoader::FbxLoader loader = { FbxLoader::FbxLoader::eDirectX };
-		loader.LoadFromFile(folder, filename);
+		FbxLoader::FbxLoader loader;
+		loader.LoadFromFile(folder, filename, FbxLoader::FbxLoader::eLeftHanded, scaleFactor);
 
 		auto* pRoot = &loader.rootNode;
 		//check meshdata 

@@ -9,10 +9,20 @@ namespace GameEngine
 {
 	using namespace std;
 
-	vector<weak_ptr<Component>> Component::allComponents;
+	template<typename T>
+	vector<T> make_reserved_vector(size_t n)
+	{
+		vector<T> ret;
+		ret.reserve(n);
+		return ret;
+	}
+
+	vector<weak_ptr<Component>> Component::allComponents = make_reserved_vector<weak_ptr<Component>>(1000);
+	queue<weak_ptr<Component>> Component::watingForRegister;
 
 	Component::Component()
 	{
+
 	}
 
 	Component::~Component()
@@ -23,7 +33,8 @@ namespace GameEngine
 	void Component::Register(const shared_ptr<Component>& com)
 	{
 		if(!com->registered && com->gameObject) {
-			allComponents.push_back(com);
+			watingForRegister.push(com);
+			//allComponents.push_back(com);
 			com->registered = true;
 			com->Start();
 		}
@@ -39,8 +50,9 @@ namespace GameEngine
 
 	void Component::UpdateAll()
 	{
-		vector<std::weak_ptr<Component>> forSwap;
+		vector<std::weak_ptr<Component>> forSwap;		
 		forSwap.reserve(allComponents.size());
+
 		for(int i = 0; i < allComponents.size(); ++i) {
 			auto& weak = allComponents[i];
 			if(!weak.expired()) {
@@ -53,6 +65,11 @@ namespace GameEngine
 			}
 		}
 		allComponents.swap(forSwap);
+		forSwap.clear();
+		for(int i = 0; i < watingForRegister.size(); ++i) {
+			allComponents.push_back(watingForRegister.front());
+			watingForRegister.pop();
+		}
 	}
 
 	Transform* const Component::GetTransform()

@@ -85,26 +85,26 @@ namespace GameEngine
 		public:
 			enum AxisMode
 			{
-				eOpenGL,
-				eDirectX
+				eLeftHanded,
+				eRightHanded,
 			};
 		public:
-			float factor = 1;
+			float factor;
 			
 			Node rootNode = { "root", "" };
 			std::string relativeFolder;
 			std::unordered_map<std::string, FMaterial> materials;
 			std::unordered_map<std::string, std::shared_ptr<AnimClip>> animationClips;
 			bool useNormalMap = false;
-			AxisMode axismode = FbxLoader::eOpenGL;
+			AxisMode axismode = FbxLoader::eLeftHanded;
 
 		public:
 			~FbxLoader();
 
-			FbxLoader(AxisMode mode = FbxLoader::eOpenGL);
+			FbxLoader();
 			void ConvertMatrix(Matrix& dst, FbxAMatrix& src);
 
-			void LoadFromFile(const std::string& folder, const std::string& filename);
+			void LoadFromFile(const std::string& folder, const std::string& filename, AxisMode axismode = AxisMode::eLeftHanded, float scaleFactor = 0.01f);
 
 			void Release();
 

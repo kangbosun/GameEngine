@@ -56,10 +56,10 @@ public:
 
 		auto g = GameObject::Instantiate("Grid");
 		g->AddComponent<Grid>();
-		//GameObject::Register(g);
+		GameObject::Register(g);
 
 		light1 = Light::CreateDirectionalLight();
-		light1->GetTransform()->Translate(1, 3, -2);
+		light1->GetTransform()->Translate(1, 3, 2);
 		light1->GetTransform()->LookAt(Vector3(0, 0, 0));
 		light1->renderShadow = false;
 		GameObject::Register(light1->gameObject);
@@ -67,34 +67,32 @@ public:
 		auto sphere = Resource::models.Find("sphere");
 		sphere->transform.SetScale(Vector3(10, 10, 10));
 		sphere->transform.Translate(1, 0.5f, 0);
-		//GameObject::Register(sphere);
+		////GameObject::Register(sphere);
 
 		auto plane = Resource::models.Find("plane");
 		plane->transform.SetScale(Vector3(200, 1, 200));
 		plane->transform.Translate(0.0f, -0.01f, 0.0f);
-		//GameObject::Register(plane);
+		GameObject::Register(plane);
 
-		Camera::main->GetTransform()->SetPosition(Vector3(0.0f, 1.0f, -10.0f));
+		Camera::main->GetTransform()->SetPosition(Vector3(0.0f, 1.0f, 2.0f));
 		Camera::main->GetTransform()->LookAt(Vector3(0, 0, 0));
 		Camera::main->gameObject->AddComponent<KeyCam>();
 
-		Resource::LoadFromFbx("attack01", "resources\\models", "attack01.fbx");
-		auto attack = Resource::models.Find("attack01");
+		Resource::LoadFromFbx("attack01", "resources\\models", "attack01.fbx", 0.01f);
+		auto attack = Resource::models.Find("attack01")->Clone();
 		auto& mat = attack->GetComponentInChildren<MeshRenderer>()->materials[0];
 		attack->transform.Translate(-1, 0, 0);
-		attack->transform.SetScale(Vector3(0.1f, 0.1f, 0.1f));
 		attack->GetComponentInChildren<Animation>()->Play("Take 001");
 		attack->GetComponentInChildren<Animation>()->speed = 0.2f;
 		GameObject::Register(attack);
 
-		Resource::LoadFromFbx("NightWing", "resources\\models\\nightwing", "NW.fbx");
-		auto nightwing = Resource::models.Find("NightWing");
-		nightwing->transform.SetScale(Vector3(10, 10, 10));
+		Resource::LoadFromFbx("NightWing", "resources\\models\\nightwing", "NW.fbx", 0.1f);
+		auto nightwing = Resource::models.Find("NightWing")->Clone();
 		nightwing->transform.Translate(1, 0, 0);
-		//GameObject::Register(nightwing);
+		GameObject::Register(nightwing);
 
-		//Resource::AddModel(L"Talia", "resources\\models\\Talia", "Talia.fbx");
-		//talia = Resource::GetModel(L"Talia");
+		Resource::LoadFromFbx("Talia", "resources\\models\\Talia", "Talia.fbx", 0.01f);
+		talia = Resource::models.Find("Talia")->Clone();
 		//GameObject::Register(talia);
 
 		auto text2 = Text::CreateText(Vector3(-960, 540, 1), Vector2(100, 100), L" ", "NanumGothic");
@@ -104,27 +102,30 @@ public:
 		text2->gameObject->AddComponent<MousePos>();
 		text2->SetColor(Color::White);
 		text2->SetMesh();
-		//GameObject::Register(text2->gameObject);
+		GameObject::Register(text2->gameObject);
 
 
 		auto img = Image::CreateImage(Vector3(960, 540, 1), Vector2(400, 400));
 		img->SetTexture(text2->renderer()->material.diffuseMap);
 		string name = img->ToString();
 		img->GetTransform()->SetPivot(Pivot(eRight | eTop));
-		//GameObject::Register(img->gameObject);
+		GameObject::Register(img->gameObject);
 
 		auto button = Button::CreateButton(Vector3(960, -540, 1), Vector2(200, 60), L"Button");
 		button->GetTransform()->SetPivot(Pivot(eRight | eBottom));
-		//GameObject::Register(button->gameObject);
+		GameObject::Register(button->gameObject);
 		button->SetText(L"Button1");
-		button->onClick = bind([&]() { GameObject::Register(talia); });
+		button->onClick = bind(
+			[&]() { 
+			GameObject::Register(talia);
+		});
 
 		auto button2 = button->gameObject->Clone();
-		//GameObject::Register(button2);
+		GameObject::Register(button2);
 		button2->transform.Translate(0, 70, 1);
 		button2->GetComponent<Button>()->SetText(L"Shadow On/Off");
 		button2->GetComponentInChildren<Text>()->SetFontSize(26);
-		button2->GetComponent<Button>()->onClick = bind([&]() { light1->renderShadow = !light1->renderShadow; });
+		button2->GetComponent<Button>()->onClick = bind([&]() { GameObject::UnRegister(talia); });
 
 		vector<GameObject*> vec;
 		GameObject::FindGameObjects("Text", vec);

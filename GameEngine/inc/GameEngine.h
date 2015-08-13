@@ -19,6 +19,7 @@
 #include <sstream>
 #include <tchar.h>
 #include <set>
+#include <queue>
 
 #include <Windows.h>
 #include <mfapi.h>
