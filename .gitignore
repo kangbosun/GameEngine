@@ -141,9 +141,9 @@ publish/
 *.publishproj
 
 # NuGet Packages
-*.nupkg
+#*.nupkg
 # The packages folder can be ignored because of Package Restore
-**/packages/*
+#**/packages/*
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
@@ -211,3 +211,14 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 /GameEngine_Demo/resources/textures/Thumbs.db
+/packages/fx11_desktop_2015.2015.7.29.1/src/native
+/packages/fbxsdk_vs2015.redist.2016.1/[Content_Types].xml
+/packages/fbxsdk_vs2015.2016.1/[Content_Types].xml
+/packages/DevIL.redist.1.7.8/[Content_Types].xml
+/packages/DevIL.1.7.8/[Content_Types].xml
+/packages/fbxsdk_vs2015.redist.2016.1/[Content_Types].xml
+/packages/fbxsdk_vs2015.2016.1/[Content_Types].xml
+/packages/DevIL.redist.1.7.8/[Content_Types].xml
+/packages/DevIL.1.7.8/[Content_Types].xml
+packages/DevIL.1.7.8/[Content_Types].xml
+packages/DevIL.1.7.8/[Content_Types].xml

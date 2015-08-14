@@ -138,7 +138,7 @@ namespace GameEngine
 			str = loader.relativeFolder + "\\" + str;
 			wstring wstr(str.begin(), str.end());
 			ret = make_shared<Texture2D>();
-			ret->LoadFromFile(wstr);
+			ret->LoadFromFile(wstr, true);
 			Resource::textures.Add(str, ret);
 		}
 		return ret;

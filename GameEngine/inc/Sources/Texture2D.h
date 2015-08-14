@@ -11,6 +11,12 @@ namespace GameEngine
 		R32G32B32A32_FLOAT = DXGI_FORMAT_R32G32B32A32_FLOAT,
 		D24_UNORM_S8_UINT = DXGI_FORMAT_D24_UNORM_S8_UINT,
 		R32G32_FLOAT = DXGI_FORMAT_R32G32_FLOAT,
+
+		//DXT
+		BC3_UNORM = DXGI_FORMAT_BC3_UNORM,
+		BC4_UNORM = DXGI_FORMAT_BC4_UNORM,
+		BC5_UNORM = DXGI_FORMAT_BC5_UNORM,
+		BC7_UNORM = DXGI_FORMAT_BC7_UNORM
 	};
 
 	enum Usage
@@ -53,7 +59,7 @@ namespace GameEngine
 		CComPtr<ID3D11Texture2D> texture2D;
 		CComPtr<ID3D11ShaderResourceView> srv;
 		bool IsValid() const { return isValid; }
-		void LoadFromFile(const std::wstring& path);
+		void LoadFromFile(const std::wstring& path, bool compressToDXT = false);
 		void CreateTexture2D(int width, int height, TextureFormat format, Usage usage = USAGE_DEFAULT, BindFlag flag = BIND_SHADER_RESOURCE, CpuAccess cpuflag = (CpuAccess)0);
 	};
 
